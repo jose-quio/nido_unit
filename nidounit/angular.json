@@ -123,6 +123,10 @@
           }
         }
       }
-    }},
-  "defaultProject": "nidounit"
+    }
+  },
+  "defaultProject": "nidounit",
+  "cli": {
+    "analytics": "17f02a59-2ecf-4d1e-b0c2-685acfcaac1d"
+  }
 }
