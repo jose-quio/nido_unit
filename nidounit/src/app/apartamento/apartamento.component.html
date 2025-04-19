@@ -1,1 +1,94 @@
-<p>apartamento works!</p>
+<h1>Formulario de <span class="badge text-bg-warning custom-border fs-2">Apartamentos</span></h1>
+
+<br>
+<form [formGroup]="FormularioApartamento" (ngSubmit)="onSubmit()">
+
+    <div class="input-group mb-3 ">
+        <span class="input-group-text" id="basic-addon1">Ubicación</span>
+        <input type="text" class="form-control" placeholder="Ubicacion" formControlName="Ubicacion">
+    </div>
+    <div class="input-group mb-3">
+        <span class="input-group-text" id="basic-addon1">N° Pisos</span>
+        <input type="number" class="form-control" placeholder="N° Pisos" formControlName="NumeroPisos">
+    </div>
+    <div class="input-group mb-3">
+        <span class="input-group-text" id="basic-addon1">Medida Alto</span>
+        <input type="number" class="form-control" placeholder="Alto" formControlName="Alto">
+    </div>
+    <div class="input-group mb-3">
+        <span class="input-group-text" id="basic-addon1">Medida Largo</span>
+        <input type="number" class="form-control" placeholder="Largo" formControlName="Largo">
+    </div>
+    <div class="input-group mb-3">
+        <span class="input-group-text" id="basic-addon1">Medida Ancho</span>
+        <input type="number" class="form-control" placeholder="Ancho" formControlName="Ancho">
+    </div>
+    <br>
+    <input type="submit" class="btn btn-info" value="Registrar Apartamento">
+</form>
+
+
+<br><br>
+<div class="apartamentos mt-4">
+    <h2 class="badge text-bg-warning custom-border fs-3 mb-3">Lista de Apartamentos</h2>
+    <table class="table table-striped table-bordered table-hover" style="width: 100%;">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Ubicación</th>
+                <th>Número de Pisos</th>
+                <th>Alto</th>
+                <th>Largo</th>
+                <th>Ancho</th>
+                <th>Editar</th>
+                <th>Eliminar</th>
+                <th>Guardar</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let apartamento of apartamentos; let i = index">
+                <td>{{ apartamento.CodigoApartamento }}</td>
+                <td>
+                    <input *ngIf="isEditingRow(i)" [(ngModel)]="apartamento.Ubicacion" class="form-control"
+                        type="text" />
+                    <span *ngIf="!isEditingRow(i)">{{ apartamento.Ubicacion }}</span>
+                </td>
+                <td>
+                    <input *ngIf="isEditingRow(i)" [(ngModel)]="apartamento.NumeroPisos" class="form-control"
+                        type="number" />
+                    <span *ngIf="!isEditingRow(i)">{{ apartamento.NumeroPisos }}</span>
+                </td>
+                <td>
+                    <input *ngIf="isEditingRow(i)" [(ngModel)]="apartamento.Alto" class="form-control" type="number"
+                        step="any" />
+                    <span *ngIf="!isEditingRow(i)">{{ apartamento.Alto }}mt</span>
+                </td>
+                <td>
+                    <input *ngIf="isEditingRow(i)" [(ngModel)]="apartamento.Largo" class="form-control" type="number"
+                        step="any" />
+                    <span *ngIf="!isEditingRow(i)">{{ apartamento.Largo }}mt</span>
+                </td>
+                <td>
+                    <input *ngIf="isEditingRow(i)" [(ngModel)]="apartamento.Ancho" class="form-control" type="number"
+                        step="any" />
+                    <span *ngIf="!isEditingRow(i)">{{ apartamento.Ancho }}mt</span>
+                </td>
+                <td>
+                    <button class="btn btn-warning" (click)="editar(i)">
+                        <i class="bi bi-pencil-square"></i>
+                    </button>
+                </td>
+                <td>
+                    <button class="btn btn-danger" (click)="eliminar(i)">
+                        <i class="bi bi-x-circle"></i>
+                    </button>
+                </td>
+                <td *ngIf="isEditingRow(i)">
+                    <button class="btn btn-info" (click)="guardarEdicion(i)">
+                        <i class="bi bi-save"></i>
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
