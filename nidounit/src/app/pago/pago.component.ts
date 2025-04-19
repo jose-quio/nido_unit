@@ -1,9 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { PagosService } from '../Servicios/pagos.service';
+import { BackserviceService } from '../Servicios/backservice.service';
 import { response } from 'express';
 import { CommonModule } from '@angular/common';
+import { environment } from '../../enviroments/environment.staging';
+
 
 @Component({
   selector: 'app-pago',
@@ -13,8 +15,10 @@ import { CommonModule } from '@angular/common';
   styleUrl: './pago.component.scss'
 })
 export class PagoComponent {
+  private baseUrl = environment.apiUrl;
+
   PagosMensuales: any[] = [];
-  constructor(private http: HttpClient, private miServicio: PagosService){
+  constructor(private http: HttpClient, private miServicio: BackserviceService){
     this.obtenerTodosLosPagos();
   }
   FormularioPago = new FormGroup({
@@ -49,7 +53,7 @@ export class PagoComponent {
         DNI: dniInput 
       };
   
-      this.http.post("http://localhost:3000/api/pago", payload)
+      this.http.post(this.baseUrl + "/api/pago", payload)
         .subscribe(
           response => {
             console.log('Pago registrado con éxito:', response);

@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { CajaService } from '../Servicios/caja.service';
+import { BackserviceService } from '../Servicios/backservice.service';
 
 @Component({
   selector: 'app-caja',
@@ -12,7 +12,7 @@ import { CajaService } from '../Servicios/caja.service';
 })
 export class CajaComponent {
   totalCapital: number = 0;
-  constructor(private http: HttpClient, private miServicio:CajaService, private fb: FormBuilder){    
+  constructor(private http: HttpClient, private miServicio:BackserviceService, private fb: FormBuilder){    
     this.obtenerCapital();
   }
   

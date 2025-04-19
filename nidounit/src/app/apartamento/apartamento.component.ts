@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { response } from 'express';
+import { environment } from '../../enviroments/environment.staging';
 
 @Component({
   selector: 'app-apartamento',
@@ -12,6 +13,7 @@ import { response } from 'express';
   styleUrl: './apartamento.component.scss'
 })
 export class ApartamentoComponent {
+  private baseUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) {
     this.obtenerApartamentos();
@@ -30,7 +32,7 @@ export class ApartamentoComponent {
 
   onSubmit() {
     if (this.FormularioApartamento.valid) {
-      this.http.post<any>('http://localhost:3000/api/apartamentos', this.FormularioApartamento.value)
+      this.http.post<any>(this.baseUrl + '/api/apartamentos', this.FormularioApartamento.value)
         .subscribe(
           response => {
             console.log('Apartamento registrado con éxito:', response);
@@ -45,7 +47,7 @@ export class ApartamentoComponent {
     }
   }
   obtenerApartamentos() {
-    this.http.get<any[]>('http://localhost:3000/api/apartamentos').subscribe(
+    this.http.get<any[]>(this.baseUrl +'/api/apartamentos').subscribe(
       data => {
         this.apartamentos = data;
         console.log('Apartamentos obtenidos:', this.apartamentos);
@@ -70,7 +72,7 @@ export class ApartamentoComponent {
     console.log('Eliminar apartamento con código:', apartamento.CodigoApartamento);  
   
     if (confirm('¿Estás seguro de que deseas eliminar este apartamento?')) {
-      this.http.delete(`http://localhost:3000/api/apartamentos/${apartamento.CodigoApartamento}`, { responseType: 'text' })
+      this.http.delete(this.baseUrl + `/api/apartamentos/${apartamento.CodigoApartamento}`, { responseType: 'text' })
         .subscribe(
           response => {
             this.apartamentos.splice(index, 1); 
@@ -89,7 +91,7 @@ export class ApartamentoComponent {
     const apartamento = this.apartamentos[index];
     console.log('Código del apartamento a actualizar:', apartamento.CodigoApartamento);
   
-    this.http.put('http://localhost:3000/api/apartamentos/' + apartamento.CodigoApartamento, apartamento, { responseType: 'text' })
+    this.http.put(this.baseUrl + '/api/apartamentos/' + apartamento.CodigoApartamento, apartamento, { responseType: 'text' })
       .subscribe(response => {
         console.log('Apartamento actualizado:', response);
         this.isEditingRowIndex = null;

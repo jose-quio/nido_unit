@@ -2,7 +2,9 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { PropietarioService } from '../Servicios/propietario.service';
+import { BackserviceService } from '../Servicios/backservice.service';
+import { environment } from '../../enviroments/environment.staging';
+
 
 @Component({
   selector: 'app-propietario',
@@ -12,11 +14,13 @@ import { PropietarioService } from '../Servicios/propietario.service';
   styleUrl: './propietario.component.scss'
 })
 export class PropietarioComponent {
+  private baseUrl = environment.apiUrl;
+
   propietarios: any[] = [];
   isEditingRowIndexProp: number | null = null;
   habitacionesDisponibles: any[] = [];
 
-  constructor(private http: HttpClient, private miServicio: PropietarioService) { 
+  constructor(private http: HttpClient, private miServicio: BackserviceService) { 
     this.obtenerPropietarios();
     this.getHabitacionesDisponibles();
   }
@@ -32,7 +36,7 @@ export class PropietarioComponent {
   });
 
   obtenerPropietarios() {
-    this.http.get<any[]>('http://localhost:3000/api/propietario').subscribe(
+    this.http.get<any[]>(this.baseUrl + '/api/propietario').subscribe(
       data => {
         this.propietarios = data;
         console.log('Propietarios obtenidos:', this.propietarios);
@@ -60,7 +64,7 @@ export class PropietarioComponent {
 
   onSubmit() {
     if (this.FormularioPropietario.valid) {
-      this.http.post<any>('http://localhost:3000/api/propietario', this.FormularioPropietario.value)
+      this.http.post<any>(this.baseUrl + '/api/propietario', this.FormularioPropietario.value)
         .subscribe(
           response => {
             console.log('Propietario registrado con éxito:', response);
@@ -99,7 +103,7 @@ export class PropietarioComponent {
       CodigoPropietario: propietario.CodigoPropietario
     };
 
-    this.http.put(`http://localhost:3000/api/propietario/${propietario.CodigoPropietario}`, actualizado, { responseType: 'text' })
+    this.http.put(this.baseUrl + `/api/propietario/${propietario.CodigoPropietario}`, actualizado, { responseType: 'text' })
       .subscribe(response => {
         console.log('Propietario actualizado:', response);
         this.isEditingRowIndexProp = null;
@@ -119,7 +123,7 @@ export class PropietarioComponent {
     console.log('Eliminar propietario con código:', propietario.CodigoPropietario);
 
     if (confirm('¿Estás seguro de que deseas eliminar este propietario?')) {
-      this.http.delete(`http://localhost:3000/api/propietario/${propietario.CodigoPropietario}`, { responseType: 'text' })
+      this.http.delete(this.baseUrl + `/api/propietario/${propietario.CodigoPropietario}`, { responseType: 'text' })
         .subscribe(
           response => {
             this.propietarios.splice(index, 1);

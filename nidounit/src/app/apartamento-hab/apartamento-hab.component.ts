@@ -2,7 +2,8 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ApartamentoService } from '../../Servicios/apartamento.service';
+import { BackserviceService } from '../Servicios/backservice.service';
+import { environment } from '../../enviroments/environment.staging';
 
 @Component({
   selector: 'app-apartamento-hab',
@@ -12,7 +13,8 @@ import { ApartamentoService } from '../../Servicios/apartamento.service';
   styleUrl: './apartamento-hab.component.scss'
 })
 export class ApartamentoHabComponent {
-  constructor(private http: HttpClient, private miServicio: ApartamentoService) {
+  private baseUrl = environment.apiUrl;
+  constructor(private http: HttpClient, private miServicio: BackserviceService) {
     this.obtenerApartamentos();
     this.obtenerApartamentosHab();
   }
@@ -32,7 +34,7 @@ export class ApartamentoHabComponent {
 
   })
   obtenerApartamentosHab() {
-    this.http.get<any[]>('http://localhost:3000/api/apartamento-habitacion').subscribe(
+    this.http.get<any[]>(this.baseUrl + '/api/apartamento-habitacion').subscribe(
       data => {
         this.apartamentosHab = data;
         console.log('Apartamentos de habitación obtenidos:', this.apartamentosHab);
@@ -54,7 +56,7 @@ export class ApartamentoHabComponent {
   }
   onSubmit() {
     if (this.FormularioApartamentoHab.valid) {
-      this.http.post<any>('http://localhost:3000/api/apartamento-habitacion', this.FormularioApartamentoHab.value)
+      this.http.post<any>(this.baseUrl + '/api/apartamento-habitacion', this.FormularioApartamentoHab.value)
         .subscribe(
           response => {
             console.log('Apartamento de habitación registrado con éxito:', response);
@@ -105,7 +107,7 @@ export class ApartamentoHabComponent {
       CodigoHabitacion: apartamentoHab.CodigoHabitacion 
     };
   
-    this.http.put(`http://localhost:3000/api/apartamento-habitacion/${apartamentoHab.CodigoHabitacion}`, actualizado, { responseType: 'text' })
+    this.http.put(this.baseUrl + `/api/apartamento-habitacion/${apartamentoHab.CodigoHabitacion}`, actualizado, { responseType: 'text' })
       .subscribe(response => {
         console.log('Apartamento de habitación actualizado:', response);
         this.isEditingRowIndexHab = null;
@@ -121,7 +123,7 @@ export class ApartamentoHabComponent {
     console.log('Eliminar apartamento de habitación con código:', apartamentoHab.CodigoApartamento);
 
     if (confirm('¿Estás seguro de que deseas eliminar este apartamento de habitación?')) {
-      this.http.delete(`http://localhost:3000/api/apartamento-habitacion/${apartamentoHab.CodigoHabitacion}`, { responseType: 'text' })
+      this.http.delete(this.baseUrl + `/api/apartamento-habitacion/${apartamentoHab.CodigoHabitacion}`, { responseType: 'text' })
         .subscribe(
           response => {
             this.apartamentosHab.splice(index, 1);
