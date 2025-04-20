@@ -4,6 +4,8 @@ import { Component } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { response } from 'express';
 import { environment } from '../../enviroments/environment.staging';
+import { BackserviceService } from '../Servicios/backservice.service';
+
 
 @Component({
   selector: 'app-apartamento',
@@ -15,7 +17,7 @@ import { environment } from '../../enviroments/environment.staging';
 export class ApartamentoComponent {
   private baseUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient,private backService: BackserviceService) {
     this.obtenerApartamentos();
   }
   apartamentos: any[] = [];
@@ -32,7 +34,7 @@ export class ApartamentoComponent {
 
   onSubmit() {
     if (this.FormularioApartamento.valid) {
-      this.http.post<any>(this.baseUrl + '/api/apartamentos', this.FormularioApartamento.value)
+      this.backService.registrarApartamento(this.FormularioApartamento.value)
         .subscribe(
           response => {
             console.log('Apartamento registrado con éxito:', response);
@@ -47,7 +49,7 @@ export class ApartamentoComponent {
     }
   }
   obtenerApartamentos() {
-    this.http.get<any[]>(this.baseUrl +'/api/apartamentos').subscribe(
+    this.backService.getApartamentos().subscribe(
       data => {
         this.apartamentos = data;
         console.log('Apartamentos obtenidos:', this.apartamentos);
@@ -70,9 +72,9 @@ export class ApartamentoComponent {
   eliminar(index: number) {
     const apartamento = this.apartamentos[index];
     console.log('Eliminar apartamento con código:', apartamento.CodigoApartamento);  
-  
+    
     if (confirm('¿Estás seguro de que deseas eliminar este apartamento?')) {
-      this.http.delete(this.baseUrl + `/api/apartamentos/${apartamento.CodigoApartamento}`, { responseType: 'text' })
+      this.backService.eliminarApartamento(apartamento.CodigoApartamento)
         .subscribe(
           response => {
             this.apartamentos.splice(index, 1); 
@@ -90,14 +92,17 @@ export class ApartamentoComponent {
   guardarEdicion(index: number) {
     const apartamento = this.apartamentos[index];
     console.log('Código del apartamento a actualizar:', apartamento.CodigoApartamento);
-  
-    this.http.put(this.baseUrl + '/api/apartamentos/' + apartamento.CodigoApartamento, apartamento, { responseType: 'text' })
-      .subscribe(response => {
-        console.log('Apartamento actualizado:', response);
-        this.isEditingRowIndex = null;
-        this.obtenerApartamentos();  
-      }, error => {
-        console.error('Error al actualizar el apartamento:', error);
-      });
+
+    this.backService.guardarEdicion(apartamento.CodigoApartamento, apartamento)
+      .subscribe(
+        response => {
+          console.log('Apartamento actualizado:', response);
+          this.isEditingRowIndex = null;  
+          this.obtenerApartamentos();     
+        },
+        error => {
+          console.error('Error al actualizar el apartamento:', error);
+        }
+      );
   }
 } 

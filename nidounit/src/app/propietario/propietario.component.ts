@@ -1,10 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BackserviceService } from '../Servicios/backservice.service';
-import { environment } from '../../enviroments/environment.staging';
-
 
 @Component({
   selector: 'app-propietario',
@@ -14,13 +11,11 @@ import { environment } from '../../enviroments/environment.staging';
   styleUrl: './propietario.component.scss'
 })
 export class PropietarioComponent {
-  private baseUrl = environment.apiUrl;
-
   propietarios: any[] = [];
   isEditingRowIndexProp: number | null = null;
   habitacionesDisponibles: any[] = [];
 
-  constructor(private http: HttpClient, private miServicio: BackserviceService) { 
+  constructor(private miServicio: BackserviceService) {
     this.obtenerPropietarios();
     this.getHabitacionesDisponibles();
   }
@@ -36,7 +31,7 @@ export class PropietarioComponent {
   });
 
   obtenerPropietarios() {
-    this.http.get<any[]>(this.baseUrl + '/api/propietario').subscribe(
+    this.miServicio.getPropietarios().subscribe(
       data => {
         this.propietarios = data;
         console.log('Propietarios obtenidos:', this.propietarios);
@@ -46,10 +41,10 @@ export class PropietarioComponent {
       }
     );
   }
-  
+
   getHabitacionesDisponibles() {
     console.log('Iniciando la obtención de habitaciones disponibles...');
-    
+
     this.miServicio.getHabitacionesDisponibles().subscribe(
       (data) => {
         console.log('Datos recibidos del servicio:', data);
@@ -64,11 +59,11 @@ export class PropietarioComponent {
 
   onSubmit() {
     if (this.FormularioPropietario.valid) {
-      this.http.post<any>(this.baseUrl + '/api/propietario', this.FormularioPropietario.value)
+      this.miServicio.registrarPropietario(this.FormularioPropietario.value)
         .subscribe(
           response => {
             console.log('Propietario registrado con éxito:', response);
-            this.obtenerPropietarios();  
+            this.obtenerPropietarios();
             this.FormularioPropietario.reset();
           },
           error => {
@@ -77,12 +72,13 @@ export class PropietarioComponent {
         );
     } else {
       console.warn('Formulario inválido');
+      alert('Por favor complete todos los campos requeridos.');
     }
   }
 
   editarPropietario(index: number) {
     const propietario = this.propietarios[index];
-    this.isEditingRowIndexProp = index; 
+    this.isEditingRowIndexProp = index;
     this.FormularioPropietario.setValue({
       Nombre: propietario.Nombre,
       Apellido: propietario.Apellido,
@@ -90,7 +86,7 @@ export class PropietarioComponent {
       Telefono: propietario.Telefono,
       DeudaAnual: propietario.DeudaAnual,
       PagoMensual: propietario.PagoMensual,
-      CodigoHabitacion: propietario.CodigoHabitacion  
+      CodigoHabitacion: propietario.CodigoHabitacion
     });
   }
 
@@ -103,7 +99,7 @@ export class PropietarioComponent {
       CodigoPropietario: propietario.CodigoPropietario
     };
 
-    this.http.put(this.baseUrl + `/api/propietario/${propietario.CodigoPropietario}`, actualizado, { responseType: 'text' })
+    this.miServicio.actualizarPropietario(propietario.CodigoPropietario, actualizado)
       .subscribe(response => {
         console.log('Propietario actualizado:', response);
         this.isEditingRowIndexProp = null;
@@ -123,18 +119,18 @@ export class PropietarioComponent {
     console.log('Eliminar propietario con código:', propietario.CodigoPropietario);
 
     if (confirm('¿Estás seguro de que deseas eliminar este propietario?')) {
-      this.http.delete(this.baseUrl + `/api/propietario/${propietario.CodigoPropietario}`, { responseType: 'text' })
+      this.miServicio.eliminarPropietario(propietario.CodigoPropietario)
         .subscribe(
           response => {
             this.propietarios.splice(index, 1);
             console.log('Propietario eliminado:', response);
-            
+            alert('Propietario eliminado correctamente');
           },
           error => {
             console.error('Error al eliminar el propietario:', error);
+            alert('Error al eliminar el propietario');
           }
         );
     }
   }
-
 }
