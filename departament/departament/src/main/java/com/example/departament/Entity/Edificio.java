@@ -1,6 +1,8 @@
 package com.example.departament.Entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -16,9 +18,10 @@ public class Edificio {
     private String direccion;
 
     @OneToMany(mappedBy = "edificio")
+    @JsonIgnoreProperties({"edificio"})
     private List<Departamento> apartamentos;
 
-    // Getters and Setters
+
     public Long getId() {
         return id;
     }

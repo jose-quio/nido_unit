@@ -1,5 +1,6 @@
 package com.example.departament.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 import java.util.HashSet;
@@ -22,6 +23,7 @@ public class Departamento {
 
     @ManyToOne
     @JoinColumn(name = "edificio_id")
+    @JsonIgnoreProperties({"apartamentos"})
     private Edificio edificio;
 
     @ManyToMany
@@ -32,7 +34,7 @@ public class Departamento {
     )
     private List<Propietario> propietarios;
 
-    // Getters and Setters
+
     public Long getId() {
         return id;
     }

@@ -25,7 +25,7 @@ public class Propietario {
     private String telefono;
     private String correo;
 
-    // Relación ManyToMany con Apartamento (un cliente puede ser propietario de varios departamentos)
+    // Relación con Apartamento
     @ManyToMany(mappedBy = "propietarios")
     private Set<Departamento> departamentos;
 }
