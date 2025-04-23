@@ -14,19 +14,15 @@
         <input type="number" class="form-control" placeholder="DNI" formControlName="DNI">
     </div>
     <div class="input-group mb-3">
-        <span class="input-group-text" id="basic-addon1">Telefono</span>
-        <input type="number" class="form-control" placeholder="Telefono" formControlName="Telefono">
+        <span class="input-group-text" id="basic-addon1">Teléfono</span>
+        <input type="number" class="form-control" placeholder="Teléfono" formControlName="Telefono">
     </div>
     <div class="input-group mb-3">
-        <span class="input-group-text" id="basic-addon1">Deuda Anual</span>
-        <input type="number" class="form-control" placeholder="Deuda Anual" formControlName="DeudaAnual">
+        <span class="input-group-text" id="basic-addon1">Email</span>
+        <input type="email" class="form-control" placeholder="Correo electrónico" formControlName="Email">
     </div>
     <div class="input-group mb-3">
-        <span class="input-group-text" id="basic-addon1">Pago Mensual</span>
-        <input type="number" class="form-control" placeholder="Pago Mensual" formControlName="PagoMensual">
-    </div>
-    <div class="input-group mb-3">
-        <span class="input-group-text" id="basic-addon1">Codigo Habitacion</span>
+        <span class="input-group-text" id="basic-addon1">Código Departamento</span>
         <div class="input-group mb-3">
             <label class="input-group-text" for="inputGroupSelect01">Opciones</label>
             <select class="form-select" id="inputGroupSelect01" formControlName="CodigoHabitacion">
@@ -50,9 +46,8 @@
                 <th scope="col">Nombre</th>
                 <th scope="col">Apellido</th>
                 <th scope="col">DNI</th>
-                <th scope="col">Telefono</th>
-                <th scope="col">Deuda Anual</th>
-                <th scope="col">Pago Mensual</th>
+                <th scope="col">Teléfono</th>
+                <th scope="col">Email</th>
                 <th scope="col">Habitación</th>
                 <th scope="col">Editar</th>
                 <th scope="col">Eliminar</th>
@@ -62,13 +57,34 @@
         <tbody>
             <tr *ngFor="let propietario of propietarios; let i = index">
                 <td>{{ propietario.CodigoPropietario }}</td>
-                <td>{{ propietario.Nombre }}</td>
-                <td>{{ propietario.Apellido }}</td>
-                <td>{{ propietario.DNI }}</td>
-                <td>{{ propietario.Telefono }}</td>
-                <td>{{ propietario.DeudaAnual }}</td>
-                <td>{{ propietario.PagoMensual }}</td>
-                <td>{{ propietario.CodigoHabitacion }}</td>
+                <td>
+                    <input *ngIf="isEditingRowProp(i)" [(ngModel)]="propietario.Nombre" class="form-control" type="text" />
+                    <span *ngIf="!isEditingRowProp(i)">{{ propietario.Nombre }}</span>
+                </td>
+                <td>
+                    <input *ngIf="isEditingRowProp(i)" [(ngModel)]="propietario.Apellido" class="form-control" type="text" />
+                    <span *ngIf="!isEditingRowProp(i)">{{ propietario.Apellido }}</span>
+                </td>
+                <td>
+                    <input *ngIf="isEditingRowProp(i)" [(ngModel)]="propietario.DNI" class="form-control" type="number" />
+                    <span *ngIf="!isEditingRowProp(i)">{{ propietario.DNI }}</span>
+                </td>
+                <td>
+                    <input *ngIf="isEditingRowProp(i)" [(ngModel)]="propietario.Telefono" class="form-control" type="number" />
+                    <span *ngIf="!isEditingRowProp(i)">{{ propietario.Telefono }}</span>
+                </td>
+                <td>
+                    <input *ngIf="isEditingRowProp(i)" [(ngModel)]="propietario.Email" class="form-control" type="email" />
+                    <span *ngIf="!isEditingRowProp(i)">{{ propietario.Email }}</span>
+                </td>
+                <td>
+                    <select *ngIf="isEditingRowProp(i)" [(ngModel)]="propietario.CodigoHabitacion" class="form-control">
+                        <option *ngFor="let habitacion of habitacionesDisponibles" [value]="habitacion.CodigoHabitacion">
+                            {{ habitacion.CodigoHabitacion }}
+                        </option>
+                    </select>
+                    <span *ngIf="!isEditingRowProp(i)">{{ propietario.CodigoHabitacion }}</span>
+                </td>
                 <td><button class="btn btn-warning" (click)="editarPropietario(i)">
                     <i class="bi bi-pencil-square"></i>
                 </button></td>

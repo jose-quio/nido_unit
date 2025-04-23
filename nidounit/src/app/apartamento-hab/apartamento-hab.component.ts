@@ -23,22 +23,22 @@ export class ApartamentoHabComponent {
 
   FormularioApartamentoHab = new FormGroup({
     CodigoApartamento: new FormControl(''),
-    TipoHabitacion: new FormControl(''),
+    Numero: new FormControl(''),
+    Piso: new FormControl(''),
     NumeroHabitaciones: new FormControl(''),
-    DimenAlto: new FormControl(''),
-    DimenAncho: new FormControl(''),
-    DimenLargo: new FormControl(''),
-    Estado: new FormControl(''),
+    PrecioVenta: new FormControl(''),
+    PrecioAlquiler: new FormControl(''),
+    Estado: new FormControl('Disponible'),
   });
 
   obtenerApartamentosHab() {
     this.miServicio.getApartamentosHab().subscribe(
       data => {
         this.apartamentosHab = data;
-        console.log('Apartamentos de habitación obtenidos:', this.apartamentosHab);
+        console.log('Departamentos obtenidos:', this.apartamentosHab);
       },
       error => {
-        console.error('Error al obtener los apartamentos de habitación:', error);
+        console.error('Error al obtener los departamentos:', error);
       }
     );
   }
@@ -47,9 +47,10 @@ export class ApartamentoHabComponent {
     this.miServicio.getApartamentos().subscribe(
       (data) => {
         this.apartamentos = data;
+        console.log('Edificios obtenidos:', this.apartamentos);
       },
       (error) => {
-        console.error('Error al obtener los apartamentos', error);
+        console.error('Error al obtener los edificios', error);
       }
     );
   }
@@ -59,12 +60,14 @@ export class ApartamentoHabComponent {
       this.miServicio.registrarApartamentoHab(this.FormularioApartamentoHab.value)
         .subscribe(
           response => {
-            console.log('Apartamento de habitación registrado con éxito:', response);
+            console.log('Departamento registrado con éxito:', response);
             this.obtenerApartamentosHab();
-            this.FormularioApartamentoHab.reset();
+            this.FormularioApartamentoHab.reset({
+              Estado: 'Disponible'
+            });
           },
           error => {
-            console.error('Error al registrar la habitación:', error);
+            console.error('Error al registrar el departamento:', error);
           }
         );
     } else {
@@ -75,15 +78,6 @@ export class ApartamentoHabComponent {
   editarHab(index: number) {
     const apartamentoHab = this.apartamentosHab[index];
     this.isEditingRowIndexHab = index;
-    this.FormularioApartamentoHab.setValue({
-      CodigoApartamento: apartamentoHab.CodigoApartamento,
-      TipoHabitacion: apartamentoHab.TipoHabitacion,
-      NumeroHabitaciones: apartamentoHab.NumeroHabitaciones,
-      DimenAlto: apartamentoHab.DimenAlto,
-      DimenAncho: apartamentoHab.DimenAncho,
-      DimenLargo: apartamentoHab.DimenLargo,
-      Estado: apartamentoHab.Estado
-    });
   }
 
   isEditingRowHab(index: number): boolean {
@@ -92,43 +86,32 @@ export class ApartamentoHabComponent {
 
   guardarEdicionHab(index: number) {
     const apartamentoHab = this.apartamentosHab[index];
-    const formularioData = this.FormularioApartamentoHab.value;
+    console.log('Actualizando departamento con código:', apartamentoHab.CodigoHabitacion);
 
-    if (!formularioData.TipoHabitacion) {
-      console.error('El campo TipoHabitacion no puede estar vacío.');
-      return;
-    }
-
-    const actualizado = {
-      ...formularioData,
-      CodigoHabitacion: apartamentoHab.CodigoHabitacion
-    };
-
-    this.miServicio.actualizarApartamentoHab(apartamentoHab.CodigoHabitacion, actualizado)
+    this.miServicio.actualizarApartamentoHab(apartamentoHab.CodigoHabitacion, apartamentoHab)
       .subscribe(response => {
-        console.log('Apartamento de habitación actualizado:', response);
+        console.log('Departamento actualizado:', response);
         this.isEditingRowIndexHab = null;
         this.obtenerApartamentosHab();
-        this.FormularioApartamentoHab.reset();
       }, error => {
-        console.error('Error al actualizar el apartamento de habitación:', error);
+        console.error('Error al actualizar el departamento:', error);
       });
   }
 
   eliminarHab(index: number) {
     const apartamentoHab = this.apartamentosHab[index];
-    console.log('Eliminar apartamento de habitación con código:', apartamentoHab.CodigoApartamento);
+    console.log('Eliminar departamento con código:', apartamentoHab.CodigoHabitacion);
 
-    if (confirm('¿Estás seguro de que deseas eliminar este apartamento de habitación?')) {
+    if (confirm('¿Estás seguro de que deseas eliminar este departamento?')) {
       this.miServicio.eliminarApartamentoHab(apartamentoHab.CodigoHabitacion)
         .subscribe(
           response => {
             this.apartamentosHab.splice(index, 1);
-            console.log('Apartamento de habitación eliminado:', response);
+            console.log('Departamento eliminado:', response);
             alert(response);
           },
           error => {
-            console.error('Error al eliminar el apartamento de habitación:', error);
+            console.error('Error al eliminar el departamento:', error);
           }
         );
     }

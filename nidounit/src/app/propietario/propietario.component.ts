@@ -25,8 +25,7 @@ export class PropietarioComponent {
     Apellido: new FormControl(''),
     DNI: new FormControl(''),
     Telefono: new FormControl(''),
-    DeudaAnual: new FormControl(''),
-    PagoMensual: new FormControl(''),
+    Email: new FormControl(''),
     CodigoHabitacion: new FormControl(''),
   });
 
@@ -45,7 +44,7 @@ export class PropietarioComponent {
   getHabitacionesDisponibles() {
     console.log('Iniciando la obtención de habitaciones disponibles...');
 
-    this.miServicio.getHabitacionesDisponibles().subscribe(
+    this.miServicio.getDepartamentosDisponibles().subscribe(
       (data) => {
         console.log('Datos recibidos del servicio:', data);
         this.habitacionesDisponibles = data;
@@ -84,27 +83,20 @@ export class PropietarioComponent {
       Apellido: propietario.Apellido,
       DNI: propietario.DNI,
       Telefono: propietario.Telefono,
-      DeudaAnual: propietario.DeudaAnual,
-      PagoMensual: propietario.PagoMensual,
+      Email: propietario.Email || '',  
       CodigoHabitacion: propietario.CodigoHabitacion
     });
   }
 
   guardarEdicionProp(index: number) {
     const propietario = this.propietarios[index];
-    const formularioData = this.FormularioPropietario.value;
+    console.log('Guardando edición de propietario:', propietario);
 
-    const actualizado = {
-      ...formularioData,
-      CodigoPropietario: propietario.CodigoPropietario
-    };
-
-    this.miServicio.actualizarPropietario(propietario.CodigoPropietario, actualizado)
+    this.miServicio.actualizarPropietario(propietario.CodigoPropietario, propietario)
       .subscribe(response => {
         console.log('Propietario actualizado:', response);
         this.isEditingRowIndexProp = null;
         this.obtenerPropietarios();
-        this.FormularioPropietario.reset();
       }, error => {
         console.error('Error al actualizar el propietario:', error);
       });

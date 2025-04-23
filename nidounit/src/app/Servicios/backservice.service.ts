@@ -62,8 +62,8 @@ export class BackserviceService {
     return this.http.get<any[]>(this.urlService.apiUrlGetTodosPagos);
   }
   //Operaciones de propietario
-  getHabitacionesDisponibles(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.urlService.apiUrlGetHabitacionesDisponibles}`);
+  getDepartamentosDisponibles(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.urlService.apiUrlGetDepartamentosDisponibles}`);
   }
   
   registrarPropietario(propietario: any): Observable<any> {

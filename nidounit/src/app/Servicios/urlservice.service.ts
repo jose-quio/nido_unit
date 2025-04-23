@@ -11,15 +11,15 @@ export class UrlserviceService {
 
   constructor(private http: HttpClient) { }
   //CRUD Departamentos
-  public apiUrlRegistrarApartamento = `${this.baseUrl}/api/apartamentos`
-  public apiUrlGetApartamentos = `${this.baseUrl}/api/apartamentos`;
-  public apiUrlDeleteApartamento = `${this.baseUrl}/api/apartamentos`;
-  public apiUrlActualizarApartamento = `${this.baseUrl}/api/apartamentos`;
+  public apiUrlRegistrarApartamento = `${this.baseUrl}/api/edificio`
+  public apiUrlGetApartamentos = `${this.baseUrl}/api/edificio`;
+  public apiUrlDeleteApartamento = `${this.baseUrl}/api/edificio`;
+  public apiUrlActualizarApartamento = `${this.baseUrl}/api/edificio`;
   //CRUD Habitaciones
-  public apiUrlRegistrarApartamentoHab = `${this.baseUrl}/api/apartamento-habitacion`;
-  public apiUrlGetApartamentosHab = `${this.baseUrl}/api/apartamento-habitacion`;
-  public apiUrlUpdateApartamentoHab = `${this.baseUrl}/api/apartamento-habitacion`;
-  public apiUrlDeleteApartamentoHab = `${this.baseUrl}/api/apartamento-habitacion`
+  public apiUrlRegistrarApartamentoHab = `${this.baseUrl}/api/apartamentos`;
+  public apiUrlGetApartamentosHab = `${this.baseUrl}/api/apartamentos`;
+  public apiUrlUpdateApartamentoHab = `${this.baseUrl}/api/apartamentos`;
+  public apiUrlDeleteApartamentoHab = `${this.baseUrl}/api/apartamentos`
   //Caja
   public apiUrlGetTotalCapital = `${this.baseUrl}/api/capital`;
   public apiUrlGuardarPago = `${this.baseUrl}/api/caja`;
@@ -27,7 +27,7 @@ export class UrlserviceService {
   public apiUrlGetPagosDNI = `${this.baseUrl}/api/pago`;
   public apiUrlGetTodosPagos = `${this.baseUrl}/api/pago`;
   //CRUD Propietarios
-  public apiUrlGetHabitacionesDisponibles = `${this.baseUrl}/api/propietario/apartamento-habitacion-disponible`;
+  public apiUrlGetDepartamentosDisponibles = `${this.baseUrl}/api/apartamentos/disponibles`;
   public apiUrlRegistrarPropietario = `${this.baseUrl}/api/propietario`;
   public apiUrlGetPropietarios = `${this.baseUrl}/api/propietario`;
   public apiUrlUpdatePropietario = `${this.baseUrl}/api/propietario`;
