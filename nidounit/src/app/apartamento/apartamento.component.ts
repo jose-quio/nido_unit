@@ -24,22 +24,26 @@ export class ApartamentoComponent {
   isEditingRowIndex: number | null = null;
 
   FormularioApartamento = new FormGroup({
-    Nombre: new FormControl(''),
-    Direccion: new FormControl(''),
-    NumeroPisos: new FormControl(''),
-    Tipo: new FormControl('residencial'),
-    Descripcion: new FormControl('')
-  })
+    nombre: new FormControl<string>(''),  
+    direccion: new FormControl<string>(''),
+    nroPisos: new FormControl<number | null>(null),  
+    tipo: new FormControl<string>('residencial'),
+    descripcion: new FormControl<string>('')
+  });
 
   onSubmit() {
+    console.log('Valores del formulario:', this.FormularioApartamento.value);
+    console.log('Estado del formulario:', this.FormularioApartamento.status);
+    
     if (this.FormularioApartamento.valid) {
+      console.log('Enviando datos:', JSON.stringify(this.FormularioApartamento.value));
       this.backService.registrarApartamento(this.FormularioApartamento.value)
         .subscribe(
           response => {
             console.log('Edificio registrado con éxito:', response);
             this.obtenerApartamentos();
             this.FormularioApartamento.reset({
-              Tipo: 'residencial'  
+              tipo: 'residencial'  
             });
           },
           error => {
@@ -47,7 +51,7 @@ export class ApartamentoComponent {
           }
         );
     } else {
-      console.warn('Formulario inválido');
+      console.warn('Formulario inválido', this.FormularioApartamento.errors);
     }
   }
 
@@ -74,10 +78,10 @@ export class ApartamentoComponent {
 
   eliminar(index: number) {
     const apartamento = this.apartamentos[index];
-    console.log('Eliminar edificio con código:', apartamento.CodigoApartamento);
+    console.log('Eliminar edificio con código:', apartamento.id);
 
     if (confirm('¿Estás seguro de que deseas eliminar este edificio?')) {
-      this.backService.eliminarApartamento(apartamento.CodigoApartamento)
+      this.backService.eliminarApartamento(apartamento.id)
         .subscribe(
           response => {
             this.apartamentos.splice(index, 1);
@@ -93,9 +97,9 @@ export class ApartamentoComponent {
 
   guardarEdicion(index: number) {
     const apartamento = this.apartamentos[index];
-    console.log('Código del edificio a actualizar:', apartamento.CodigoApartamento);
+    console.log('Código del edificio a actualizar:', apartamento.id);
 
-    this.backService.guardarEdicion(apartamento.CodigoApartamento, apartamento)
+    this.backService.guardarEdicion(apartamento.id, apartamento)
       .subscribe(
         response => {
           console.log('Edificio actualizado:', response);
