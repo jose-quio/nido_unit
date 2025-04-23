@@ -5,14 +5,13 @@ import com.example.departament.Entity.Departamento;
 import com.example.departament.Entity.Propietario;
 import com.example.departament.Repository.DepartamentoRepository;
 import com.example.departament.Repository.PropietarioRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/propietario")
@@ -85,6 +84,7 @@ public class PropietarioController {
 
     // Asignar departamento a propietario
     @PostMapping("/{propietarioId}/departamentos/{departamentoId}")
+    @Transactional
     public ResponseEntity<?> asignarDepartamentoAPropietario(
             @PathVariable Long propietarioId,
             @PathVariable Long departamentoId) {
@@ -103,6 +103,13 @@ public class PropietarioController {
         if (propietario.getDepartamentos().contains(departamento)) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body("El propietario ya está asignado a este departamento");
+        }
+
+        if (departamento.getPropietarios() == null) {
+            departamento.setPropietarios(new ArrayList<>());
+        }
+        if (propietario.getDepartamentos() == null) {
+            propietario.setDepartamentos(new HashSet<>());
         }
 
         // Establecer la relación en ambos lados

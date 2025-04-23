@@ -30,13 +30,16 @@ public class EdificioControllerTest {
 
     //Metodos Auxiliares
 
-    private void crearEdificioDePrueba(String nombre, String direccion) throws Exception {
+    private void crearEdificioDePrueba(String nombre, String direccion, String nroPisos, String tipo, String descripcion) throws Exception {
         String json = String.format("""
     {
         "nombre": "%s",
-        "direccion": "%s"
+        "direccion": "%s",
+        "nroPisos": "%s",
+        "tipo": "%s",
+        "descripcion": "%s"
     }
-    """, nombre, direccion);
+    """, nombre, direccion, nroPisos, tipo, descripcion);
 
         mockMvc.perform(MockMvcRequestBuilders
                 .post("/api/edificio")
@@ -44,13 +47,16 @@ public class EdificioControllerTest {
                 .content(json));
     }
 
-    private Long crearEdificioDePruebaYRetornarId(String nombre, String direccion) throws Exception {
+    private Long crearEdificioDePruebaYRetornarId(String nombre, String direccion, String nroPisos, String tipo, String descripcion) throws Exception {
         String json = String.format("""
     {
         "nombre": "%s",
-        "direccion": "%s"
+        "direccion": "%s",
+        "nroPisos": "%s",
+        "tipo": "%s",
+        "descripcion": "%s"
     }
-    """, nombre, direccion);
+    """, nombre, direccion, nroPisos, tipo, descripcion);
 
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders
                         .post("/api/edificio")
@@ -69,6 +75,7 @@ public class EdificioControllerTest {
     {
         "numero": "101",
         "piso": "1",
+        "nroHabitaciones": "6",
         "area": 75.5,
         "precioVenta": 150000.00,
         "precioAlquiler": 1200.00,
@@ -88,7 +95,10 @@ public class EdificioControllerTest {
         String edificioJson = """
     {
         "nombre": "Torre Esmeralda",
-        "direccion": "Av. Principal 123"
+        "direccion": "Av. Principal 123",
+        "nroPisos": "6",
+        "tipo": "residencial",
+        "descripcion": "edificio grande"
     }
     """;
         URI uri = new URI("/api/edificio");
@@ -107,7 +117,10 @@ public class EdificioControllerTest {
         String edificioJson = """
     {
         "nombre": "",
-        "direccion": null
+        "direccion": null,
+        "nroPisos": null,
+        "tipo": null,
+        "descripcion": null
     }
     """;
         URI uri = new URI("/api/edificio");
@@ -127,7 +140,10 @@ public class EdificioControllerTest {
         String edificioJson = """
     {
         "nombre": "Torre Esmeralda",
-        "direccion": "Av. Principal 123"
+        "direccion": "Av. Principal 123",
+        "nroPisos": "6",
+        "tipo": "residencial",
+        "descripcion": "edificio grande"
     }
     """;
         URI uri = new URI("/api/edificio");
@@ -168,8 +184,9 @@ public class EdificioControllerTest {
     @Test public void getAllEdificios_retornaLista() throws Exception {
 
         edificioRepository.deleteAll();
-        crearEdificioDePrueba("Edificio Z","Calle las penurias");
-        crearEdificioDePrueba("Edificio L","Calle las noches");
+        crearEdificioDePrueba("Edificio Z","Calle las penurias","4","residencial","nada");
+        crearEdificioDePrueba("Edificio L","Calle las noches","2","residencial","nada");
+
 
         URI uri = new URI("/api/edificio");
         mockMvc.perform(MockMvcRequestBuilders.get(uri)
@@ -194,12 +211,15 @@ public class EdificioControllerTest {
 
     @Test
     void updateEdificio_exito() throws Exception {
-        Long id = crearEdificioDePruebaYRetornarId("Edificio Original", "Dirección Original");
+        Long id = crearEdificioDePruebaYRetornarId("Edificio Original", "Dirección Original","2","oficinas","nada");
 
         String edificioActualizadoJson = """
     {
         "nombre": "Edificio Actualizado",
-        "direccion": "Nueva Dirección"
+        "direccion": "Nueva Dirección",
+        "nroPisos": "3",
+        "tipo": "oficinas",
+        "descripcion": "nada"
     }
     """;
 
@@ -210,7 +230,10 @@ public class EdificioControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(id))
                 .andExpect(jsonPath("$.nombre").value("Edificio Actualizado"))
-                .andExpect(jsonPath("$.direccion").value("Nueva Dirección"));
+                .andExpect(jsonPath("$.direccion").value("Nueva Dirección"))
+                .andExpect(jsonPath("$.nroPisos").value("3"))
+                .andExpect(jsonPath("$.tipo").value("oficinas"))
+                .andExpect(jsonPath("$.descripcion").value("nada"));
     }
 
     @Test
@@ -218,7 +241,10 @@ public class EdificioControllerTest {
         String edificioJson = """
     {
         "nombre": "Edificio Inexistente",
-        "direccion": "Dirección"
+        "direccion": "Dirección",
+        "nroPisos": "3",
+        "tipo": "oficinas",
+        "descripcion": "nada"
     }
     """;
 
@@ -232,12 +258,15 @@ public class EdificioControllerTest {
     @Test
     void updateEdificio_InvalidoOK() throws Exception {
         edificioRepository.deleteAll();
-        Long id = crearEdificioDePruebaYRetornarId("Edificio Valido", "Dirección Valida");
+        Long id = crearEdificioDePruebaYRetornarId("Edificio Valido", "Dirección Valida","4","oficinas","nada");
 
         String edificioInvalidoJson = """
     {
         "nombre": "",
-        "direccion": null
+        "direccion": null,
+        "nroPisos": null,
+        "tipo": null,
+        "descripcion": null
     }
     """;
 
@@ -252,7 +281,7 @@ public class EdificioControllerTest {
 
     @Test
     void deleteEdificio_SinContenidoYNoExiste() throws Exception {
-        Long id = crearEdificioDePruebaYRetornarId("Edificio a Eliminar", "Dirección");
+        Long id = crearEdificioDePruebaYRetornarId("Edificio a Eliminar", "Dirección","4","oficinas","nada");
 
         mockMvc.perform(MockMvcRequestBuilders
                         .delete("/api/edificio/" + id))
@@ -273,7 +302,7 @@ public class EdificioControllerTest {
     @Test
     void deleteEdificio_conDepartamentosSinContenido() throws Exception {
 
-        Long idEdificio = crearEdificioDePruebaYRetornarId("Edificio con Deptos", "Dirección");
+        Long idEdificio = crearEdificioDePruebaYRetornarId("Edificio con Deptos", "Dirección","4","oficinas","nada");
         crearDepartamentoEnEdificio(idEdificio);
 
         mockMvc.perform(MockMvcRequestBuilders
