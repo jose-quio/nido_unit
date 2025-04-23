@@ -54,6 +54,8 @@ public class EdificioController {
                 .map(edificio -> {
                     edificio.setNombre(edificioDetails.getNombre());
                     edificio.setDireccion(edificioDetails.getDireccion());
+                    edificio.setNroPisos(edificioDetails.getNroPisos());
+                    edificio.setDescripcion(edificioDetails.getDescripcion());
                     Edificio updatedEdificio = edificioRepository.save(edificio);
                     return ResponseEntity.ok(updatedEdificio);
                 })
@@ -71,7 +73,7 @@ public class EdificioController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // Obtener apartamentos de un edificio
+    // Obtener apartamentos de un edificio Eliminado
     @GetMapping("/{id}/apartamentos")
     public ResponseEntity<List<Departamento>> getApartamentosByEdificio(@PathVariable Long id) {
         if (!edificioRepository.existsById(id)) {
