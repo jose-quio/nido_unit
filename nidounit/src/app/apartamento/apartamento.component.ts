@@ -86,7 +86,7 @@ export class ApartamentoComponent {
           response => {
             this.apartamentos.splice(index, 1);
             console.log('Edificio eliminado:', response);
-            alert(response);
+            alert("Edificio eliminado con éxito");
           },
           error => {
             console.error('Error al eliminar el edificio:', error);

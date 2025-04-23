@@ -3,35 +3,34 @@
 <form [formGroup]="FormularioPropietario" (ngSubmit)="onSubmit()">
     <div class="input-group mb-3">
         <span class="input-group-text" id="basic-addon1">Nombre</span>
-        <input type="text" class="form-control" placeholder="Nombre" formControlName="Nombre">
+        <input type="text" class="form-control" placeholder="Nombre" formControlName="nombres">
     </div>
     <div class="input-group mb-3">
         <span class="input-group-text" id="basic-addon1">Apellido</span>
-        <input type="text" class="form-control" placeholder="Apellido" formControlName="Apellido">
+        <input type="text" class="form-control" placeholder="Apellido" formControlName="apellidos">
     </div>
     <div class="input-group mb-3">
         <span class="input-group-text" id="basic-addon1">DNI</span>
-        <input type="number" class="form-control" placeholder="DNI" formControlName="DNI">
+        <input type="number" class="form-control" placeholder="DNI" formControlName="dni">
     </div>
     <div class="input-group mb-3">
         <span class="input-group-text" id="basic-addon1">Teléfono</span>
-        <input type="number" class="form-control" placeholder="Teléfono" formControlName="Telefono">
+        <input type="number" class="form-control" placeholder="Teléfono" formControlName="telefono">
     </div>
     <div class="input-group mb-3">
         <span class="input-group-text" id="basic-addon1">Email</span>
-        <input type="email" class="form-control" placeholder="Correo electrónico" formControlName="Email">
+        <input type="email" class="form-control" placeholder="Correo electrónico" formControlName="correo">
     </div>
     <div class="input-group mb-3">
-        <span class="input-group-text" id="basic-addon1">Código Departamento</span>
-        <div class="input-group mb-3">
-            <label class="input-group-text" for="inputGroupSelect01">Opciones</label>
-            <select class="form-select" id="inputGroupSelect01" formControlName="CodigoHabitacion">
-                <option selected>Elija la Habitación</option>
-                <option *ngFor="let habitacion of habitacionesDisponibles" [value]="habitacion.CodigoHabitacion">
-                    {{ habitacion.CodigoHabitacion }}
-                </option>
-            </select>
-        </div>
+        <span class="input-group-text">Departamento</span>
+        <select class="form-select" formControlName="departamentoId" required>
+            <option value="" disabled selected>Seleccione un departamento</option>
+            <option *ngFor="let departamento of departamentosDisponibles" 
+                    [value]="departamento.id">
+                {{ departamento.numero }} - Piso {{ departamento.piso }} 
+                ({{ departamento.edificio?.nombre || 'Sin edificio' }})
+            </option>
+        </select>
     </div>
     <br>
     <input type="submit" class="btn btn-info" value="Registrar Propietario">
@@ -48,7 +47,7 @@
                 <th scope="col">DNI</th>
                 <th scope="col">Teléfono</th>
                 <th scope="col">Email</th>
-                <th scope="col">Habitación</th>
+                <th scope="col">Departamento</th>
                 <th scope="col">Editar</th>
                 <th scope="col">Eliminar</th>
                 <th scope="col">Guardar</th>
@@ -56,35 +55,40 @@
         </thead>
         <tbody>
             <tr *ngFor="let propietario of propietarios; let i = index">
-                <td>{{ propietario.CodigoPropietario }}</td>
+                <td>{{ propietario.id }}</td>
                 <td>
-                    <input *ngIf="isEditingRowProp(i)" [(ngModel)]="propietario.Nombre" class="form-control" type="text" />
-                    <span *ngIf="!isEditingRowProp(i)">{{ propietario.Nombre }}</span>
+                    <input *ngIf="isEditingRowProp(i)" [(ngModel)]="propietario.nombres" class="form-control" type="text" />
+                    <span *ngIf="!isEditingRowProp(i)">{{ propietario.nombres }}</span>
                 </td>
                 <td>
-                    <input *ngIf="isEditingRowProp(i)" [(ngModel)]="propietario.Apellido" class="form-control" type="text" />
-                    <span *ngIf="!isEditingRowProp(i)">{{ propietario.Apellido }}</span>
+                    <input *ngIf="isEditingRowProp(i)" [(ngModel)]="propietario.apellidos" class="form-control" type="text" />
+                    <span *ngIf="!isEditingRowProp(i)">{{ propietario.apellidos }}</span>
                 </td>
                 <td>
-                    <input *ngIf="isEditingRowProp(i)" [(ngModel)]="propietario.DNI" class="form-control" type="number" />
-                    <span *ngIf="!isEditingRowProp(i)">{{ propietario.DNI }}</span>
+                    <input *ngIf="isEditingRowProp(i)" [(ngModel)]="propietario.dni" class="form-control" type="number" />
+                    <span *ngIf="!isEditingRowProp(i)">{{ propietario.dni }}</span>
                 </td>
                 <td>
-                    <input *ngIf="isEditingRowProp(i)" [(ngModel)]="propietario.Telefono" class="form-control" type="number" />
-                    <span *ngIf="!isEditingRowProp(i)">{{ propietario.Telefono }}</span>
+                    <input *ngIf="isEditingRowProp(i)" [(ngModel)]="propietario.telefono" class="form-control" type="number" />
+                    <span *ngIf="!isEditingRowProp(i)">{{ propietario.telefono }}</span>
                 </td>
                 <td>
-                    <input *ngIf="isEditingRowProp(i)" [(ngModel)]="propietario.Email" class="form-control" type="email" />
-                    <span *ngIf="!isEditingRowProp(i)">{{ propietario.Email }}</span>
+                    <input *ngIf="isEditingRowProp(i)" [(ngModel)]="propietario.correo" class="form-control" type="email" />
+                    <span *ngIf="!isEditingRowProp(i)">{{ propietario.correo }}</span>
                 </td>
                 <td>
-                    <select *ngIf="isEditingRowProp(i)" [(ngModel)]="propietario.CodigoHabitacion" class="form-control">
-                        <option *ngFor="let habitacion of habitacionesDisponibles" [value]="habitacion.CodigoHabitacion">
-                            {{ habitacion.CodigoHabitacion }}
-                        </option>
+                    <span *ngIf="!isEditingRowProp(i)">
+                      {{ getDepartamentoInfo(propietario) }}
+                    </span>
+                    <select *ngIf="isEditingRowProp(i)" 
+                            [(ngModel)]="propietario.departamentoId" 
+                            class="form-control">
+                      <option *ngFor="let departamento of departamentosDisponibles" 
+                              [value]="departamento.id">
+                        {{ departamento.numero }} ({{ departamento.edificio?.nombre }})
+                      </option>
                     </select>
-                    <span *ngIf="!isEditingRowProp(i)">{{ propietario.CodigoHabitacion }}</span>
-                </td>
+                  </td>
                 <td><button class="btn btn-warning" (click)="editarPropietario(i)">
                     <i class="bi bi-pencil-square"></i>
                 </button></td>

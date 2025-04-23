@@ -124,7 +124,7 @@ export class ApartamentoHabComponent {
           response => {
             this.apartamentosHab.splice(index, 1);
             console.log('Departamento eliminado:', response);
-            alert(response);
+            alert("Departamento eliminado con éxito");
           },
           error => {
             console.error('Error al eliminar el departamento:', error);

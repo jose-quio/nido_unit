@@ -8,7 +8,7 @@ public class DepartamentApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(DepartamentApplication.class, args);
-		System.out.println("holamundo");
+		System.out.println("Bienvenido");
 	}
 
 }

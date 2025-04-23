@@ -85,4 +85,11 @@ export class BackserviceService {
   getEdificioSimple(): Observable<any> {
     return this.http.get<any>(this.urlService.apiUrlGetEdificioSimple);
   }
+
+
+  asignarPropietario(propietarioId: number, departamentoId: number): Observable<any> {
+    const url = `${this.urlService.apiUrlRegistrarPropietario}/${propietarioId}/departamentos/${departamentoId}`;
+    return this.http.post<any>(url, null);
+  }
+  
 }
