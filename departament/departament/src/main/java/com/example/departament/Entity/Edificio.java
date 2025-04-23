@@ -17,6 +17,9 @@ public class Edificio {
     private String nombre;
     private String direccion;
     private String nroPisos;
+    private String tipo;
+    private String descripcion;
+
 
 
     @OneToMany(mappedBy = "edificio")
@@ -54,6 +57,22 @@ public class Edificio {
 
     public void setNroPisos(String nroPisos) {
         this.nroPisos = nroPisos;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
     }
 
     public List<Departamento> getApartamentos() {
