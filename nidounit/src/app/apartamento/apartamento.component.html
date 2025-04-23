@@ -5,19 +5,19 @@
 
     <div class="input-group mb-3">
         <span class="input-group-text" id="basic-addon1">Nombre</span>
-        <input type="text" class="form-control" placeholder="Nombre" formControlName="Nombre">
+        <input type="text" class="form-control" placeholder="Nombre" formControlName="nombre">
     </div>
     <div class="input-group mb-3">
         <span class="input-group-text" id="basic-addon1">Dirección</span>
-        <input type="text" class="form-control" placeholder="Dirección" formControlName="Direccion">
+        <input type="text" class="form-control" placeholder="Dirección" formControlName="direccion">
     </div>
     <div class="input-group mb-3">
         <span class="input-group-text" id="basic-addon1">N° Pisos</span>
-        <input type="number" class="form-control" placeholder="N° Pisos" formControlName="NumeroPisos">
+        <input type="number" class="form-control" placeholder="N° Pisos" formControlName="nroPisos">
     </div>
     <div class="input-group mb-3">
         <span class="input-group-text" id="basic-addon1">Tipo</span>
-        <select class="form-control" formControlName="Tipo">
+        <select class="form-control" formControlName="tipo">
             <option value="residencial">Residencial</option>
             <option value="comercial">Comercial</option>
             <option value="mixto">Mixto</option>
@@ -26,7 +26,7 @@
     </div>
     <div class="input-group mb-3">
         <span class="input-group-text" id="basic-addon1">Descripción</span>
-        <textarea class="form-control" placeholder="Descripción" formControlName="Descripcion" rows="3"></textarea>
+        <textarea class="form-control" placeholder="Descripción" formControlName="descripcion" rows="3"></textarea>
     </div>
     <br>
     <input type="submit" class="btn btn-info" value="Registrar Edificio">
@@ -52,34 +52,34 @@
         </thead>
         <tbody>
             <tr *ngFor="let apartamento of apartamentos; let i = index">
-                <td>{{ apartamento.CodigoApartamento }}</td>
+                <td>{{ apartamento.id }}</td>
                 <td>
-                    <input *ngIf="isEditingRow(i)" [(ngModel)]="apartamento.Nombre" class="form-control" type="text" />
-                    <span *ngIf="!isEditingRow(i)">{{ apartamento.Nombre }}</span>
+                    <input *ngIf="isEditingRow(i)" [(ngModel)]="apartamento.nombre" class="form-control" type="text" />
+                    <span *ngIf="!isEditingRow(i)">{{ apartamento.nombre }}</span>
                 </td>
                 <td>
-                    <input *ngIf="isEditingRow(i)" [(ngModel)]="apartamento.Direccion" class="form-control"
+                    <input *ngIf="isEditingRow(i)" [(ngModel)]="apartamento.direccion" class="form-control"
                         type="text" />
-                    <span *ngIf="!isEditingRow(i)">{{ apartamento.Direccion }}</span>
+                    <span *ngIf="!isEditingRow(i)">{{ apartamento.direccion }}</span>
                 </td>
                 <td>
-                    <input *ngIf="isEditingRow(i)" [(ngModel)]="apartamento.NumeroPisos" class="form-control"
+                    <input *ngIf="isEditingRow(i)" [(ngModel)]="apartamento.nroPisos" class="form-control"
                         type="number" />
-                    <span *ngIf="!isEditingRow(i)">{{ apartamento.NumeroPisos }}</span>
+                    <span *ngIf="!isEditingRow(i)">{{ apartamento.nroPisos }}</span>
                 </td>
                 <td>
-                    <select *ngIf="isEditingRow(i)" [(ngModel)]="apartamento.Tipo" class="form-control">
+                    <select *ngIf="isEditingRow(i)" [(ngModel)]="apartamento.tipo" class="form-control">
                         <option value="residencial">Residencial</option>
                         <option value="comercial">Comercial</option>
                         <option value="mixto">Mixto</option>
                         <option value="oficinas">Oficinas</option>
                     </select>
-                    <span *ngIf="!isEditingRow(i)">{{ apartamento.Tipo }}</span>
+                    <span *ngIf="!isEditingRow(i)">{{ apartamento.tipo }}</span>
                 </td>
                 <td>
-                    <textarea *ngIf="isEditingRow(i)" [(ngModel)]="apartamento.Descripcion" class="form-control"
+                    <textarea *ngIf="isEditingRow(i)" [(ngModel)]="apartamento.descripcion" class="form-control"
                         rows="2"></textarea>
-                    <span *ngIf="!isEditingRow(i)">{{ apartamento.Descripcion }}</span>
+                    <span *ngIf="!isEditingRow(i)">{{ apartamento.descripcion }}</span>
                 </td>
                 <td>
                     <button class="btn btn-warning" (click)="editar(i)">

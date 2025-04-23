@@ -21,12 +21,6 @@ public class Edificio {
     private String descripcion;
 
 
-
-    @OneToMany(mappedBy = "edificio")
-    @JsonIgnoreProperties({"edificio"})
-    private List<Departamento> apartamentos;
-
-
     public Long getId() {
         return id;
     }
@@ -75,11 +69,4 @@ public class Edificio {
         this.descripcion = descripcion;
     }
 
-    public List<Departamento> getApartamentos() {
-        return apartamentos;
-    }
-
-    public void setApartamentos(List<Departamento> apartamentos) {
-        this.apartamentos = apartamentos;
-    }
 }
