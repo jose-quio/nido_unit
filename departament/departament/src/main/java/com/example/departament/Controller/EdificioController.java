@@ -10,7 +10,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/edificio")
@@ -81,6 +84,22 @@ public class EdificioController {
         }
         List<Departamento> apartamentos = departamentoRepository.findByEdificioId(id);
         return ResponseEntity.ok(apartamentos);
+    }
+
+    @GetMapping("/EdificioSimple")
+    public ResponseEntity<List<Map<String, Object>>> getAllEdificiosSimplified() {
+        List<EdificioRepository.EdificioProjection> edificios = edificioRepository.findAllEdificiosSimplified();
+
+        List<Map<String, Object>> response = edificios.stream()
+                .map(e -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("id", e.getId());
+                    map.put("nombre", e.getNombre());
+                    return map;
+                })
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(response);
     }
 
 }
