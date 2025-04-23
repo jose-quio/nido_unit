@@ -22,13 +22,13 @@ export class ApartamentoHabComponent {
   apartamentos: any[] = [];
 
   FormularioApartamentoHab = new FormGroup({
-    CodigoApartamento: new FormControl(''),
-    Numero: new FormControl(''),
-    Piso: new FormControl(''),
-    NumeroHabitaciones: new FormControl(''),
-    PrecioVenta: new FormControl(''),
-    PrecioAlquiler: new FormControl(''),
-    Estado: new FormControl('Disponible'),
+    CodigoApartamento: new FormControl(''), 
+    numero: new FormControl(''),
+    piso: new FormControl(''),
+    numeroHabitaciones: new FormControl(''),
+    precioVenta: new FormControl(''),
+    precioAlquiler: new FormControl(''),
+    disponible: new FormControl('Disponible'),
   });
 
   obtenerApartamentosHab() {
@@ -44,9 +44,9 @@ export class ApartamentoHabComponent {
   }
 
   obtenerApartamentos() {
-    this.miServicio.getApartamentos().subscribe(
+    this.miServicio.getEdificioSimple().subscribe(
       (data) => {
-        this.apartamentos = data;
+        this.apartamentos = data; 
         console.log('Edificios obtenidos:', this.apartamentos);
       },
       (error) => {
@@ -63,7 +63,7 @@ export class ApartamentoHabComponent {
             console.log('Departamento registrado con éxito:', response);
             this.obtenerApartamentosHab();
             this.FormularioApartamentoHab.reset({
-              Estado: 'Disponible'
+              disponible: 'Disponible'
             });
           },
           error => {
@@ -115,5 +115,10 @@ export class ApartamentoHabComponent {
           }
         );
     }
+  }
+
+  getNombreEdificio(id: number): string {
+    const edificio = this.apartamentos.find(a => a.id === id);
+    return edificio ? edificio.nombre : 'Desconocido';
   }
 }

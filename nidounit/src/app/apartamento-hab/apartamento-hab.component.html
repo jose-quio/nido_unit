@@ -4,34 +4,34 @@
     <div class="input-group mb-3">
         <span class="input-group-text" id="basic-addon1">Código del Edificio</span>
         <select class="form-select" formControlName="CodigoApartamento">
-            <option *ngFor="let apartamento of apartamentos" [value]="apartamento.CodigoApartamento">
-                {{ apartamento.CodigoApartamento }}
+            <option *ngFor="let apartamento of apartamentos" [value]="apartamento.id">
+                {{ apartamento.nombre }}
             </option>
         </select>
     </div>
     <div class="input-group mb-3">
         <span class="input-group-text" id="basic-addon1">Número</span>
-        <input type="text" class="form-control" placeholder="Número" formControlName="Numero">
+        <input type="text" class="form-control" placeholder="Número" formControlName="numero">
     </div>
     <div class="input-group mb-3">
         <span class="input-group-text" id="basic-addon1">Piso</span>
-        <input type="number" class="form-control" placeholder="Piso" formControlName="Piso">
+        <input type="number" class="form-control" placeholder="Piso" formControlName="piso">
     </div>
     <div class="input-group mb-3">
         <span class="input-group-text" id="basic-addon1">N° Habitaciones</span>
-        <input type="number" class="form-control" placeholder="N° Habitaciones" formControlName="NumeroHabitaciones">
+        <input type="number" class="form-control" placeholder="N° Habitaciones" formControlName="numeroHabitaciones">
     </div>
     <div class="input-group mb-3">
         <span class="input-group-text" id="basic-addon1">Precio de Venta</span>
-        <input type="number" class="form-control" placeholder="Precio de Venta" formControlName="PrecioVenta">
+        <input type="number" class="form-control" placeholder="Precio de Venta" formControlName="precioVenta">
     </div>
     <div class="input-group mb-3">
         <span class="input-group-text" id="basic-addon1">Precio de Alquiler</span>
-        <input type="number" class="form-control" placeholder="Precio de Alquiler" formControlName="PrecioAlquiler">
+        <input type="number" class="form-control" placeholder="Precio de Alquiler" formControlName="precioAlquiler">
     </div>
     <div class="input-group mb-3">
         <span class="input-group-text" id="basic-addon1">Estado</span>
-        <select class="form-select" formControlName="Estado">
+        <select class="form-select" formControlName="disponible">
             <option value="Disponible">Disponible</option>
             <option value="Ocupado">Ocupado</option>
         </select>
@@ -46,7 +46,7 @@
         <thead class="table-dark">
             <tr>
                 <th>Código Departamento</th>
-                <th>Código Edificio</th>
+                <th>Edificio</th>
                 <th>Número</th>
                 <th>Piso</th>
                 <th>N° Habitaciones</th>
@@ -60,45 +60,63 @@
         </thead>
         <tbody>
             <tr *ngFor="let apartamentoHab of apartamentosHab; let i = index">
-                <td>{{ apartamentoHab.CodigoHabitacion }}</td>
-                <td>{{ apartamentoHab.CodigoApartamento }}</td>
+                <td>{{ apartamentoHab.id }}</td>
                 <td>
-                    <input *ngIf="isEditingRowHab(i)" [(ngModel)]="apartamentoHab.Numero" class="form-control"
+                    <span *ngIf="!isEditingRowHab(i)">{{ getNombreEdificio(apartamentoHab.CodigoApartamento) }}</span>
+                    <select *ngIf="isEditingRowHab(i)" [(ngModel)]="apartamentoHab.CodigoApartamento"
+                        class="form-control">
+                        <option *ngFor="let apartamento of apartamentos" [value]="apartamento.id">
+                            {{ apartamento.nombre }} (ID: {{ apartamento.id }})
+                        </option>
+                    </select>
+                </td>
+                <td>
+                    <input *ngIf="isEditingRowHab(i)" [(ngModel)]="apartamentoHab.numero" class="form-control"
                         type="text" />
-                    <span *ngIf="!isEditingRowHab(i)">{{ apartamentoHab.Numero }}</span>
+                    <span *ngIf="!isEditingRowHab(i)">{{ apartamentoHab.numero }}</span>
                 </td>
                 <td>
-                    <input *ngIf="isEditingRowHab(i)" [(ngModel)]="apartamentoHab.Piso" class="form-control"
+                    <input *ngIf="isEditingRowHab(i)" [(ngModel)]="apartamentoHab.piso" class="form-control"
                         type="number" />
-                    <span *ngIf="!isEditingRowHab(i)">{{ apartamentoHab.Piso }}</span>
+                    <span *ngIf="!isEditingRowHab(i)">{{ apartamentoHab.piso }}</span>
                 </td>
                 <td>
-                    <input *ngIf="isEditingRowHab(i)" [(ngModel)]="apartamentoHab.NumeroHabitaciones"
-                        class="form-control" type="number" />
-                    <span *ngIf="!isEditingRowHab(i)">{{ apartamentoHab.NumeroHabitaciones }}</span>
+                    <input *ngIf="isEditingRowHab(i)" [(ngModel)]="apartamentoHab.nroHabitaciones" class="form-control"
+                        type="number" />
+                    <span *ngIf="!isEditingRowHab(i)">{{ apartamentoHab.nroHabitaciones }}</span>
                 </td>
                 <td>
-                    <input *ngIf="isEditingRowHab(i)" [(ngModel)]="apartamentoHab.PrecioVenta" class="form-control"
+                    <input *ngIf="isEditingRowHab(i)" [(ngModel)]="apartamentoHab.precioVenta" class="form-control"
                         type="number" step="0.01" />
-                    <span *ngIf="!isEditingRowHab(i)">{{ apartamentoHab.PrecioVenta | currency }}</span>
+                    <span *ngIf="!isEditingRowHab(i)">{{ apartamentoHab.precioVenta | currency }}</span>
                 </td>
                 <td>
-                    <input *ngIf="isEditingRowHab(i)" [(ngModel)]="apartamentoHab.PrecioAlquiler" class="form-control"
+                    <input *ngIf="isEditingRowHab(i)" [(ngModel)]="apartamentoHab.precioAlquiler" class="form-control"
                         type="number" step="0.01" />
-                    <span *ngIf="!isEditingRowHab(i)">{{ apartamentoHab.PrecioAlquiler | currency }}</span>
+                    <span *ngIf="!isEditingRowHab(i)">{{ apartamentoHab.precioAlquiler | currency }}</span>
                 </td>
                 <td>
-                    <select *ngIf="isEditingRowHab(i)" [(ngModel)]="apartamentoHab.Estado" class="form-control">
+                    <select *ngIf="isEditingRowHab(i)" [(ngModel)]="apartamentoHab.disponible" class="form-control">
                         <option value="Disponible">Disponible</option>
                         <option value="Ocupado">Ocupado</option>
                     </select>
-                    <span *ngIf="!isEditingRowHab(i)">{{ apartamentoHab.Estado }}</span>
+                    <span *ngIf="!isEditingRowHab(i)">{{ apartamentoHab.disponible }}</span>
                 </td>
-                <td><button (click)="editarHab(i)" class="btn btn-warning"><i class="bi bi-pencil-square"></i></button>
+                <td>
+                    <button (click)="editarHab(i)" class="btn btn-warning">
+                        <i class="bi bi-pencil-square"></i>
+                    </button>
                 </td>
-                <td><button (click)="eliminarHab(i)" class="btn btn-danger"><i class="bi bi-x-circle"></i></button></td>
-                <td><button *ngIf="isEditingRowHab(i)" (click)="guardarEdicionHab(i)" class="btn btn-success"><i
-                            class="bi bi-save"></i></button></td>
+                <td>
+                    <button (click)="eliminarHab(i)" class="btn btn-danger">
+                        <i class="bi bi-x-circle"></i>
+                    </button>
+                </td>
+                <td>
+                    <button *ngIf="isEditingRowHab(i)" (click)="guardarEdicionHab(i)" class="btn btn-success">
+                        <i class="bi bi-save"></i>
+                    </button>
+                </td>
             </tr>
         </tbody>
     </table>

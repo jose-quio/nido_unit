@@ -81,4 +81,8 @@ export class BackserviceService {
   eliminarPropietario(codigoPropietario: string): Observable<any> {
     return this.http.delete<any>(`${this.urlService.apiUrlDeletePropietario}/${codigoPropietario}`);
   }
+
+  getEdificioSimple(): Observable<any> {
+    return this.http.get<any>(this.urlService.apiUrlGetEdificioSimple);
+  }
 }

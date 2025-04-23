@@ -32,4 +32,6 @@ export class UrlserviceService {
   public apiUrlGetPropietarios = `${this.baseUrl}/api/propietario`;
   public apiUrlUpdatePropietario = `${this.baseUrl}/api/propietario`;
   public apiUrlDeletePropietario = `${this.baseUrl}/api/propietario`;
+
+  public apiUrlGetEdificioSimple = `${this.baseUrl}/api/edificio/EdificioSimple`;
 }
