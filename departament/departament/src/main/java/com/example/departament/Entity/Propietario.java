@@ -27,7 +27,7 @@ public class Propietario {
     private String correo;
 
     // Relación con Apartamento
-    @ManyToMany(mappedBy = "propietarios")
+    @ManyToMany(mappedBy = "propietarios",cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JsonIgnoreProperties({"propietarios"})
-    private Set<Departamento> departamentos;
+    private Set<Departamento> departamentos = new HashSet<>();
 }

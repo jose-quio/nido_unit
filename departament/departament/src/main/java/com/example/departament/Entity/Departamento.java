@@ -3,6 +3,7 @@ package com.example.departament.Entity;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
@@ -27,14 +28,14 @@ public class Departamento {
     @JsonIgnoreProperties({"apartamentos"})
     private Edificio edificio;
 
-    @ManyToMany
+    @ManyToMany(cascade = {CascadeType.PERSIST,CascadeType.MERGE})
     @JoinTable(
             name = "apartamento_cliente",
             joinColumns = @JoinColumn(name = "apartamento_id"),
             inverseJoinColumns = @JoinColumn(name = "cliente_id")
     )
     @JsonIgnoreProperties({"departamentos"})
-    private List<Propietario> propietarios;
+    private List<Propietario> propietarios = new ArrayList<>();
 
 
     public Long getId() {
