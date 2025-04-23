@@ -1,1 +1,105 @@
-<p>apartamento-hab works!</p>
+<h1>Formulario de <span class="badge text-bg-warning --bs-warning-border-subtle fs-2">Departamentos</span></h1>
+<br>
+<form [formGroup]="FormularioApartamentoHab" (ngSubmit)="onSubmit()">
+    <div class="input-group mb-3">
+        <span class="input-group-text" id="basic-addon1">Código del Edificio</span>
+        <select class="form-select" formControlName="CodigoApartamento">
+            <option *ngFor="let apartamento of apartamentos" [value]="apartamento.CodigoApartamento">
+                {{ apartamento.CodigoApartamento }}
+            </option>
+        </select>
+    </div>
+    <div class="input-group mb-3">
+        <span class="input-group-text" id="basic-addon1">Número</span>
+        <input type="text" class="form-control" placeholder="Número" formControlName="Numero">
+    </div>
+    <div class="input-group mb-3">
+        <span class="input-group-text" id="basic-addon1">Piso</span>
+        <input type="number" class="form-control" placeholder="Piso" formControlName="Piso">
+    </div>
+    <div class="input-group mb-3">
+        <span class="input-group-text" id="basic-addon1">N° Habitaciones</span>
+        <input type="number" class="form-control" placeholder="N° Habitaciones" formControlName="NumeroHabitaciones">
+    </div>
+    <div class="input-group mb-3">
+        <span class="input-group-text" id="basic-addon1">Precio de Venta</span>
+        <input type="number" class="form-control" placeholder="Precio de Venta" formControlName="PrecioVenta">
+    </div>
+    <div class="input-group mb-3">
+        <span class="input-group-text" id="basic-addon1">Precio de Alquiler</span>
+        <input type="number" class="form-control" placeholder="Precio de Alquiler" formControlName="PrecioAlquiler">
+    </div>
+    <div class="input-group mb-3">
+        <span class="input-group-text" id="basic-addon1">Estado</span>
+        <select class="form-select" formControlName="Estado">
+            <option value="Disponible">Disponible</option>
+            <option value="Ocupado">Ocupado</option>
+        </select>
+    </div>
+    <br>
+    <input type="submit" class="btn btn-info" value="Registrar Departamento">
+</form>
+
+<div class="apartamentos mt-4">
+    <h2 class="badge text-bg-warning custom-border fs-3 mb-3">Lista de Departamentos</h2>
+    <table class="table table-striped table-bordered table-hover" style="width: 100%;">
+        <thead class="table-dark">
+            <tr>
+                <th>Código Departamento</th>
+                <th>Código Edificio</th>
+                <th>Número</th>
+                <th>Piso</th>
+                <th>N° Habitaciones</th>
+                <th>Precio de Venta</th>
+                <th>Precio de Alquiler</th>
+                <th>Estado</th>
+                <th>Editar</th>
+                <th>Eliminar</th>
+                <th>Guardar</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let apartamentoHab of apartamentosHab; let i = index">
+                <td>{{ apartamentoHab.CodigoHabitacion }}</td>
+                <td>{{ apartamentoHab.CodigoApartamento }}</td>
+                <td>
+                    <input *ngIf="isEditingRowHab(i)" [(ngModel)]="apartamentoHab.Numero" class="form-control"
+                        type="text" />
+                    <span *ngIf="!isEditingRowHab(i)">{{ apartamentoHab.Numero }}</span>
+                </td>
+                <td>
+                    <input *ngIf="isEditingRowHab(i)" [(ngModel)]="apartamentoHab.Piso" class="form-control"
+                        type="number" />
+                    <span *ngIf="!isEditingRowHab(i)">{{ apartamentoHab.Piso }}</span>
+                </td>
+                <td>
+                    <input *ngIf="isEditingRowHab(i)" [(ngModel)]="apartamentoHab.NumeroHabitaciones"
+                        class="form-control" type="number" />
+                    <span *ngIf="!isEditingRowHab(i)">{{ apartamentoHab.NumeroHabitaciones }}</span>
+                </td>
+                <td>
+                    <input *ngIf="isEditingRowHab(i)" [(ngModel)]="apartamentoHab.PrecioVenta" class="form-control"
+                        type="number" step="0.01" />
+                    <span *ngIf="!isEditingRowHab(i)">{{ apartamentoHab.PrecioVenta | currency }}</span>
+                </td>
+                <td>
+                    <input *ngIf="isEditingRowHab(i)" [(ngModel)]="apartamentoHab.PrecioAlquiler" class="form-control"
+                        type="number" step="0.01" />
+                    <span *ngIf="!isEditingRowHab(i)">{{ apartamentoHab.PrecioAlquiler | currency }}</span>
+                </td>
+                <td>
+                    <select *ngIf="isEditingRowHab(i)" [(ngModel)]="apartamentoHab.Estado" class="form-control">
+                        <option value="Disponible">Disponible</option>
+                        <option value="Ocupado">Ocupado</option>
+                    </select>
+                    <span *ngIf="!isEditingRowHab(i)">{{ apartamentoHab.Estado }}</span>
+                </td>
+                <td><button (click)="editarHab(i)" class="btn btn-warning"><i class="bi bi-pencil-square"></i></button>
+                </td>
+                <td><button (click)="eliminarHab(i)" class="btn btn-danger"><i class="bi bi-x-circle"></i></button></td>
+                <td><button *ngIf="isEditingRowHab(i)" (click)="guardarEdicionHab(i)" class="btn btn-success"><i
+                            class="bi bi-save"></i></button></td>
+            </tr>
+        </tbody>
+    </table>
+</div>

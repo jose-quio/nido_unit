@@ -1,1 +1,42 @@
-<p>pago works!</p>
+<h1>Formulario de  <span class="badge text-bg-warning --bs-warning-border-subtle fs-2">Pagos</span></h1>
+<br>
+<div class="input-group mb-3">
+    <span class="input-group-text" id="basic-addon1">DNI</span>
+    <input type="number" class="form-control" placeholder="DNI">
+    <button class="btn btn-info" (click)="buscar()">Buscar</button>
+</div>
+<form [formGroup]="FormularioPago" (ngSubmit)="onSubmit()">
+    <div class="input-group mb-3">
+        <span class="input-group-text" id="basic-addon1">Pago Mensual</span>
+        <input type="number" class="form-control" placeholder="Pago Mensual"  formControlName = "PagoMensual">
+    </div>
+    
+    <div class="input-group mb-3">
+        <span class="input-group-text" id="basic-addon1">Fecha de Pago</span>
+        <input type="date" class="form-control" placeholder="Fecha de Pago"  formControlName = "FechaPago">
+    </div>
+    <br>
+    <button type="submit"  class="btn btn-info">Registrar Pago</button>
+</form>
+
+<div class="apartamentos mt-4">
+    <h2 class="badge text-bg-warning custom-border fs-3 mb-3">Lista de Pagos Realizados</h2>
+    <table class="table table-striped table-bordered table-hover" style="width: 100%;">
+        <thead class="table-dark">
+        <tr>
+            <th>Id Pago</th>
+          <th>DNI</th>
+          <th>Pago Realizado</th>
+          <th>Fecha de Pago</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let pago of PagosMensuales">
+            <td>{{ pago.IdPago }}</td>
+          <td>{{ pago.DNI }}</td>
+          <td>{{ pago.PagoMensual }}</td>
+          <td>{{ pago.FechaPago | date }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
