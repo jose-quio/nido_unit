@@ -22,13 +22,14 @@ export class ApartamentoHabComponent {
   apartamentos: any[] = [];
 
   FormularioApartamentoHab = new FormGroup({
-    CodigoApartamento: new FormControl(''), 
-    numero: new FormControl(''),
-    piso: new FormControl(''),
-    numeroHabitaciones: new FormControl(''),
-    precioVenta: new FormControl(''),
-    precioAlquiler: new FormControl(''),
-    disponible: new FormControl('Disponible'),
+    edificioId: new FormControl<number | null>(null), 
+    numero: new FormControl<string>(''),
+    piso: new FormControl<string>(''), 
+    nroHabitaciones: new FormControl<string>(''), 
+    area: new FormControl<number | null>(null), 
+    precioVenta: new FormControl<number | null>(null),
+    precioAlquiler: new FormControl<number | null>(null),
+    disponible: new FormControl<boolean>(true)
   });
 
   obtenerApartamentosHab() {
@@ -57,13 +58,28 @@ export class ApartamentoHabComponent {
 
   onSubmit() {
     if (this.FormularioApartamentoHab.valid) {
-      this.miServicio.registrarApartamentoHab(this.FormularioApartamentoHab.value)
+      const formData = {
+        numero: this.FormularioApartamentoHab.value.numero,
+        piso: String(this.FormularioApartamentoHab.value.piso), 
+        nroHabitaciones: String(this.FormularioApartamentoHab.value.nroHabitaciones),
+        area: Number(this.FormularioApartamentoHab.value.area),
+        precioVenta: Number(this.FormularioApartamentoHab.value.precioVenta),
+        precioAlquiler: Number(this.FormularioApartamentoHab.value.precioAlquiler),
+        disponible: Boolean(this.FormularioApartamentoHab.value.disponible),
+        edificio: {
+          id: Number(this.FormularioApartamentoHab.value.edificioId)
+        }
+      };
+  
+      console.log('Datos a enviar:', formData); 
+  
+      this.miServicio.registrarApartamentoHab(formData)
         .subscribe(
           response => {
             console.log('Departamento registrado con éxito:', response);
             this.obtenerApartamentosHab();
             this.FormularioApartamentoHab.reset({
-              disponible: 'Disponible'
+              disponible: false
             });
           },
           error => {
@@ -71,7 +87,7 @@ export class ApartamentoHabComponent {
           }
         );
     } else {
-      console.warn('Formulario inválido');
+      console.warn('Formulario inválido', this.FormularioApartamentoHab.errors);
     }
   }
 
@@ -86,9 +102,9 @@ export class ApartamentoHabComponent {
 
   guardarEdicionHab(index: number) {
     const apartamentoHab = this.apartamentosHab[index];
-    console.log('Actualizando departamento con código:', apartamentoHab.CodigoHabitacion);
+    console.log('Actualizando departamento con código:', apartamentoHab.id);
 
-    this.miServicio.actualizarApartamentoHab(apartamentoHab.CodigoHabitacion, apartamentoHab)
+    this.miServicio.actualizarApartamentoHab(apartamentoHab.id, apartamentoHab)
       .subscribe(response => {
         console.log('Departamento actualizado:', response);
         this.isEditingRowIndexHab = null;
@@ -100,10 +116,10 @@ export class ApartamentoHabComponent {
 
   eliminarHab(index: number) {
     const apartamentoHab = this.apartamentosHab[index];
-    console.log('Eliminar departamento con código:', apartamentoHab.CodigoHabitacion);
+    console.log('Eliminar departamento con código:', apartamentoHab.id);
 
     if (confirm('¿Estás seguro de que deseas eliminar este departamento?')) {
-      this.miServicio.eliminarApartamentoHab(apartamentoHab.CodigoHabitacion)
+      this.miServicio.eliminarApartamentoHab(apartamentoHab.id)
         .subscribe(
           response => {
             this.apartamentosHab.splice(index, 1);
@@ -117,8 +133,5 @@ export class ApartamentoHabComponent {
     }
   }
 
-  getNombreEdificio(id: number): string {
-    const edificio = this.apartamentos.find(a => a.id === id);
-    return edificio ? edificio.nombre : 'Desconocido';
-  }
+  
 }

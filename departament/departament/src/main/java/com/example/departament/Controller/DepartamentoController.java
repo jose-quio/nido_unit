@@ -74,6 +74,7 @@ public class DepartamentoController {
                 .map(apartamento -> {
                     apartamento.setNumero(apartamentoDetails.getNumero());
                     apartamento.setPiso(apartamentoDetails.getPiso());
+                    apartamento.setNroHabitaciones(apartamentoDetails.getNroHabitaciones());
                     apartamento.setArea(apartamentoDetails.getArea());
                     apartamento.setPrecioVenta(apartamentoDetails.getPrecioVenta());
                     apartamento.setPrecioAlquiler(apartamentoDetails.getPrecioAlquiler());
