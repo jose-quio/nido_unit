@@ -16,6 +16,7 @@ public class Departamento {
 
     private String numero;
     private String piso;
+    private int nroHabitaciones;
     private Double area;
     private Double precioVenta;
     private Double precioAlquiler;
@@ -32,6 +33,7 @@ public class Departamento {
             joinColumns = @JoinColumn(name = "apartamento_id"),
             inverseJoinColumns = @JoinColumn(name = "cliente_id")
     )
+    @JsonIgnoreProperties({"departamentos"})
     private List<Propietario> propietarios;
 
 
@@ -57,6 +59,14 @@ public class Departamento {
 
     public void setPiso(String piso) {
         this.piso = piso;
+    }
+
+    public int getNroHabitaciones() {
+        return nroHabitaciones;
+    }
+
+    public void setNroHabitaciones(int nroHabitaciones) {
+        this.nroHabitaciones = nroHabitaciones;
     }
 
     public Double getArea() {

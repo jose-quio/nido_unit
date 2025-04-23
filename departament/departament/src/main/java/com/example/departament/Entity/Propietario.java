@@ -1,5 +1,6 @@
 package com.example.departament.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,5 +28,6 @@ public class Propietario {
 
     // Relación con Apartamento
     @ManyToMany(mappedBy = "propietarios")
+    @JsonIgnoreProperties({"propietarios"})
     private Set<Departamento> departamentos;
 }

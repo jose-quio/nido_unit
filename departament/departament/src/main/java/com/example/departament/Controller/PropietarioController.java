@@ -3,6 +3,7 @@ package com.example.departament.Controller;
 
 import com.example.departament.Entity.Departamento;
 import com.example.departament.Entity.Propietario;
+import com.example.departament.Repository.DepartamentoRepository;
 import com.example.departament.Repository.PropietarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,8 @@ import java.util.Set;
 public class PropietarioController {
     @Autowired
     private PropietarioRepository propietarioRepository;
+    @Autowired
+    private DepartamentoRepository departamentoRepository;
 
     // CREATE
     @PostMapping
@@ -78,5 +81,37 @@ public class PropietarioController {
         return propietarioRepository.findById(id)
                 .map(propietario -> ResponseEntity.ok(propietario.getDepartamentos()))
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    // Asignar departamento a propietario
+    @PostMapping("/{propietarioId}/departamentos/{departamentoId}")
+    public ResponseEntity<?> asignarDepartamentoAPropietario(
+            @PathVariable Long propietarioId,
+            @PathVariable Long departamentoId) {
+
+        Optional<Propietario> propietarioOpt = propietarioRepository.findById(propietarioId);
+        Optional<Departamento> departamentoOpt = departamentoRepository.findById(departamentoId);
+
+        if (propietarioOpt.isEmpty() || departamentoOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Propietario propietario = propietarioOpt.get();
+        Departamento departamento = departamentoOpt.get();
+
+        // Verificar si la relación ya existe
+        if (propietario.getDepartamentos().contains(departamento)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("El propietario ya está asignado a este departamento");
+        }
+
+        // Establecer la relación en ambos lados
+        propietario.getDepartamentos().add(departamento);
+        departamento.getPropietarios().add(propietario);
+
+        propietarioRepository.save(propietario);
+        departamentoRepository.save(departamento);
+
+        return ResponseEntity.ok().build();
     }
 }

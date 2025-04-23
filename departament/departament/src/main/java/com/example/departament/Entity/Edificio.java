@@ -16,6 +16,8 @@ public class Edificio {
 
     private String nombre;
     private String direccion;
+    private String nroPisos;
+
 
     @OneToMany(mappedBy = "edificio")
     @JsonIgnoreProperties({"edificio"})
@@ -44,6 +46,14 @@ public class Edificio {
 
     public void setDireccion(String direccion) {
         this.direccion = direccion;
+    }
+
+    public String getNroPisos() {
+        return nroPisos;
+    }
+
+    public void setNroPisos(String nroPisos) {
+        this.nroPisos = nroPisos;
     }
 
     public List<Departamento> getApartamentos() {
