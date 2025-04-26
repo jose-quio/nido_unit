@@ -19,8 +19,10 @@
 ### 🔸 Backend (Spring Boot)
 1. Abre tu IDE de preferencia (por ejemplo, IntelliJ IDEA, Eclipse o VSCode).
 2. Abre el proyecto de Spring.
-3. Ejecuta la clase principal: DepartamentApplication
-4. 
+3. Ejecuta la clase principal:
+   ```bash
+   DepartamentApplication
+   
 # Estrategia de Ramificación
 
 Se utilizó un **Modelo de Ramas por Desarrollador**, siguiendo la siguiente estructura:
