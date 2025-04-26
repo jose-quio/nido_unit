@@ -24,3 +24,10 @@ Esta estrategia asegura:
 - Trabajo paralelo sin conflictos.
 - Integraciones controladas.
 - Mayor claridad en el flujo de desarrollo.
+
+
+# Versionamiento
+Versión: v1.0 (Primera versión estable)
+Fecha de publicación: 26 de abril de 2025
+
+Para más información, consulte las Releases.
