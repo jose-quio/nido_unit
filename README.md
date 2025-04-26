@@ -1,15 +1,26 @@
-# NidoUnit
-Angular CLI Version: 19.2.8
-Node Version: 22.8.0
-JDK version: 22
-//Exectute project
-Angular terminal:
-cd nidounit
-npm install
-ng serve
-Spring(IDE de su preferencia)
-run project DepartamentApplication+
+# 📚 NidoUnit
 
+**Angular CLI Version:** `19.2.8`  
+**Node Version:** `22.8.0`  
+**JDK Version:** `22`
+
+---
+
+## ⚙️ ¿Cómo ejecutar el proyecto?
+
+### 🔸 Frontend (Angular)
+
+1. Abre una terminal.
+2. Entra al directorio del proyecto:
+   ```bash
+   cd nidounit
+   npm install
+   ng serve
+### 🔸 Backend (Spring Boot)
+1. Abre tu IDE de preferencia (por ejemplo, IntelliJ IDEA, Eclipse o VSCode).
+2. Abre el proyecto de Spring.
+3. Ejecuta la clase principal: DepartamentApplication
+4. 
 # Estrategia de Ramificación
 
 Se utilizó un **Modelo de Ramas por Desarrollador**, siguiendo la siguiente estructura:
