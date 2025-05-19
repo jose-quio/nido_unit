@@ -20,6 +20,11 @@ public class Edificio {
     private String tipo;
     private String descripcion;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "company_id")
+    @JsonIgnoreProperties({"edificios", "usuarios"})
+    private Company company;
+
 
     public Long getId() {
         return id;
