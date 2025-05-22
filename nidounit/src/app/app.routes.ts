@@ -1,18 +1,25 @@
 import { Routes } from '@angular/router';
-import path from 'node:path';
 import { ApartamentoComponent } from './edificio/apartamento.component';
 import { CajaComponent } from './caja/caja.component';
 import { PagoComponent } from './pago/pago.component';
 import { PropietarioComponent } from './propietario/propietario.component';
 import { ApartamentoHabComponent } from './departamento/apartamento-hab.component';
-import { AppComponent } from './app.component';
-
+import { LoginComponent } from './login/login.component';
+import { AuthGuard } from './auth.guard';
 
 export const routes: Routes = [
-    {path: '', redirectTo: '/apartamento', pathMatch: 'full' },
-    {path: 'apartamento', component: ApartamentoComponent},
-    {path: 'apartamentoHab', component: ApartamentoHabComponent},
-    {path: 'propietario', component: PropietarioComponent},
-    {path: 'pago', component: PagoComponent},
-    {path: 'caja', component: CajaComponent},
+  { path: 'login', component: LoginComponent },
+  { 
+    path: '', 
+    canActivate: [AuthGuard], 
+    children: [
+      { path: '', redirectTo: '/apartamento', pathMatch: 'full' },
+      { path: 'apartamento', component: ApartamentoComponent },
+      { path: 'apartamentoHab', component: ApartamentoHabComponent },
+      { path: 'propietario', component: PropietarioComponent },
+      { path: 'pago', component: PagoComponent },
+      { path: 'caja', component: CajaComponent },
+    ]
+  },
+  { path: '**', redirectTo: '/login' } 
 ];

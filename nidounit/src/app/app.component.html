@@ -437,8 +437,7 @@
 </head>
 
 <body>
-  <!-- Sidebar -->
-  <div class="sidebar">
+  <div *ngIf="authService.isAuthenticated()" class="sidebar">
     <div class="sidebar-header">
       <a href="#" class="sidebar-logo">
         <i class="fas fa-building"></i>
@@ -488,11 +487,9 @@
         </div>
       </div>
     </div>
-
-    
   </div>
 
-  <div class="main-content">
+  <div *ngIf="authService.isAuthenticated()" class="main-content">
     <div class="content-area">
         <router-outlet></router-outlet>
     </div>
