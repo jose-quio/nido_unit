@@ -1,10 +1,10 @@
 import { Routes } from '@angular/router';
 import path from 'node:path';
-import { ApartamentoComponent } from './apartamento/apartamento.component';
+import { ApartamentoComponent } from './edificio/apartamento.component';
 import { CajaComponent } from './caja/caja.component';
 import { PagoComponent } from './pago/pago.component';
 import { PropietarioComponent } from './propietario/propietario.component';
-import { ApartamentoHabComponent } from './apartamento-hab/apartamento-hab.component';
+import { ApartamentoHabComponent } from './departamento/apartamento-hab.component';
 import { AppComponent } from './app.component';
 
 
