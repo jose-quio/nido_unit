@@ -1,6 +1,7 @@
 package com.example.departament.config;
 
 import com.example.departament.Repository.UserRepository;
+import com.example.departament.Service.MyUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -10,6 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
@@ -25,29 +27,22 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(csrf -> csrf.disable())
+        return http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/public/**").permitAll()
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN_COMPANY")
-                        .requestMatchers("/api/manager/**").hasRole("MANAGER_EDIFICIO")
                         .anyRequest().authenticated()
                 )
-                .httpBasic(basic -> {});
-
-        return http.build();
+                .csrf(csrf -> csrf.disable())
+                .formLogin(form -> form.disable())
+                .build();
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(
-            AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
+    public UserDetailsService userDetailsService() {
+
+        MyUserDetailsService serv = new MyUserDetailsService();
+        return serv;
+
     }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        // Aunque usemos withDefaultPasswordEncoder, es bueno tener este bean
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
-    }
 }
