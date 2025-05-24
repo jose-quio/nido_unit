@@ -11,7 +11,15 @@ export class AuthService {
   constructor(
     private router: Router,
     @Inject(PLATFORM_ID) private platformId: Object
-  ) {}
+  ) {
+    this.initAuthState();
+  }
+
+  private initAuthState(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      this.isAuth = localStorage.getItem('isLoggedIn') === 'true';
+    }
+  }
 
   login(username: string, password: string): boolean {
     if (username === 'admin' && password === 'admin') {
@@ -36,7 +44,9 @@ export class AuthService {
     if (this.isAuth) return true;
     
     if (isPlatformBrowser(this.platformId)) {
-      return localStorage.getItem('isLoggedIn') === 'true';
+      const stored = localStorage.getItem('isLoggedIn') === 'true';
+      this.isAuth = stored; // Sincronizar el estado
+      return stored;
     }
     
     return false;

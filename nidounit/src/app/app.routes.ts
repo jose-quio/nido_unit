@@ -5,13 +5,13 @@ import { PagoComponent } from './pago/pago.component';
 import { PropietarioComponent } from './propietario/propietario.component';
 import { ApartamentoHabComponent } from './departamento/apartamento-hab.component';
 import { LoginComponent } from './login/login.component';
-import { AuthGuard } from './auth.guard';
+import { authGuard } from './auth.guard';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { 
     path: '', 
-    canActivate: [AuthGuard], 
+    canActivate: [authGuard], 
     children: [
       { path: '', redirectTo: '/apartamento', pathMatch: 'full' },
       { path: 'apartamento', component: ApartamentoComponent },
