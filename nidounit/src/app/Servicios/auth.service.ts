@@ -19,6 +19,7 @@ export interface AuthUser {
   providedIn: 'root'
 })
 export class AuthService {
+
   private currentUserSubject = new BehaviorSubject<AuthUser | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 
@@ -97,13 +98,13 @@ export class AuthService {
   async loginWithEmailPassword(email: string, password: string): Promise<boolean> {
     try {
       const credential = await signInWithEmailAndPassword(this.auth, email, password);
-      
+
       const idToken = await credential.user.getIdToken();
-      
+
       await this.backService.login(email, password).toPromise();
-      
+
       await this.syncUserWithBackend(credential.user);
-      
+
       return true;
     } catch (error: any) {
       console.error('Error en login:', error);
@@ -114,7 +115,7 @@ export class AuthService {
   async registerWithEmailPassword(email: string, password: string, displayName?: string): Promise<boolean> {
     try {
       const credential = await createUserWithEmailAndPassword(this.auth, email, password);
-      
+
       if (displayName && credential.user) {
         await updateProfile(credential.user, { displayName });
       }
@@ -126,9 +127,9 @@ export class AuthService {
         uid: credential.user.uid
       };
       await this.backService.register(userData).toPromise();
-      
+
       await this.syncUserWithBackend(credential.user);
-      
+
       return true;
     } catch (error: any) {
       console.error('Error en registro:', error);
@@ -141,14 +142,14 @@ export class AuthService {
       const provider = new GoogleAuthProvider();
       provider.addScope('email');
       provider.addScope('profile');
-      
+
       const credential = await signInWithPopup(this.auth, provider);
       const idToken = await credential.user.getIdToken();
-      
+
       await this.backService.login(credential.user.email || '', idToken).toPromise();
-      
+
       await this.syncUserWithBackend(credential.user);
-      
+
       return true;
     } catch (error: any) {
       console.error('Error en login con Google:', error);
@@ -178,11 +179,11 @@ export class AuthService {
   async logout(): Promise<void> {
     try {
       await this.backService.logout().toPromise();
-      
+
       await signOut(this.auth);
-      
+
       this.clearLocalStorage();
-      
+
       this.router.navigate(['/login']);
     } catch (error) {
       console.error('Error en logout:', error);
@@ -264,11 +265,11 @@ export class AuthService {
           return 'Error de autenticación: ' + (error.message || 'Error desconocido');
       }
     }
-    
+
     if (error.error && error.error.message) {
       return error.error.message;
     }
-    
+
     return 'Error de autenticación: ' + (error.message || 'Error desconocido');
   }
 }
