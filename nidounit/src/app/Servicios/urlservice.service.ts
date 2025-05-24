@@ -35,4 +35,12 @@ export class UrlserviceService {
 
   public apiUrlGetEdificioSimple = `${this.baseUrl}/api/edificio/EdificioSimple`;
   public apiUrlAsignarDepa = `${this.baseUrl}/api/propietario`;
+
+  // ENDPOINTS DE AUTENTICACIÓN
+  public apiUrlLogin = `${this.baseUrl}/api/auth/login`;
+  public apiUrlRegister = `${this.baseUrl}/api/auth/register`;
+  public apiUrlSyncUser = `${this.baseUrl}/api/auth/sync-user`;
+  public apiUrlValidateToken = `${this.baseUrl}/api/auth/validate-token`;
+  public apiUrlRefreshToken = `${this.baseUrl}/api/auth/refresh-token`;
+  public apiUrlLogout = `${this.baseUrl}/api/auth/logout`;
 }

@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { UrlserviceService } from './urlservice.service';
+import { AuthUser } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -44,7 +45,7 @@ export class BackserviceService {
     return this.http.delete<any>(`${this.urlService.apiUrlDeleteApartamentoHab}/${codigoHabitacion}`);
   }
 
-  //Operaciones de Caja
+  // Operaciones de Caja
   getTotalCapital(): Observable<any> {
     return this.http.get<any>(this.urlService.apiUrlGetTotalCapital);
   }
@@ -53,7 +54,7 @@ export class BackserviceService {
     return this.http.post(this.urlService.apiUrlGuardarPago, pago);
   }
 
-  //Operaciones de Pago
+  // Operaciones de Pago
   getPagosDNI(dni: string): Observable<any> {
     return this.http.get<any>(`${this.urlService.apiUrlGetPagosDNI}/${dni}`);
   }
@@ -61,11 +62,12 @@ export class BackserviceService {
   getTodosLosPagos(): Observable<any[]> {
     return this.http.get<any[]>(this.urlService.apiUrlGetTodosPagos);
   }
-  //Operaciones de propietario
+
+  // Operaciones de propietario
   getDepartamentosDisponibles(): Observable<any[]> {
     return this.http.get<any[]>(`${this.urlService.apiUrlGetDepartamentosDisponibles}`);
   }
-  
+
   registrarPropietario(propietario: any): Observable<any> {
     return this.http.post<any>(this.urlService.apiUrlRegistrarPropietario, propietario);
   }
@@ -86,10 +88,34 @@ export class BackserviceService {
     return this.http.get<any>(this.urlService.apiUrlGetEdificioSimple);
   }
 
-
   asignarPropietario(propietarioId: number, departamentoId: number): Observable<any> {
-    const url = `${this.urlService.apiUrlRegistrarPropietario}/${propietarioId}/departamentos/${departamentoId}`;
+    const url = `${this.urlService.apiUrlAsignarDepa}/${propietarioId}/departamentos/${departamentoId}`;
     return this.http.post<any>(url, null);
   }
-  
+
+  // Métodos para sincronización con AuthService
+  login(email: string, password: string): Observable<any> {
+    return this.http.post(this.urlService.apiUrlLogin, { email, password });
+  }
+
+  register(userData: any): Observable<any> {
+    return this.http.post(this.urlService.apiUrlRegister, userData);
+  }
+
+  syncUserWithBackend(userData: AuthUser): Observable<any> {
+    return this.http.post(this.urlService.apiUrlSyncUser, userData);
+  }
+
+  validateToken(token: string): Observable<any> {
+    return this.http.post(this.urlService.apiUrlValidateToken, { token });
+  }
+
+  refreshToken(refreshToken: string): Observable<any> {
+    return this.http.post(this.urlService.apiUrlRefreshToken, { refreshToken });
+  }
+
+  logout(): Observable<any> {
+    return this.http.post(this.urlService.apiUrlLogout, {});
+  }
+
 }

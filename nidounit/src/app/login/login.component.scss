@@ -1,37 +1,243 @@
-/* login.component.css */
 .login-container {
-  max-width: 400px;
-  margin: 100px auto;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.login-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+  padding: 40px;
+  width: 100%;
+  max-width: 420px;
+  animation: slideUp 0.5s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 30px;
+  
+  h2 {
+    color: #333;
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  
+  p {
+    color: #666;
+    font-size: 16px;
+    margin: 0;
+  }
+}
+
+.alert {
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  
+  &.alert-error {
+    background-color: #fee;
+    border: 1px solid #fcc;
+    color: #c66;
+  }
+  
+  &.alert-success {
+    background-color: #efe;
+    border: 1px solid #cfc;
+    color: #6c6;
+  }
+}
+
+.login-form {
+  margin-bottom: 20px;
 }
 
 .form-group {
-  margin-bottom: 15px;
+  margin-bottom: 20px;
+  
+  label {
+    display: block;
+    color: #333;
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+  
+  input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+    
+    &:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    &:disabled {
+      background-color: #f8f9fa;
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+    
+    &::placeholder {
+      color: #adb5bd;
+    }
+  }
+  
+  small {
+    color: #666;
+    font-size: 12px;
+    margin-top: 4px;
+    display: block;
+  }
 }
 
-label {
-  display: block;
-  margin-bottom: 5px;
-}
-
-input {
-  width: 100%;
-  padding: 8px;
-  box-sizing: border-box;
-}
-
-button {
-  background-color: #007bff;
-  color: white;
-  padding: 10px 15px;
+.btn {
+  padding: 12px 24px;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-decoration: none;
+  
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+  
+  &.btn-full {
+    width: 100%;
+  }
+  
+  &.btn-primary {
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    color: white;
+    
+    &:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    }
+  }
+  
+  &.btn-google {
+    background: white;
+    border: 2px solid #e1e5e9;
+    color: #333;
+    
+    &:hover:not(:disabled) {
+      border-color: #667eea;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+  }
+  
+  &.btn-link {
+    background: none;
+    border: none;
+    color: #667eea;
+    padding: 0;
+    font-size: inherit;
+    text-decoration: underline;
+    
+    &:hover:not(:disabled) {
+      color: #764ba2;
+    }
+  }
 }
 
-button:hover {
-  background-color: #0056b3;
+.google-icon {
+  display: flex;
+  align-items: center;
+}
+
+.loading-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.divider {
+  margin: 30px 0;
+  text-align: center;
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #e1e5e9;
+  }
+  
+  span {
+    background: white;
+    color: #666;
+    padding: 0 16px;
+    font-size: 14px;
+    position: relative;
+  }
+}
+
+.toggle-mode {
+  text-align: center;
+  margin-top: 30px;
+  
+  p {
+    color: #666;
+    font-size: 14px;
+    margin: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-container {
+    padding: 10px;
+  }
+  
+  .login-card {
+    padding: 30px 20px;
+  }
+  
+  .login-header h2 {
+    font-size: 24px;
+  }
 }
