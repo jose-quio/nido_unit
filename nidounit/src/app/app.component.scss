@@ -1,5 +1,32 @@
-.alineacion{
+.alineacion {
     display: flex;
     flex-direction: row;
-    
+
+}
+
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 250px; 
+    height: 100vh;
+
+    &.visible {
+        display: block;
+    }
+
+    &.hidden {
+        display: none; 
+    }
+}
+
+.main-content {
+    &.authenticated {
+        margin-left: 250px; 
+    }
+
+    &.login-page {
+        margin-left: 0;
+        width: 100%;
+    }
 }

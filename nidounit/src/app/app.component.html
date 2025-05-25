@@ -437,7 +437,7 @@
 </head>
 
 <body>
-  <div *ngIf="authService.isAuthenticated()" class="sidebar">
+  <div class="sidebar" [ngClass]="{'visible': authService.isAuthenticated(), 'hidden': !authService.isAuthenticated()}">
     <div class="sidebar-header">
       <a href="#" class="sidebar-logo">
         <i class="fas fa-building"></i>
