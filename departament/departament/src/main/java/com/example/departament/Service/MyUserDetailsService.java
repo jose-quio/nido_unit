@@ -27,7 +27,9 @@ public class MyUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User u = usuariosR.findByUsername(username);
+        User u = usuariosR.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + username));
+
         if (u == null) {
             throw new UsernameNotFoundException(username);
         }
@@ -35,7 +37,7 @@ public class MyUserDetailsService implements UserDetailsService {
         u.setPassword("{noop}" + u.getPassword());
         //se extrae los nombres de los roles
         List<String> roles = u.getRoles().stream()
-                .map(rol -> rol.getNombre().name())
+                .map(rol ->"ROLE_" + rol.getNombre().name())
                 .collect(Collectors.toList());
 
         String tk = jwtUtil.createToken(u, roles);

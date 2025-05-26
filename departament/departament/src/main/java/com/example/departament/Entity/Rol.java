@@ -1,6 +1,7 @@
 package com.example.departament.Entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -31,14 +32,6 @@ public class Rol {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, unique = true)
     private RolNombre nombre;
-
-    @ManyToMany(mappedBy = "roles")
-    @JsonIgnoreProperties({"roles"})
-    @Builder.Default
-    private Set<User> usuarios = new HashSet<>();
-
-
-
 }
 
 

@@ -1,6 +1,7 @@
 package com.example.departament.Entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -38,8 +39,8 @@ public class User {
     private boolean enabled = true;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "company_id", nullable = false)
-    @JsonIgnoreProperties({"usuarios", "edificios"})
+    @JoinColumn(name = "company_id", nullable = true)
+    @JsonIgnoreProperties({"usuarios", "edificios","hibernateLazyInitializer", "handler"})
     private Company company;
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -48,7 +49,6 @@ public class User {
             joinColumns = @JoinColumn(name = "usuario_id"),
             inverseJoinColumns = @JoinColumn(name = "rol_id")
     )
-    @Builder.Default
     private Set<Rol> roles = new HashSet<>();
 
 

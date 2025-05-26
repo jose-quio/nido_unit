@@ -18,17 +18,17 @@ public class DataInitializer implements CommandLineRunner {
     private final UserRepository userRepository;
     private final RolRepository rolRepository;
     private final CompanyRepository companyRepository;
-    //private final PasswordEncoder passwordEncoder;
+
 
     @Autowired
     public DataInitializer(UserRepository userRepository,
                            RolRepository rolRepository,
                            CompanyRepository companyRepository
-                           /*PasswordEncoder passwordEncoder*/) {
+                           ) {
         this.userRepository = userRepository;
         this.rolRepository = rolRepository;
         this.companyRepository = companyRepository;
-        //this.passwordEncoder = passwordEncoder;
+
     }
 
     @Override

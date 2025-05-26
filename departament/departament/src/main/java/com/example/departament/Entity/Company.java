@@ -1,4 +1,5 @@
 package com.example.departament.Entity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
@@ -27,11 +28,11 @@ public class Company {
     private String ruc;
 
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnoreProperties({"company"})
+    @JsonIgnore
     private Set<User> usuarios = new HashSet<>();
 
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({"company", "departamentos"})
+    @JsonIgnore
     private Set<Edificio> edificios = new HashSet<>();
 }
 
