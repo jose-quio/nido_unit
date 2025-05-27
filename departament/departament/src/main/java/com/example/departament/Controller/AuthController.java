@@ -106,7 +106,28 @@ public class AuthController {
         }
 
         User savedUser = userRepository.save(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
+
+
+        // Generar token y preparar respuesta (igual que en login)
+        List<String> roles = savedUser.getRoles().stream()
+                .map(rol -> rol.getNombre().name())
+                .collect(Collectors.toList());
+
+        String token = jwtUtil.createToken(savedUser, roles);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("token", token);
+        response.put("username", savedUser.getUsername());
+        response.put("roles", roles);
+        response.put("userId", savedUser.getId());
+
+        if (savedUser.getCompany() != null) {
+            response.put("idCompany", savedUser.getCompany().getId());
+        } else {
+            response.put("idCompany", null);
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     // DTO interno para el login
