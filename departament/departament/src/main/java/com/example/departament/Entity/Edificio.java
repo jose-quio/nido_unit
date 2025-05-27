@@ -4,10 +4,18 @@ package com.example.departament.Entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Edificio {
 
     @Id
@@ -19,6 +27,11 @@ public class Edificio {
     private String nroPisos;
     private String tipo;
     private String descripcion;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "company_id")
+    @JsonIgnoreProperties({"edificios", "usuarios","hibernateLazyInitializer", "handler"})
+    private Company company;
 
 
     public Long getId() {
