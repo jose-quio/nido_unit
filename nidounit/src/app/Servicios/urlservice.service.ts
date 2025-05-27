@@ -43,4 +43,10 @@ export class UrlserviceService {
   public apiUrlValidateToken = `${this.baseUrl}/api/auth/validate-token`;
   public apiUrlRefreshToken = `${this.baseUrl}/api/auth/refresh-token`;
   public apiUrlLogout = `${this.baseUrl}/api/auth/logout`;
+
+  // ENDPOINTS DE COMPAÑÍA
+  public apiUrlRegistrarCompania = `${this.baseUrl}/api/company`;
+  public apiUrlAsociarUsuarioCompania = `${this.baseUrl}/api/users`; 
+  public apiUrlGetCompanias = `${this.baseUrl}/api/company`;
+  public apiUrlGetCompaniaByUser = `${this.baseUrl}/api/users`;
 }

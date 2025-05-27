@@ -13,6 +13,7 @@ export interface AuthUser {
   photoURL: string | null;
   token?: string;
   refreshToken?: string;
+  userId?: number; // ID del usuario en el backend
 }
 
 @Injectable({
@@ -45,7 +46,8 @@ export class AuthService {
                 displayName: user.displayName,
                 photoURL: user.photoURL,
                 token: idToken,
-                refreshToken: user.refreshToken
+                refreshToken: user.refreshToken,
+                userId: response.userId 
               };
               this.currentUserSubject.next(authUser);
               localStorage.setItem('isLoggedIn', 'true');
@@ -112,7 +114,7 @@ export class AuthService {
     }
   }
 
-  async registerWithEmailPassword(email: string, password: string, displayName?: string): Promise<boolean> {
+  async registerWithEmailPassword(email: string, password: string, displayName?: string): Promise<{ success: boolean, userId?: number }> {
     try {
       const credential = await createUserWithEmailAndPassword(this.auth, email, password);
 
@@ -126,18 +128,20 @@ export class AuthService {
         displayName,
         uid: credential.user.uid
       };
-      await this.backService.register(userData).toPromise();
+      
+      const registerResponse = await this.backService.register(userData).toPromise();
 
       await this.syncUserWithBackend(credential.user);
 
-      return true;
+      // Devolver el userId del backend para usar en el registro de compañía
+      return { success: true, userId: registerResponse.userId };
     } catch (error: any) {
       console.error('Error en registro:', error);
       throw this.handleAuthError(error);
     }
   }
 
-  async loginWithGoogle(): Promise<boolean> {
+  async loginWithGoogle(): Promise<{ success: boolean, userId?: number, isNewUser?: boolean }> {
     try {
       const provider = new GoogleAuthProvider();
       provider.addScope('email');
@@ -146,11 +150,16 @@ export class AuthService {
       const credential = await signInWithPopup(this.auth, provider);
       const idToken = await credential.user.getIdToken();
 
-      await this.backService.login(credential.user.email || '', idToken).toPromise();
+      const loginResponse = await this.backService.login(credential.user.email || '', idToken).toPromise();
 
       await this.syncUserWithBackend(credential.user);
 
-      return true;
+      // Si es un nuevo usuario registrado con Google, también necesitará registrar compañía
+      return { 
+        success: true, 
+        userId: loginResponse.userId,
+        isNewUser: loginResponse.isNewUser || false
+      };
     } catch (error: any) {
       console.error('Error en login con Google:', error);
       throw this.handleAuthError(error);
@@ -236,6 +245,10 @@ export class AuthService {
 
   getToken(): string | null {
     return this.currentUserSubject.value?.token || null;
+  }
+
+  getUserId(): number | null {
+    return this.currentUserSubject.value?.userId || null;
   }
 
   private handleAuthError(error: any): string {

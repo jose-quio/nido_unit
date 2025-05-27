@@ -118,4 +118,23 @@ export class BackserviceService {
     return this.http.post(this.urlService.apiUrlLogout, {});
   }
 
+
+  // Operaciones de Compañía
+  registrarCompania(companiaData: any): Observable<any> {
+    return this.http.post<any>(this.urlService.apiUrlRegistrarCompania, companiaData);
+  }
+
+  asociarUsuarioCompania(userId: number, companyId: number): Observable<any> {
+    const url = `${this.urlService.apiUrlAsociarUsuarioCompania}/${userId}/company/${companyId}`;
+    return this.http.post<any>(url, {});
+  }
+
+  getCompanias(): Observable<any[]> {
+    return this.http.get<any[]>(this.urlService.apiUrlGetCompanias);
+  }
+
+  getCompaniaByUser(userId: number): Observable<any> {
+    const url = `${this.urlService.apiUrlGetCompaniaByUser}/${userId}/company`;
+    return this.http.get<any>(url);
+  }
 }

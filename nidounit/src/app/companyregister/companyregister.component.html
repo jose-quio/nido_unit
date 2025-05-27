@@ -1,0 +1,67 @@
+<div class="company-register-container">
+    <div class="company-register-card">
+        <div class="register-header">
+            <h2>Registrar Compañía</h2>
+            <p>Complete la información de su empresa para continuar</p>
+        </div>
+
+        <div *ngIf="errorMessage" class="alert alert-error">
+            {{ errorMessage }}
+        </div>
+
+        <div *ngIf="successMessage" class="alert alert-success">
+            {{ successMessage }}
+        </div>
+
+        <form (ngSubmit)="onRegisterCompany()" class="company-form">
+            <div class="form-group">
+                <label for="nombre">Nombre de la Empresa *</label>
+                <input type="text" id="nombre" [(ngModel)]="companyData.nombre" name="nombre"
+                    placeholder="Ingrese el nombre de su empresa" [disabled]="isLoading" required>
+            </div>
+
+            <div class="form-group">
+                <label for="direccion">Dirección *</label>
+                <input type="text" id="direccion" [(ngModel)]="companyData.direccion" name="direccion"
+                    placeholder="Ingrese la dirección de su empresa" [disabled]="isLoading" required>
+            </div>
+
+            <div class="form-group">
+                <label for="telefono">Teléfono *</label>
+                <input type="tel" id="telefono" [(ngModel)]="companyData.telefono" name="telefono"
+                    placeholder="Ingrese el teléfono de contacto" [disabled]="isLoading" required>
+                <small>Mínimo 9 dígitos</small>
+            </div>
+
+            <div class="form-group">
+                <label for="ruc">RUC *</label>
+                <input type="text" id="ruc" [(ngModel)]="companyData.ruc" name="ruc"
+                    placeholder="Ingrese el RUC de su empresa" [disabled]="isLoading" maxlength="11" required>
+                <small>11 dígitos</small>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="btn btn-primary btn-full" [disabled]="isLoading">
+                    <span *ngIf="isLoading" class="loading-spinner"></span>
+                    {{ isLoading ? 'Registrando...' : 'Registrar Compañía' }}
+                </button>
+
+                <button type="button" (click)="onSkipCompanyRegistration()" class="btn btn-secondary btn-full"
+                    [disabled]="isLoading">
+                    Omitir por ahora
+                </button>
+            </div>
+        </form>
+
+        <div class="info-section">
+            <p class="info-text">
+                <strong>¿Por qué necesitamos esta información?</strong><br>
+                Los datos de su empresa nos permiten personalizar la experiencia y generar reportes específicos para su
+                organización.
+            </p>
+        </div>
+    </div>
+</div>
+
+
+    

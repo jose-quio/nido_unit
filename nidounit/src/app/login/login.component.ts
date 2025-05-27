@@ -40,7 +40,6 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log('LoginComponent ngOnInit ejecutado');
     
     if (this.authService.isAuthenticated()) {
       this.router.navigateByUrl(this.returnUrl);
@@ -84,16 +83,20 @@ export class LoginComponent implements OnInit {
     this.clearMessages();
 
     try {
-      await this.authService.registerWithEmailPassword(
+      const result = await this.authService.registerWithEmailPassword(
         this.registerData.email,
         this.registerData.password,
         this.registerData.displayName
       );
       
-      this.successMessage = 'Registro exitoso. Iniciando sesión...';
-      setTimeout(() => {
-        this.router.navigateByUrl(this.returnUrl);
-      }, 1000);
+      if (result.success && result.userId) {
+        this.successMessage = 'Registro exitoso. Redirigiendo al registro de compañía...';
+        setTimeout(() => {
+          this.router.navigate(['/company-register'], { 
+            queryParams: { userId: result.userId } 
+          });
+        }, 1500);
+      }
       
     } catch (error: any) {
       this.errorMessage = error;
@@ -107,12 +110,21 @@ export class LoginComponent implements OnInit {
     this.clearMessages();
 
     try {
-      await this.authService.loginWithGoogle();
+      const result = await this.authService.loginWithGoogle();
       
       this.successMessage = 'Login con Google exitoso';
-      setTimeout(() => {
-        this.router.navigateByUrl(this.returnUrl);
-      }, 1000);
+      
+      if (result.isNewUser && result.userId) {
+        setTimeout(() => {
+          this.router.navigate(['/company-register'], { 
+            queryParams: { userId: result.userId } 
+          });
+        }, 1500);
+      } else {
+        setTimeout(() => {
+          this.router.navigateByUrl(this.returnUrl);
+        }, 1000);
+      }
       
     } catch (error: any) {
       this.errorMessage = error;
@@ -121,7 +133,6 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  // Validaciones
   private validateLoginForm(): boolean {
     if (!this.loginData.email || !this.loginData.password) {
       this.errorMessage = 'Por favor complete todos los campos';
