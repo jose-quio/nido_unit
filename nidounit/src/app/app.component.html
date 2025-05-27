@@ -487,6 +487,11 @@
         </div>
       </div>
     </div>
+    <div>
+      <button *ngIf="localStorage?.getItem('token')" (click)="logout()">
+  Cerrar sesión
+</button>
+    </div>
   </div>
 
   <div class="main-content"

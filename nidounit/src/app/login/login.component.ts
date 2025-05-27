@@ -14,19 +14,20 @@ import { Router, ActivatedRoute } from '@angular/router';
 export class LoginComponent implements OnInit {
   isLoginMode = true;
   isLoading = false;
-  
+
   loginData = {
     email: '',
     password: ''
   };
-  
+
   registerData = {
+    username: '',
+    nombre: '',
     email: '',
     password: '',
-    confirmPassword: '',
-    displayName: ''
+    confirmPassword: ''
   };
-  
+
   returnUrl: string;
   errorMessage: string = '';
   successMessage: string = '';
@@ -40,10 +41,7 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit() {
-    
-    if (this.authService.isAuthenticated()) {
-      this.router.navigateByUrl(this.returnUrl);
-    }
+
   }
 
   toggleMode(): void {
@@ -59,51 +57,67 @@ export class LoginComponent implements OnInit {
     this.clearMessages();
 
     try {
-      await this.authService.loginWithEmailPassword(
-        this.loginData.email, 
+      const response = await this.authService.loginWithEmailPassword(
+        this.loginData.email,
         this.loginData.password
       );
-      
+
+      localStorage.setItem('token', response.token);
+      localStorage.setItem('user', JSON.stringify({
+        userId: response.userId,
+        username: response.username,
+        roles: response.roles
+      }));
+
       this.successMessage = 'Login exitoso';
-      setTimeout(() => {
-        this.router.navigateByUrl(this.returnUrl);
-      }, 1000);
-      
+      setTimeout(() => this.router.navigateByUrl(this.returnUrl), 1000);
+
     } catch (error: any) {
-      this.errorMessage = error;
+      this.errorMessage = this.getUserFriendlyError(error);
     } finally {
       this.isLoading = false;
     }
   }
 
+  private getUserFriendlyError(error: any): string {
+    if (error?.error?.message) {
+      return error.error.message;
+    }
+    if (error.message.includes('404')) {
+      return 'Usuario o contraseña incorrectos';
+    }
+    if (error.message.includes('Network Error')) {
+      return 'Error de conexión. Verifica tu internet';
+    }
+    return 'Error al iniciar sesión. Intenta nuevamente';
+  }
   async onRegister(): Promise<void> {
-    if (!this.validateRegisterForm()) return;
+  if (!this.validateRegisterForm()) return;
 
-    this.isLoading = true;
-    this.clearMessages();
+  this.isLoading = true;
+  this.clearMessages();
 
-    try {
-      const result = await this.authService.registerWithEmailPassword(
-        this.registerData.email,
-        this.registerData.password,
-        this.registerData.displayName
-      );
+  try {
+    const result = await this.authService.registerWithEmailPassword(
+      this.registerData.username,
+      this.registerData.password,
+      this.registerData.nombre,
+      this.registerData.email
+    );
+
+    if (result.success) {
+      this.successMessage = 'Registro exitoso. Redirigiendo al registro de compañía...';
       
-      if (result.success && result.userId) {
-        this.successMessage = 'Registro exitoso. Redirigiendo al registro de compañía...';
-        setTimeout(() => {
-          this.router.navigate(['/company-register'], { 
-            queryParams: { userId: result.userId } 
-          });
-        }, 1500);
-      }
-      
-    } catch (error: any) {
-      this.errorMessage = error;
-    } finally {
-      this.isLoading = false;
+      await this.router.navigate(['/companyregister'], {
+        queryParams: { userId: result.userId }
+      });
     }
+  } catch (error: any) {
+    this.errorMessage = this.getUserFriendlyError(error);
+  } finally {
+    this.isLoading = false;
   }
+}
 
   async onGoogleLogin(): Promise<void> {
     this.isLoading = true;
@@ -111,13 +125,13 @@ export class LoginComponent implements OnInit {
 
     try {
       const result = await this.authService.loginWithGoogle();
-      
+
       this.successMessage = 'Login con Google exitoso';
-      
+
       if (result.isNewUser && result.userId) {
         setTimeout(() => {
-          this.router.navigate(['/company-register'], { 
-            queryParams: { userId: result.userId } 
+          this.router.navigate(['/company-register'], {
+            queryParams: { userId: result.userId }
           });
         }, 1500);
       } else {
@@ -125,7 +139,7 @@ export class LoginComponent implements OnInit {
           this.router.navigateByUrl(this.returnUrl);
         }, 1000);
       }
-      
+
     } catch (error: any) {
       this.errorMessage = error;
     } finally {
@@ -148,8 +162,9 @@ export class LoginComponent implements OnInit {
   }
 
   private validateRegisterForm(): boolean {
-    if (!this.registerData.email || !this.registerData.password || 
-        !this.registerData.confirmPassword || !this.registerData.displayName) {
+    if (!this.registerData.email || !this.registerData.password ||
+      !this.registerData.confirmPassword || !this.registerData.nombre ||
+      !this.registerData.username) {
       this.errorMessage = 'Por favor complete todos los campos';
       return false;
     }
@@ -184,6 +199,6 @@ export class LoginComponent implements OnInit {
 
   private resetForms(): void {
     this.loginData = { email: '', password: '' };
-    this.registerData = { email: '', password: '', confirmPassword: '', displayName: '' };
+    this.registerData = { username: '', email: '', password: '', confirmPassword: '', nombre: '' };
   }
 }

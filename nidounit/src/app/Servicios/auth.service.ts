@@ -10,10 +10,11 @@ export interface AuthUser {
   uid: string;
   email: string | null;
   displayName: string | null;
+  username?: string;
   photoURL: string | null;
   token?: string;
   refreshToken?: string;
-  userId?: number; // ID del usuario en el backend
+  userId?: number;
 }
 
 @Injectable({
@@ -31,6 +32,7 @@ export class AuthService {
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
     this.initAuthState();
+    this.loadUserFromStorage();
   }
 
   private initAuthState(): void {
@@ -47,7 +49,7 @@ export class AuthService {
                 photoURL: user.photoURL,
                 token: idToken,
                 refreshToken: user.refreshToken,
-                userId: response.userId 
+                userId: response.userId
               };
               this.currentUserSubject.next(authUser);
               localStorage.setItem('isLoggedIn', 'true');
@@ -55,7 +57,6 @@ export class AuthService {
             },
             (error) => {
               console.error('Token validation failed:', error);
-              this.logout();
             }
           );
         } else {
@@ -97,44 +98,62 @@ export class AuthService {
     );
   }
 
-  async loginWithEmailPassword(email: string, password: string): Promise<boolean> {
-    try {
-      const credential = await signInWithEmailAndPassword(this.auth, email, password);
+  async loginWithEmailPassword(email: string, password: string): Promise<{
+    token: string;
+    userId: number;
+    username: string;
+    roles: string[];
+  }> {
+    const response = await this.backService.login(email, password).toPromise();
 
-      const idToken = await credential.user.getIdToken();
-
-      await this.backService.login(email, password).toPromise();
-
-      await this.syncUserWithBackend(credential.user);
-
-      return true;
-    } catch (error: any) {
-      console.error('Error en login:', error);
-      throw this.handleAuthError(error);
+    if (!response || !response.token) {
+      throw new Error('Respuesta inválida del servidor');
     }
+
+    return {
+      token: response.token,
+      userId: response.userId,
+      username: response.username,
+      roles: response.roles || []
+    };
   }
 
-  async registerWithEmailPassword(email: string, password: string, displayName?: string): Promise<{ success: boolean, userId?: number }> {
+  async registerWithEmailPassword(
+    username: string,
+    password: string,
+    nombre: string,
+    email: string
+  ): Promise<{ success: boolean, userId: number }> {
     try {
-      const credential = await createUserWithEmailAndPassword(this.auth, email, password);
+      const registerData = {
+        username,
+        password,
+        nombre,
+        email
+      };
 
-      if (displayName && credential.user) {
-        await updateProfile(credential.user, { displayName });
+      const response = await this.backService.register(registerData).toPromise();
+
+      if (response && response.id) {
+        const authUser: AuthUser = {
+          uid: response.id.toString(),
+          email: email,
+          displayName: nombre,
+          username: username,
+          photoURL: null,
+          token: 'token-placeholder',
+          userId: response.id
+        };
+
+        this.currentUserSubject.next(authUser);
+        localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('currentUser', JSON.stringify(authUser));
+
+        return { success: true, userId: response.id };
       }
 
-      const userData = {
-        email,
-        password,
-        displayName,
-        uid: credential.user.uid
-      };
-      
-      const registerResponse = await this.backService.register(userData).toPromise();
+      throw new Error('El registro fue exitoso pero no se recibió ID de usuario');
 
-      await this.syncUserWithBackend(credential.user);
-
-      // Devolver el userId del backend para usar en el registro de compañía
-      return { success: true, userId: registerResponse.userId };
     } catch (error: any) {
       console.error('Error en registro:', error);
       throw this.handleAuthError(error);
@@ -154,11 +173,9 @@ export class AuthService {
 
       await this.syncUserWithBackend(credential.user);
 
-      // Si es un nuevo usuario registrado con Google, también necesitará registrar compañía
-      return { 
-        success: true, 
-        userId: loginResponse.userId,
-        isNewUser: loginResponse.isNewUser || false
+      return {
+        success: true,
+
       };
     } catch (error: any) {
       console.error('Error en login con Google:', error);
@@ -185,20 +202,7 @@ export class AuthService {
     }
   }
 
-  async logout(): Promise<void> {
-    try {
-      await this.backService.logout().toPromise();
 
-      await signOut(this.auth);
-
-      this.clearLocalStorage();
-
-      this.router.navigate(['/login']);
-    } catch (error) {
-      console.error('Error en logout:', error);
-      throw error;
-    }
-  }
 
   refreshToken(): Observable<boolean> {
     const currentUser = this.currentUserSubject.value;
@@ -220,17 +224,28 @@ export class AuthService {
       }),
       switchMap(() => of(true)),
       catchError(() => {
-        this.logout();
         return of(false);
       })
     );
   }
 
+  private loadUserFromStorage(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      const userData = localStorage.getItem('currentUser');
+      if (userData) {
+        try {
+          const user = JSON.parse(userData);
+          this.currentUserSubject.next(user);
+        } catch (e) {
+          this.clearAuthData();
+        }
+      }
+    }
+  }
+
   isAuthenticated(): boolean {
     if (isPlatformBrowser(this.platformId)) {
-      const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-      const currentUser = this.currentUserSubject.value;
-      return isLoggedIn && currentUser !== null;
+      return !!localStorage.getItem('token') && !!this.currentUserSubject.value;
     }
     return false;
   }
@@ -244,7 +259,18 @@ export class AuthService {
   }
 
   getToken(): string | null {
-    return this.currentUserSubject.value?.token || null;
+    if (isPlatformBrowser(this.platformId)) {
+      const userData = localStorage.getItem('currentUser');
+      if (userData) {
+        try {
+          const user = JSON.parse(userData);
+          return user.token || null;
+        } catch {
+          return null;
+        }
+      }
+    }
+    return null;
   }
 
   getUserId(): number | null {
@@ -284,5 +310,39 @@ export class AuthService {
     }
 
     return 'Error de autenticación: ' + (error.message || 'Error desconocido');
+  }
+
+  setAuthData(token: string, userData: any): void {
+    localStorage.setItem('token', token);
+    localStorage.setItem('user', JSON.stringify(userData));
+  }
+
+  clearAuthData(): void {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+  }
+
+  getAuthData(): { token: string | null, user: any | null } {
+    return {
+      token: localStorage.getItem('token'),
+      user: JSON.parse(localStorage.getItem('user') || 'null')
+    };
+  }
+
+
+  updateCompanyInfo(companyId: number): void {
+    if (typeof window !== 'undefined') {
+      const userData = localStorage.getItem('currentUser');
+      if (userData) {
+        try {
+          const user = JSON.parse(userData);
+          user.companyId = companyId;
+          localStorage.setItem('currentUser', JSON.stringify(user));
+          this.currentUserSubject.next(user);
+        } catch (e) {
+          console.error('Error al actualizar información de compañía', e);
+        }
+      }
+    }
   }
 }

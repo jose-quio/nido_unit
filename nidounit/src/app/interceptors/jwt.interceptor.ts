@@ -50,7 +50,6 @@ function handle401Error(
   router: Router
 ): Observable<any> {
  
-  authService.logout();
   router.navigate(['/login']);
   return throwError(() => new Error('Session expired'));
 }

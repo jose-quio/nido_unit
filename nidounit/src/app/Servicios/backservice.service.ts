@@ -1,13 +1,15 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { UrlserviceService } from './urlservice.service';
 import { AuthUser } from './auth.service';
+import { environment } from '../../enviroments/environment.staging';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BackserviceService {
+  private baseUrl = environment.apiUrl;
 
   constructor(private http: HttpClient, private urlService: UrlserviceService) { }
 
@@ -94,10 +96,20 @@ export class BackserviceService {
   }
 
   // Métodos para sincronización con AuthService
-  login(email: string, password: string): Observable<any> {
-    return this.http.post(this.urlService.apiUrlLogin, { email, password });
-  }
 
+  login(email: string, password: string): Observable<{
+    token: string;
+    userId: number;
+    username: string;
+    roles: string[];
+  }> {
+    return this.http.post<{
+      token: string;
+      userId: number;
+      username: string;
+      roles: string[]
+    }>(this.urlService.apiUrlLogin, { email, password });
+  }
   register(userData: any): Observable<any> {
     return this.http.post(this.urlService.apiUrlRegister, userData);
   }
@@ -114,19 +126,29 @@ export class BackserviceService {
     return this.http.post(this.urlService.apiUrlRefreshToken, { refreshToken });
   }
 
-  logout(): Observable<any> {
-    return this.http.post(this.urlService.apiUrlLogout, {});
-  }
-
 
   // Operaciones de Compañía
-  registrarCompania(companiaData: any): Observable<any> {
-    return this.http.post<any>(this.urlService.apiUrlRegistrarCompania, companiaData);
+
+  registrarCompania(companyData: any, token: string): Observable<any> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    });
+
+    return this.http.post(`${this.baseUrl}/companies`, companyData, { headers });
   }
 
-  asociarUsuarioCompania(userId: number, companyId: number): Observable<any> {
-    const url = `${this.urlService.apiUrlAsociarUsuarioCompania}/${userId}/company/${companyId}`;
-    return this.http.post<any>(url, {});
+  asociarUsuarioCompania(userId: number, companyId: number, token: string): Observable<any> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    });
+
+    return this.http.post(
+      `${this.baseUrl}/users/${userId}/company`,
+      { companyId },
+      { headers }
+    );
   }
 
   getCompanias(): Observable<any[]> {

@@ -8,40 +8,26 @@
     <div *ngIf="errorMessage" class="alert alert-error">
       {{ errorMessage }}
     </div>
-    
+
     <div *ngIf="successMessage" class="alert alert-success">
       {{ successMessage }}
     </div>
 
     <form *ngIf="isLoginMode" (ngSubmit)="onLogin()" class="login-form">
+
       <div class="form-group">
         <label for="loginEmail">Email</label>
-        <input 
-          type="email" 
-          id="loginEmail"
-          [(ngModel)]="loginData.email" 
-          name="loginEmail"
-          placeholder="Ingresa tu correo"
-          [disabled]="isLoading"
-          required>
+        <input type="email" id="loginEmail" [(ngModel)]="loginData.email" name="loginEmail"
+          placeholder="Ingresa tu correo" [disabled]="isLoading" required>
       </div>
 
       <div class="form-group">
         <label for="loginPassword">Contraseña</label>
-        <input 
-          type="password" 
-          id="loginPassword"
-          [(ngModel)]="loginData.password" 
-          name="loginPassword"
-          placeholder="••••••••"
-          [disabled]="isLoading"
-          required>
+        <input type="password" id="loginPassword" [(ngModel)]="loginData.password" name="loginPassword"
+          placeholder="••••••••" [disabled]="isLoading" required>
       </div>
 
-      <button 
-        type="submit" 
-        class="btn btn-primary btn-full"
-        [disabled]="isLoading">
+      <button type="submit" class="btn btn-primary btn-full" [disabled]="isLoading">
         <span *ngIf="isLoading" class="loading-spinner"></span>
         {{ isLoading ? 'Iniciando...' : 'Iniciar Sesión' }}
       </button>
@@ -49,58 +35,36 @@
 
     <form *ngIf="!isLoginMode" (ngSubmit)="onRegister()" class="login-form">
       <div class="form-group">
+        <label for="registerUsername">Nombre de usuario</label>
+        <input type="text" id="registerUsername" [(ngModel)]="registerData.username" name="registerUsername"
+          placeholder="Ingrese su nombre de usuario" [disabled]="isLoading" required>
+      </div>
+      <div class="form-group">
         <label for="registerName">Nombre completo</label>
-        <input 
-          type="text" 
-          id="registerName"
-          [(ngModel)]="registerData.displayName" 
-          name="registerName"
-          placeholder="Ingrese su nombre"
-          [disabled]="isLoading"
-          required>
+        <input type="text" id="registerName" [(ngModel)]="registerData.nombre" name="registerName"
+          placeholder="Ingrese su nombre completo" [disabled]="isLoading" required>
       </div>
 
       <div class="form-group">
         <label for="registerEmail">Email</label>
-        <input 
-          type="email" 
-          id="registerEmail"
-          [(ngModel)]="registerData.email" 
-          name="registerEmail"
-          placeholder="Ingrese su correo"
-          [disabled]="isLoading"
-          required>
+        <input type="email" id="registerEmail" [(ngModel)]="registerData.email" name="registerEmail"
+          placeholder="Ingrese su correo" [disabled]="isLoading" required>
       </div>
 
       <div class="form-group">
         <label for="registerPassword">Contraseña</label>
-        <input 
-          type="password" 
-          id="registerPassword"
-          [(ngModel)]="registerData.password" 
-          name="registerPassword"
-          placeholder="••••••••"
-          [disabled]="isLoading"
-          required>
+        <input type="password" id="registerPassword" [(ngModel)]="registerData.password" name="registerPassword"
+          placeholder="••••••••" [disabled]="isLoading" required>
         <small>Mínimo 6 caracteres</small>
       </div>
 
       <div class="form-group">
         <label for="confirmPassword">Confirmar contraseña</label>
-        <input 
-          type="password" 
-          id="confirmPassword"
-          [(ngModel)]="registerData.confirmPassword" 
-          name="confirmPassword"
-          placeholder="••••••••"
-          [disabled]="isLoading"
-          required>
+        <input type="password" id="confirmPassword" [(ngModel)]="registerData.confirmPassword" name="confirmPassword"
+          placeholder="••••••••" [disabled]="isLoading" required>
       </div>
 
-      <button 
-        type="submit" 
-        class="btn btn-primary btn-full"
-        [disabled]="isLoading">
+      <button type="submit" class="btn btn-primary btn-full" [disabled]="isLoading">
         <span *ngIf="isLoading" class="loading-spinner"></span>
         {{ isLoading ? 'Registrando...' : 'Registrarse' }}
       </button>
@@ -110,17 +74,17 @@
       <span>o</span>
     </div>
 
-    <button 
-      type="button" 
-      (click)="onGoogleLogin()" 
-      class="btn btn-google btn-full"
-      [disabled]="isLoading">
+    <button type="button" (click)="onGoogleLogin()" class="btn btn-google btn-full" [disabled]="isLoading">
       <span *ngIf="!isLoading" class="google-icon">
         <svg width="18" height="18" viewBox="0 0 24 24">
-          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+          <path fill="#4285F4"
+            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+          <path fill="#34A853"
+            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+          <path fill="#FBBC05"
+            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+          <path fill="#EA4335"
+            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
         </svg>
       </span>
       <span *ngIf="isLoading" class="loading-spinner"></span>
@@ -131,11 +95,7 @@
     <div class="toggle-mode">
       <p>
         {{ isLoginMode ? '¿No tienes cuenta?' : '¿Ya tienes cuenta?' }}
-        <button 
-          type="button" 
-          (click)="toggleMode()" 
-          class="btn-link"
-          [disabled]="isLoading">
+        <button type="button" (click)="toggleMode()" class="btn-link" [disabled]="isLoading">
           {{ isLoginMode ? 'Registrarse' : 'Iniciar Sesión' }}
         </button>
       </p>
