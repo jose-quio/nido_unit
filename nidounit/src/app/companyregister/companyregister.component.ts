@@ -96,9 +96,6 @@ export class CompanyRegisterComponent implements OnInit {
     }
   }
 
-  onSkipCompanyRegistration(): void {
-    this.router.navigate(['/dashboard']);
-  }
 
   private validateForm(): boolean {
     if (!this.companyData.nombre || !this.companyData.direccion || 

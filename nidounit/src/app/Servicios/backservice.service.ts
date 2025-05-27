@@ -135,7 +135,7 @@ export class BackserviceService {
       'Authorization': `Bearer ${token}`
     });
 
-    return this.http.post(`${this.baseUrl}/companies`, companyData, { headers });
+    return this.http.post(`${this.baseUrl}`, companyData, { headers });
   }
 
   asociarUsuarioCompania(userId: number, companyId: number, token: string): Observable<any> {
