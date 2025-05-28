@@ -16,7 +16,7 @@ export interface AuthUser {
   userId?: number;
   roles?: string[];
   isNewUser?: boolean;
-  idCompany?: number;
+  idCompany?: number | null;
 }
 
 @Injectable({
@@ -26,6 +26,8 @@ export class AuthService {
 
   private currentUserSubject = new BehaviorSubject<AuthUser | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
+  private nameCompanySubject!: BehaviorSubject<string | null>;
+  nameCompany$!: Observable<string | null>;
 
   constructor(
     private router: Router,
@@ -35,6 +37,12 @@ export class AuthService {
   ) {
     this.initAuthState();
     this.loadUserFromStorage();
+    const initialName = isPlatformBrowser(this.platformId)
+      ? localStorage.getItem('nameCompany')
+      : null;
+
+    this.nameCompanySubject = new BehaviorSubject<string | null>(initialName);
+    this.nameCompany$ = this.nameCompanySubject.asObservable();
   }
 
   isAuthenticated(): boolean {
@@ -128,6 +136,7 @@ export class AuthService {
     userId: number;
     username: string;
     roles: string[];
+    idCompany?: number;
   }> {
     const response = await this.backService.login(email, password).toPromise();
 
@@ -135,11 +144,28 @@ export class AuthService {
       throw new Error('Respuesta inválida del servidor');
     }
 
+    localStorage.setItem('isLoggedIn', 'true');
+    localStorage.setItem('token', response.token);
+
+    const authUser: AuthUser = {
+      uid: response.userId.toString(),
+      email: email,
+      displayName: response.username,
+      token: response.token,
+      userId: response.userId,
+      roles: response.roles,
+      idCompany: response.idCompany
+    };
+
+    this.currentUserSubject.next(authUser);
+    localStorage.setItem('currentUser', JSON.stringify(authUser));
+
     return {
       token: response.token,
       userId: response.userId,
       username: response.username,
-      roles: response.roles || []
+      roles: response.roles,
+      idCompany: response.idCompany
     };
   }
 
@@ -173,6 +199,7 @@ export class AuthService {
 
         localStorage.setItem('token', response.token);
         localStorage.setItem('currentUser', JSON.stringify(authUser));
+        localStorage.setItem('idCompany', response.idCompany);
 
         this.currentUserSubject.next(authUser);
 
@@ -221,6 +248,7 @@ export class AuthService {
 
       localStorage.setItem('currentUser', JSON.stringify(authUser));
       localStorage.setItem('token', loginResponse.token);
+      localStorage.setItem('idCompany', loginResponse.idCompany);
 
       const response = {
         success: true,
@@ -233,7 +261,7 @@ export class AuthService {
         this.router.navigate(['/companyregister'], {
           queryParams: { userId: loginResponse.userId }
         });
-      } else {        
+      } else {
         this.router.navigate(['/apartamento']);
         localStorage.setItem('isLoggedIn', 'true');
       }
@@ -270,16 +298,36 @@ export class AuthService {
   }
 
   refreshToken(): Observable<string | null> {
+    if (this.refreshInProgress) {
+      return of(null);
+    }
+
+    this.refreshInProgress = true;
+
     return this.backService.refreshToken().pipe(
-      map(response => {
-        if (response?.token) {
-          localStorage.setItem('token', response.token);
-          return response.token;
+      tap({
+        next: (response) => {
+          if (response?.token) {
+            const currentUser = this.currentUserSubject.value;
+            if (currentUser) {
+              currentUser.token = response.token;
+              this.currentUserSubject.next(currentUser);
+            }
+            localStorage.setItem('token', response.token);
+          }
+          this.refreshInProgress = false;
+        },
+        error: (err) => {
+          this.refreshInProgress = false;
+          this.logout();
+          throw err;
         }
-        return null;
-      })
+      }),
+      map(response => response?.token || null)
     );
   }
+
+  private refreshInProgress = false;
 
   private loadUserFromStorage(): void {
     if (isPlatformBrowser(this.platformId)) {
@@ -381,12 +429,14 @@ export class AuthService {
   async logout(): Promise<void> {
     try {
       this.currentUserSubject.next(null);
-      
+
       localStorage.removeItem('token');
       localStorage.removeItem('currentUser');
       localStorage.removeItem('isLoggedIn');
       localStorage.removeItem('user');
-
+      localStorage.removeItem('idCompany');
+      localStorage.removeItem('nameCompany');
+       this.clearNameCompany();
       if (this.auth.currentUser) {
         await signOut(this.auth);
       }
@@ -395,14 +445,32 @@ export class AuthService {
         next: () => console.log('Backend logout successful'),
         error: (error) => console.warn('Backend logout failed, but local logout completed:', error)
       });
-
+      
       this.router.navigate(['/login']);
 
     } catch (error) {
       console.error('Error durante logout:', error);
       this.currentUserSubject.next(null);
-      localStorage.clear(); 
+      localStorage.clear();
       this.router.navigate(['/login']);
     }
   }
+
+  private nameCompanySubject$() {
+    return this.nameCompanySubject.asObservable();
+  }
+
+  setNameCompany(value: string) {
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.setItem('nameCompany', value);
+    }
+    this.nameCompanySubject.next(value);
+  }
+  clearNameCompany(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.removeItem('nameCompany');
+    }
+    this.nameCompanySubject.next(null); 
+  }
+
 }

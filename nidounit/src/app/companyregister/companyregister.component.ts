@@ -82,6 +82,10 @@ export class CompanyRegisterComponent implements OnInit {
         
         this.router.navigate(['/apartamento']);
         localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('idCompany', companyResponse.id);
+        localStorage.setItem('nameCompany', companyResponse.nombre);
+        this.authService.setNameCompany(companyResponse.nombre);
+
         
       }, 1500);
 

@@ -57,27 +57,29 @@ export class LoginComponent implements OnInit {
     this.clearMessages();
 
     try {
-      const response = await this.authService.loginWithEmailPassword(
-        this.loginData.email,
-        this.loginData.password
-      );
+        const response = await this.authService.loginWithEmailPassword(
+            this.loginData.email,
+            this.loginData.password
+        );
 
-      localStorage.setItem('token', response.token);
-      localStorage.setItem('user', JSON.stringify({
-        userId: response.userId,
-        username: response.username,
-        roles: response.roles
-      }));
-
-      this.successMessage = 'Login exitoso';
-      setTimeout(() => this.router.navigateByUrl(this.returnUrl), 1000);
+        this.successMessage = 'Login exitoso';
+        
+        setTimeout(() => {
+            if (response.idCompany) {
+                this.router.navigate(['/apartamento']);
+            } else {
+                this.router.navigate(['/companyregister'], {
+                    queryParams: { userId: response.userId }
+                });
+            }
+        }, 1000);
 
     } catch (error: any) {
-      this.errorMessage = this.getUserFriendlyError(error);
+        this.errorMessage = this.getUserFriendlyError(error);
     } finally {
-      this.isLoading = false;
+        this.isLoading = false;
     }
-  }
+}
 
   private getUserFriendlyError(error: any): string {
     if (error?.error?.message) {

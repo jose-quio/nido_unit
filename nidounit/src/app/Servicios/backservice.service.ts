@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { catchError, map, Observable, of } from 'rxjs';
+import { catchError, map, Observable, of, tap, throwError } from 'rxjs';
 import { UrlserviceService } from './urlservice.service';
 import { AuthUser } from './auth.service';
 import { environment } from '../../enviroments/environment.staging';
@@ -15,6 +15,10 @@ export class BackserviceService {
 
   // Operaciones de Apartamentos
   registrarApartamento(apartamento: any): Observable<any> {
+    if (!apartamento.company?.id) {
+      return throwError(() => new Error('ID de compañía no proporcionado'));
+    }
+      
     return this.http.post<any>(this.urlService.apiUrlRegistrarApartamento, apartamento);
   }
 
@@ -102,12 +106,14 @@ export class BackserviceService {
     userId: number;
     username: string;
     roles: string[];
+    idCompany: number;
   }> {
     return this.http.post<{
       token: string;
       userId: number;
       username: string;
-      roles: string[]
+      roles: string[];
+      idCompany: number;
     }>(this.urlService.apiUrlLogin, { email, password });
   }
   register(userData: any): Observable<any> {
@@ -123,33 +129,45 @@ export class BackserviceService {
   }
 
   refreshToken(): Observable<{ token: string }> {
+    const refreshToken = localStorage.getItem('refreshToken');
+    if (!refreshToken) {
+      return throwError(() => 'No refresh token available');
+    }
+
     return this.http.post<{ token: string }>(
-      this.urlService.apiUrlRefreshToken,
-      {},
-      { withCredentials: true }
+      `${this.baseUrl}/api/auth/refresh`,
+      { refreshToken }
+    ).pipe(
+      catchError(error => {
+        // Si falla el refresh, limpia todo
+        localStorage.removeItem('token');
+        localStorage.removeItem('refreshToken');
+        return throwError(() => error);
+      })
     );
   }
-
 
   logout(): Observable<any> {
     return this.http.post(
       this.urlService.apiUrlLogout,
-      {}, 
+      {},
       {
-        withCredentials: true, 
-        observe: 'response'
+        withCredentials: true,
+        responseType: 'text'
       }
     ).pipe(
-      map(response => {
-        console.log('Logout successful:', response.body);
-        return response.body;
-      }),
+      tap(() => console.log('Backend logout successful')),
       catchError(error => {
+        if (error.status === 0) {
+          console.warn('Logout: CORS/Network error, pero se completó localmente');
+          return of('Logout completado (CORS ignorado)');
+        }
         console.error('Error en logout:', error);
-        return of({ message: 'Logout completado localmente' });
+        return of('Logout completado (con error ignorado)');
       })
     );
   }
+
   loginWithGoogle(accessToken: string): Observable<any> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json'

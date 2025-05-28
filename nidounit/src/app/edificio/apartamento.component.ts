@@ -32,28 +32,36 @@ export class ApartamentoComponent {
   });
 
   onSubmit() {
-    console.log('Valores del formulario:', this.FormularioApartamento.value);
-    console.log('Estado del formulario:', this.FormularioApartamento.status);
-    
     if (this.FormularioApartamento.valid) {
-      console.log('Enviando datos:', JSON.stringify(this.FormularioApartamento.value));
-      this.backService.registrarApartamento(this.FormularioApartamento.value)
-        .subscribe(
-          response => {
+      const idCompany = localStorage.getItem('idCompany');
+      
+      if (!idCompany) {
+        console.error('No se encontró idCompany en el localStorage');
+        return;
+      }
+
+      const buildingData = {
+        ...this.FormularioApartamento.value,
+        company: { id: Number(idCompany) }
+      };
+
+      console.log('Enviando datos:', buildingData);
+      
+      this.backService.registrarApartamento(buildingData)
+        .subscribe({
+          next: (response) => {
             console.log('Edificio registrado con éxito:', response);
             this.obtenerApartamentos();
-            this.FormularioApartamento.reset({
-              tipo: 'residencial'  
-            });
+            this.FormularioApartamento.reset({ tipo: 'residencial' });
           },
-          error => {
-            console.error('Error al registrar el edificio:', error);
+          error: (error) => {
+            console.error('Error al registrar:', error);
           }
-        );
+        });
     } else {
       console.warn('Formulario inválido', this.FormularioApartamento.errors);
     }
-  }
+}
 
   obtenerApartamentos() {
     this.backService.getApartamentos().subscribe(

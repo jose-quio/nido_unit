@@ -444,7 +444,7 @@
         <i class="fas fa-building"></i>
         <div>
           <div class="sidebar-title">NidoUnit</div>
-          <div class="sidebar-subtitle">Gestión de Condominios</div>
+          <div class="sidebar-subtitle">{{nameCompany}}</div>
         </div>
       </a>
     </div>
@@ -489,9 +489,7 @@
       </div>
     </div>
     <div>
-      <button *ngIf="localStorage?.getItem('token')" (click)="logout()">
-        Cerrar sesión
-      </button>
+      <button (click)="logout()">Cerrar sesión</button>
     </div>
   </div>
 
