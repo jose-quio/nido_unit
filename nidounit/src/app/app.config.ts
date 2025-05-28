@@ -26,7 +26,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideHttpClient(
       withFetch(),
-      withInterceptors([authInterceptor, refreshTokenInterceptor])
+      withInterceptors([authInterceptor, refreshTokenInterceptor])  
     ),
     provideRouter(routes),
     provideClientHydration(),

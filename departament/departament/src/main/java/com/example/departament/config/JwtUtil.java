@@ -18,7 +18,7 @@ import jakarta.servlet.http.HttpServletRequest;
 @Component
 public class JwtUtil {
     private final String secret_key = "mysecretkey";
-    private long accessTokenValidity = 60 * 1000;
+    private long accessTokenValidity = 30 * 1000;
     private final JwtParser jwtParser;
     private final String TOKEN_HEADER = "Authorization";
     private final String TOKEN_PREFIX = "Bearer ";
@@ -33,7 +33,7 @@ public class JwtUtil {
         claims.put("usuarioId", user.getId());
         claims.put("roles", roles);
         Date tokenCreateTime = new Date();
-        Date tokenValidity = new Date(tokenCreateTime.getTime() + TimeUnit.MINUTES.toMillis(accessTokenValidity));
+        Date tokenValidity = new Date(tokenCreateTime.getTime() + accessTokenValidity);
         return Jwts.builder().setClaims(claims).setExpiration(tokenValidity)
                 .signWith(SignatureAlgorithm.HS256, secret_key).compact();
     }

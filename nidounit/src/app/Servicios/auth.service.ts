@@ -2,8 +2,8 @@ import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { Router } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { Auth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged, User, updateProfile } from '@angular/fire/auth';
-import { Observable, BehaviorSubject, from, of, map } from 'rxjs';
-import { switchMap, catchError, tap } from 'rxjs/operators';
+import { Observable, BehaviorSubject, from, of, map, throwError } from 'rxjs';
+import { switchMap, catchError, tap, filter, take } from 'rxjs/operators';
 import { BackserviceService } from './backservice.service';
 
 export interface AuthUser {
@@ -23,6 +23,9 @@ export interface AuthUser {
   providedIn: 'root'
 })
 export class AuthService {
+
+  private refreshTokenInProgress = false;
+  private refreshTokenSubject = new BehaviorSubject<string | null>(null);
 
   private currentUserSubject = new BehaviorSubject<AuthUser | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
@@ -248,14 +251,10 @@ export class AuthService {
 
       localStorage.setItem('currentUser', JSON.stringify(authUser));
       localStorage.setItem('token', loginResponse.token);
-      localStorage.setItem('idCompany', loginResponse.idCompany);
-
-      const response = {
-        success: true,
-        userId: loginResponse.userId,
-        isNewUser: loginResponse.isNewUser,
-        needsCompany: loginResponse.idCompany === null
-      };
+      localStorage.setItem('isLoggedIn', 'true');
+      if (loginResponse.idCompany) {
+        localStorage.setItem('idCompany', loginResponse.idCompany);
+      }
 
       if (loginResponse.idCompany === null) {
         this.router.navigate(['/companyregister'], {
@@ -263,14 +262,9 @@ export class AuthService {
         });
       } else {
         this.router.navigate(['/apartamento']);
-        localStorage.setItem('isLoggedIn', 'true');
       }
 
-      return {
-        success: true,
-        userId: loginResponse.userId,
-        isNewUser: loginResponse.isNewUser
-      };
+      return { success: true, userId: loginResponse.userId, isNewUser: loginResponse.isNewUser };
 
     } catch (error: any) {
       console.error('Error en login con Google:', error);
@@ -298,33 +292,29 @@ export class AuthService {
   }
 
   refreshToken(): Observable<string | null> {
-    if (this.refreshInProgress) {
-      return of(null);
+    if (this.refreshTokenInProgress) {
+      return this.refreshTokenSubject.asObservable().pipe(
+        filter(token => token !== null),
+        take(1)
+      );
+    } else {
+      this.refreshTokenInProgress = true;
+      this.refreshTokenSubject.next(null);
+
+      return this.backService.refreshToken().pipe(
+        tap((response: { token: string }) => {
+          this.refreshTokenInProgress = false;
+          localStorage.setItem('token', response.token);
+          this.refreshTokenSubject.next(response.token);
+        }),
+        catchError(error => {
+          this.refreshTokenInProgress = false;
+          this.refreshTokenSubject.error(error);
+          return throwError(() => error);
+        }),
+        map(response => response.token)
+      );
     }
-
-    this.refreshInProgress = true;
-
-    return this.backService.refreshToken().pipe(
-      tap({
-        next: (response) => {
-          if (response?.token) {
-            const currentUser = this.currentUserSubject.value;
-            if (currentUser) {
-              currentUser.token = response.token;
-              this.currentUserSubject.next(currentUser);
-            }
-            localStorage.setItem('token', response.token);
-          }
-          this.refreshInProgress = false;
-        },
-        error: (err) => {
-          this.refreshInProgress = false;
-          this.logout();
-          throw err;
-        }
-      }),
-      map(response => response?.token || null)
-    );
   }
 
   private refreshInProgress = false;
@@ -436,7 +426,7 @@ export class AuthService {
       localStorage.removeItem('user');
       localStorage.removeItem('idCompany');
       localStorage.removeItem('nameCompany');
-       this.clearNameCompany();
+      this.clearNameCompany();
       if (this.auth.currentUser) {
         await signOut(this.auth);
       }
@@ -445,7 +435,7 @@ export class AuthService {
         next: () => console.log('Backend logout successful'),
         error: (error) => console.warn('Backend logout failed, but local logout completed:', error)
       });
-      
+
       this.router.navigate(['/login']);
 
     } catch (error) {
@@ -470,7 +460,7 @@ export class AuthService {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem('nameCompany');
     }
-    this.nameCompanySubject.next(null); 
+    this.nameCompanySubject.next(null);
   }
 
 }

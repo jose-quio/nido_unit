@@ -18,7 +18,7 @@ export class BackserviceService {
     if (!apartamento.company?.id) {
       return throwError(() => new Error('ID de compañía no proporcionado'));
     }
-      
+
     return this.http.post<any>(this.urlService.apiUrlRegistrarApartamento, apartamento);
   }
 
@@ -114,10 +114,19 @@ export class BackserviceService {
       username: string;
       roles: string[];
       idCompany: number;
-    }>(this.urlService.apiUrlLogin, { email, password });
+    }>(
+      this.urlService.apiUrlLogin,
+      { email, password },
+      { withCredentials: true }
+    );
   }
+
   register(userData: any): Observable<any> {
-    return this.http.post(this.urlService.apiUrlRegister, userData);
+    return this.http.post(
+      this.urlService.apiUrlRegister,
+      userData,
+      { withCredentials: true }
+    );
   }
 
   syncUserWithBackend(userData: AuthUser): Observable<any> {
@@ -129,24 +138,14 @@ export class BackserviceService {
   }
 
   refreshToken(): Observable<{ token: string }> {
-    const refreshToken = localStorage.getItem('refreshToken');
-    if (!refreshToken) {
-      return throwError(() => 'No refresh token available');
-    }
-
     return this.http.post<{ token: string }>(
       `${this.baseUrl}/api/auth/refresh`,
-      { refreshToken }
-    ).pipe(
-      catchError(error => {
-        // Si falla el refresh, limpia todo
-        localStorage.removeItem('token');
-        localStorage.removeItem('refreshToken');
-        return throwError(() => error);
-      })
+      {},
+      {
+        withCredentials: true
+      }
     );
   }
-
   logout(): Observable<any> {
     return this.http.post(
       this.urlService.apiUrlLogout,
@@ -175,8 +174,13 @@ export class BackserviceService {
 
     return this.http.post(`${environment.apiUrl}/api/auth/login/google`, {
       access_token: accessToken
-    }, { headers });
+    }, {
+      headers,
+      withCredentials: true 
+    });
   }
+
+
 
 
   // Operaciones de Compañía

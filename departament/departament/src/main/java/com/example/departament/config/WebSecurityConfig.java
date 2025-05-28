@@ -35,6 +35,12 @@ public class WebSecurityConfig {
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
+    @Autowired
+    private CustomAccessDeniedHandler accessDeniedHandler;
+
+    @Autowired
+    private CustomAuthenticationEntryPoint authenticationEntryPoint;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
@@ -48,6 +54,10 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/users/**").hasRole("ADMIN_COMPANY")
 
                         .anyRequest().authenticated()
+                )
+                .exceptionHandling(eh -> eh
+                        .authenticationEntryPoint(authenticationEntryPoint)
+                        .accessDeniedHandler(accessDeniedHandler)
                 )
                 .csrf(csrf -> csrf.disable())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
