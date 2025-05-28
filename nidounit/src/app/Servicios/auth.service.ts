@@ -2,7 +2,7 @@ import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { Router } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { Auth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged, User, updateProfile } from '@angular/fire/auth';
-import { Observable, BehaviorSubject, from, of, map} from 'rxjs';
+import { Observable, BehaviorSubject, from, of, map } from 'rxjs';
 import { switchMap, catchError, tap } from 'rxjs/operators';
 import { BackserviceService } from './backservice.service';
 
@@ -16,6 +16,7 @@ export interface AuthUser {
   userId?: number;
   roles?: string[];
   isNewUser?: boolean;
+  idCompany?: number;
 }
 
 @Injectable({
@@ -34,6 +35,17 @@ export class AuthService {
   ) {
     this.initAuthState();
     this.loadUserFromStorage();
+  }
+  isAuthenticated(): boolean {
+    if (!isPlatformBrowser(this.platformId)) return false;
+
+    const token = localStorage.getItem('token');
+    const currentUser = this.currentUserSubject.value;
+    const storedUser = localStorage.getItem('currentUser');
+
+    const hasBasicAuth = !!token && !!currentUser && !!storedUser;
+
+    return hasBasicAuth;
   }
 
   private initAuthState(): void {
@@ -175,12 +187,9 @@ export class AuthService {
       }
 
       const googleAccessToken = credential.accessToken;
-      console.log("Access token obtenido: ", googleAccessToken);
       if (!googleAccessToken) {
         throw new Error('No se pudo obtener el Access Token de Google');
       }
-
-      const firebaseIdToken = await result.user.getIdToken();
 
       const loginResponse = await this.backService.loginWithGoogle(googleAccessToken).toPromise();
 
@@ -190,7 +199,8 @@ export class AuthService {
         displayName: result.user.displayName,
         token: loginResponse.token,
         userId: loginResponse.userId,
-        isNewUser: loginResponse.isNewUser
+        isNewUser: loginResponse.isNewUser,
+        idCompany: loginResponse.idCompany
       };
 
       this.currentUserSubject.next(authUser);
@@ -198,11 +208,22 @@ export class AuthService {
       localStorage.setItem('currentUser', JSON.stringify(authUser));
       localStorage.setItem('token', loginResponse.token);
 
-      return {
+      const response = {
         success: true,
         userId: loginResponse.userId,
-        isNewUser: loginResponse.isNewUser
+        isNewUser: loginResponse.isNewUser,
+        needsCompany: loginResponse.idCompany === null
       };
+
+      if (loginResponse.idCompany === null) {
+        setTimeout(() => {
+          this.router.navigate(['/companyregister'], {
+            queryParams: { userId: loginResponse.userId }
+          });
+        }, 0);
+      }
+
+      return response;
 
     } catch (error: any) {
       console.error('Error en login con Google:', error);
@@ -258,15 +279,6 @@ export class AuthService {
     }
   }
 
-  isAuthenticated(): boolean {
-    if (!isPlatformBrowser(this.platformId)) return false;
-
-    const token = localStorage.getItem('token');
-    const currentUser = this.currentUserSubject.value;
-    const user = localStorage.getItem('user');
-
-    return !!token && !!currentUser && !!user;
-  }
 
 
   getCurrentUser(): AuthUser | null {
@@ -342,18 +354,11 @@ export class AuthService {
 
 
   updateCompanyInfo(companyId: number): void {
-    if (typeof window !== 'undefined') {
-      const userData = localStorage.getItem('currentUser');
-      if (userData) {
-        try {
-          const user = JSON.parse(userData);
-          user.companyId = companyId;
-          localStorage.setItem('currentUser', JSON.stringify(user));
-          this.currentUserSubject.next(user);
-        } catch (e) {
-          console.error('Error al actualizar información de compañía', e);
-        }
-      }
+    const currentUser = this.currentUserSubject.value;
+    if (currentUser) {
+      const updatedUser = { ...currentUser, idCompany: companyId };
+      this.currentUserSubject.next(updatedUser);
+      localStorage.setItem('currentUser', JSON.stringify(updatedUser));
     }
   }
 

@@ -143,7 +143,7 @@ export class BackserviceService {
     });
 
     return this.http.post(`${environment.apiUrl}/api/auth/login/google`, {
-      accessToken: accessToken
+      access_token: accessToken
     }, { headers });
   }
 

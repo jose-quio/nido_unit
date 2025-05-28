@@ -30,7 +30,7 @@ export class CompanyRegisterComponent implements OnInit {
     private backService: BackserviceService,
     private authService: AuthService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.loadAuthData();
@@ -39,7 +39,7 @@ export class CompanyRegisterComponent implements OnInit {
   private loadAuthData(): void {
     this.userId = this.authService.getUserId();
     this.token = this.authService.getToken();
-    
+
     if (!this.userId || !this.token) {
       this.errorMessage = 'Error: No se pudo obtener la información de autenticación';
       setTimeout(() => {
@@ -68,7 +68,7 @@ export class CompanyRegisterComponent implements OnInit {
         throw new Error('No se recibió un ID válido de la compañía');
       }
 
-      const associationResponse = await this.backService.asociarUsuarioCompania(
+      await this.backService.asociarUsuarioCompania(
         this.userId,
         companyResponse.id,
         this.token
@@ -76,30 +76,23 @@ export class CompanyRegisterComponent implements OnInit {
 
       this.authService.updateCompanyInfo(companyResponse.id);
 
-      this.successMessage = 'Compañía registrada y asociada exitosamente. Redirigiendo...';
-      
+      this.successMessage = 'Compañía registrada exitosamente. Redirigiendo...';
+
       setTimeout(() => {
-        this.router.navigate(['/dashboard']); 
-      }, 2000);
+        this.router.navigate(['/apartamento']);
+      }, 1500);
 
     } catch (error: any) {
-      console.error('Error en el proceso de registro:', error);
+      console.error('Error en el registro:', error);
       this.errorMessage = this.handleError(error);
-      
-      if (error.status === 401) {
-        setTimeout(() => {
-          this.router.navigate(['/login']);
-        }, 2000);
-      }
     } finally {
       this.isLoading = false;
     }
   }
 
-
   private validateForm(): boolean {
-    if (!this.companyData.nombre || !this.companyData.direccion || 
-        !this.companyData.telefono || !this.companyData.ruc) {
+    if (!this.companyData.nombre || !this.companyData.direccion ||
+      !this.companyData.telefono || !this.companyData.ruc) {
       this.errorMessage = 'Por favor complete todos los campos';
       return false;
     }
