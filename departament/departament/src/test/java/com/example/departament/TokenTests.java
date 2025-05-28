@@ -57,7 +57,7 @@ public class TokenTests {
     void accesoDenegadoSinToken() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders
                         .get("/api/company"))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -67,7 +67,7 @@ public class TokenTests {
         mockMvc.perform(MockMvcRequestBuilders
                         .get("/api/company")
                         .header("Authorization", tokenFalso))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
     }
 }
 
