@@ -45,7 +45,19 @@ export class AuthService {
 
     const hasBasicAuth = !!token && !!currentUser && !!storedUser;
 
-    return hasBasicAuth;
+    const isCompanyRegisterRoute = window.location.pathname.includes('/companyregister');
+
+    return hasBasicAuth && (isCompanyRegisterRoute || currentUser?.idCompany !== null);
+  }
+
+  hasCompany(): boolean {
+    if (!isPlatformBrowser(this.platformId)) return false;
+
+    const currentUser = this.currentUserSubject.value;
+    const storedUser = localStorage.getItem('currentUser');
+
+    return !!currentUser?.idCompany ||
+      (!!storedUser && JSON.parse(storedUser)?.idCompany);
   }
 
   private initAuthState(): void {
@@ -204,7 +216,7 @@ export class AuthService {
       };
 
       this.currentUserSubject.next(authUser);
-      localStorage.setItem('isLoggedIn', 'true');
+
       localStorage.setItem('currentUser', JSON.stringify(authUser));
       localStorage.setItem('token', loginResponse.token);
 
@@ -216,14 +228,19 @@ export class AuthService {
       };
 
       if (loginResponse.idCompany === null) {
-        setTimeout(() => {
-          this.router.navigate(['/companyregister'], {
-            queryParams: { userId: loginResponse.userId }
-          });
-        }, 0);
+        this.router.navigate(['/companyregister'], {
+          queryParams: { userId: loginResponse.userId }
+        });
+      } else {        
+        this.router.navigate(['/apartamento']);
+        localStorage.setItem('isLoggedIn', 'true');
       }
 
-      return response;
+      return {
+        success: true,
+        userId: loginResponse.userId,
+        isNewUser: loginResponse.isNewUser
+      };
 
     } catch (error: any) {
       console.error('Error en login con Google:', error);

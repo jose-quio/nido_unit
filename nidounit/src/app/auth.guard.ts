@@ -7,29 +7,28 @@ import { isPlatformBrowser } from '@angular/common';
 export const authGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthService);
   const router = inject(Router);
-  const platformId = inject(PLATFORM_ID);
 
-  if (isPlatformBrowser(platformId)) {
-    if (authService.isAuthenticated()) {
+  if (state.url.includes('/companyregister')) {
+    if (authService.isAuthenticated() && !authService.hasCompany()) {
       return true;
     }
+    router.navigate(['/login']);
+    return false;
   }
 
   return authService.currentUser$.pipe(
     take(1),
     map(user => {
-      const isAuthenticated = authService.isAuthenticated();
-
-      if (isAuthenticated) {
+      if (authService.isAuthenticated() && authService.hasCompany()) {
         return true;
       }
 
-      if (isPlatformBrowser(platformId)) {
-        router.navigate(['/login'], {
-          queryParams: { returnUrl: state.url },
-          state: { from: state.url }
-        });
+      if (authService.isAuthenticated() && !authService.hasCompany()) {
+        router.navigate(['/companyregister']);
+        return false;
       }
+
+      router.navigate(['/login']);
       return false;
     })
   );

@@ -437,7 +437,7 @@
 </head>
 
 <body>
-  <div class="sidebar" [ngClass]="{'visible': authService.isAuthenticated(), 'hidden': !authService.isAuthenticated()}">
+  <div class="sidebar" [ngClass]="{'visible': authService.hasCompany(), 'hidden': !authService.hasCompany()}">
     <div class="sidebar-header">
       <a href="#" class="sidebar-logo">
         <i class="fas fa-building"></i>
@@ -489,13 +489,13 @@
     </div>
     <div>
       <button *ngIf="localStorage?.getItem('token')" (click)="logout()">
-  Cerrar sesión
-</button>
+        Cerrar sesión
+      </button>
     </div>
   </div>
 
   <div class="main-content"
-    [ngClass]="{'authenticated': authService.isAuthenticated(), 'login-page': !authService.isAuthenticated()}">
+    [ngClass]="{'authenticated': authService.hasCompany(), 'login-page': !authService.hasCompany()}">
     <div class="content-area">
       <router-outlet></router-outlet>
     </div>

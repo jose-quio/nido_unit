@@ -79,7 +79,10 @@ export class CompanyRegisterComponent implements OnInit {
       this.successMessage = 'Compañía registrada exitosamente. Redirigiendo...';
 
       setTimeout(() => {
+        
         this.router.navigate(['/apartamento']);
+        localStorage.setItem('isLoggedIn', 'true');
+        
       }, 1500);
 
     } catch (error: any) {
