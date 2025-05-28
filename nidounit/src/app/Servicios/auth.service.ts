@@ -2,7 +2,7 @@ import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { Router } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { Auth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged, User, updateProfile } from '@angular/fire/auth';
-import { Observable, BehaviorSubject, from, of } from 'rxjs';
+import { Observable, BehaviorSubject, from, of, map} from 'rxjs';
 import { switchMap, catchError, tap } from 'rxjs/operators';
 import { BackserviceService } from './backservice.service';
 
@@ -14,7 +14,8 @@ export interface AuthUser {
   token?: string;
   refreshToken?: string;
   userId?: number;
-  roles?: string[]; 
+  roles?: string[];
+  isNewUser?: boolean;
 }
 
 @Injectable({
@@ -45,12 +46,12 @@ export class AuthService {
               const authUser: AuthUser = {
                 uid: user.uid,
                 email: user.email,
-                displayName: user.displayName,                
+                displayName: user.displayName,
                 token: idToken,
                 refreshToken: user.refreshToken,
                 userId: response.userId
               };
-              this.currentUserSubject.next(authUser);              
+              this.currentUserSubject.next(authUser);
               localStorage.setItem('currentUser', JSON.stringify(authUser));
             },
             (error) => {
@@ -117,48 +118,48 @@ export class AuthService {
   }
 
   async registerWithEmailPassword(
-  username: string,
-  password: string,
-  nombre: string,
-  email: string
-): Promise<{ success: boolean, userId: number }> {
-  try {
-    const registerData = {
-      username,
-      password,
-      nombre,
-      email
-    };
-
-    const response = await this.backService.register(registerData).toPromise();
-
-    if (response && response.userId && response.token) {
-      const authUser: AuthUser = {
-        uid: response.userId.toString(), 
-        email: email,
-        displayName: nombre,
-        username: response.username || username,
-        token: response.token, 
-        refreshToken: '',
-        userId: response.userId,
-        roles: response.roles 
+    username: string,
+    password: string,
+    nombre: string,
+    email: string
+  ): Promise<{ success: boolean, userId: number }> {
+    try {
+      const registerData = {
+        username,
+        password,
+        nombre,
+        email
       };
 
-      localStorage.setItem('token', response.token); 
-      localStorage.setItem('currentUser', JSON.stringify(authUser));
+      const response = await this.backService.register(registerData).toPromise();
 
-      this.currentUserSubject.next(authUser);
+      if (response && response.userId && response.token) {
+        const authUser: AuthUser = {
+          uid: response.userId.toString(),
+          email: email,
+          displayName: nombre,
+          username: response.username || username,
+          token: response.token,
+          refreshToken: '',
+          userId: response.userId,
+          roles: response.roles
+        };
 
-      return { success: true, userId: response.userId };
+        localStorage.setItem('token', response.token);
+        localStorage.setItem('currentUser', JSON.stringify(authUser));
+
+        this.currentUserSubject.next(authUser);
+
+        return { success: true, userId: response.userId };
+      }
+
+      throw new Error('El registro fue exitoso pero no se recibieron todos los datos necesarios');
+
+    } catch (error: any) {
+      console.error('Error en registro:', error);
+      throw this.handleAuthError(error);
     }
-
-    throw new Error('El registro fue exitoso pero no se recibieron todos los datos necesarios');
-
-  } catch (error: any) {
-    console.error('Error en registro:', error);
-    throw this.handleAuthError(error);
   }
-}
 
   async loginWithGoogle(): Promise<{ success: boolean, userId?: number, isNewUser?: boolean }> {
     try {
@@ -166,17 +167,43 @@ export class AuthService {
       provider.addScope('email');
       provider.addScope('profile');
 
-      const credential = await signInWithPopup(this.auth, provider);
-      const idToken = await credential.user.getIdToken();
+      const result = await signInWithPopup(this.auth, provider);
 
-      const loginResponse = await this.backService.login(credential.user.email || '', idToken).toPromise();
+      const credential = GoogleAuthProvider.credentialFromResult(result);
+      if (!credential) {
+        throw new Error('No se pudo obtener las credenciales de Google');
+      }
 
-      await this.syncUserWithBackend(credential.user);
+      const googleAccessToken = credential.accessToken;
+      console.log("Access token obtenido: ", googleAccessToken);
+      if (!googleAccessToken) {
+        throw new Error('No se pudo obtener el Access Token de Google');
+      }
+
+      const firebaseIdToken = await result.user.getIdToken();
+
+      const loginResponse = await this.backService.loginWithGoogle(googleAccessToken).toPromise();
+
+      const authUser: AuthUser = {
+        uid: result.user.uid,
+        email: result.user.email,
+        displayName: result.user.displayName,
+        token: loginResponse.token,
+        userId: loginResponse.userId,
+        isNewUser: loginResponse.isNewUser
+      };
+
+      this.currentUserSubject.next(authUser);
+      localStorage.setItem('isLoggedIn', 'true');
+      localStorage.setItem('currentUser', JSON.stringify(authUser));
+      localStorage.setItem('token', loginResponse.token);
 
       return {
         success: true,
-
+        userId: loginResponse.userId,
+        isNewUser: loginResponse.isNewUser
       };
+
     } catch (error: any) {
       console.error('Error en login con Google:', error);
       throw this.handleAuthError(error);
@@ -204,30 +231,18 @@ export class AuthService {
 
 
 
-  refreshToken(): Observable<boolean> {
-    const currentUser = this.currentUserSubject.value;
-    if (!currentUser?.refreshToken) {
-      return of(false);
-    }
-
-    return this.backService.refreshToken(currentUser.refreshToken).pipe(
-      tap((response: any) => {
-        if (response.token) {
-          const updatedUser = {
-            ...currentUser,
-            token: response.token,
-            refreshToken: response.refreshToken || currentUser.refreshToken
-          };
-          this.currentUserSubject.next(updatedUser);
-          localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+  refreshToken(): Observable<string | null> {
+    return this.backService.refreshToken().pipe(
+      map(response => {
+        if (response?.token) {
+          localStorage.setItem('token', response.token);
+          return response.token;
         }
-      }),
-      switchMap(() => of(true)),
-      catchError(() => {
-        return of(false);
+        return null;
       })
     );
   }
+
 
   private loadUserFromStorage(): void {
     if (isPlatformBrowser(this.platformId)) {
@@ -244,14 +259,14 @@ export class AuthService {
   }
 
   isAuthenticated(): boolean {
-  if (!isPlatformBrowser(this.platformId)) return false;
+    if (!isPlatformBrowser(this.platformId)) return false;
 
-  const token = localStorage.getItem('token');
-  const currentUser = this.currentUserSubject.value;
-  const user = localStorage.getItem('user');
+    const token = localStorage.getItem('token');
+    const currentUser = this.currentUserSubject.value;
+    const user = localStorage.getItem('user');
 
-  return !!token && !!currentUser && !!user;
-}
+    return !!token && !!currentUser && !!user;
+  }
 
 
   getCurrentUser(): AuthUser | null {
@@ -263,16 +278,8 @@ export class AuthService {
   }
 
   getToken(): string | null {
-    if (isPlatformBrowser(this.platformId)) {
-      const userData = localStorage.getItem('currentUser');
-      if (userData) {
-        try {
-          const user = JSON.parse(userData);
-          return user.token || null;
-        } catch {
-          return null;
-        }
-      }
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('token');
     }
     return null;
   }
@@ -348,5 +355,15 @@ export class AuthService {
         }
       }
     }
+  }
+
+  logout(): void {
+    localStorage.removeItem('token');
+    localStorage.removeItem('currentUser');
+    localStorage.removeItem('isLoggedIn');
+
+    this.backService.logout().subscribe();
+
+    this.router.navigate(['/login']);
   }
 }

@@ -32,7 +32,6 @@ export class UrlserviceService {
   public apiUrlGetPropietarios = `${this.baseUrl}/api/propietario`;
   public apiUrlUpdatePropietario = `${this.baseUrl}/api/propietario`;
   public apiUrlDeletePropietario = `${this.baseUrl}/api/propietario`;
-
   public apiUrlGetEdificioSimple = `${this.baseUrl}/api/edificio/EdificioSimple`;
   public apiUrlAsignarDepa = `${this.baseUrl}/api/propietario`;
 
@@ -41,10 +40,12 @@ export class UrlserviceService {
   public apiUrlRegister = `${this.baseUrl}/api/auth/register`;
   public apiUrlSyncUser = `${this.baseUrl}/api/auth/sync-user`;
   public apiUrlValidateToken = `${this.baseUrl}/api/auth/validate-token`;
-  public apiUrlRefreshToken = `${this.baseUrl}/api/auth/refresh-token`;
+  public apiUrlRefreshToken = `${this.baseUrl}/api/auth/refresh`;
+  public apiUrlLogout = `${this.baseUrl}/api/auth/logout`;
 
   // ENDPOINTS DE COMPAÑÍA
   public apiUrlRegistrarCompania = `${this.baseUrl}/api/company`;
   public apiUrlGetCompanias = `${this.baseUrl}/api/company`;
   public apiUrlGetCompaniaByUser = `${this.baseUrl}/api/users`;
+  
 }

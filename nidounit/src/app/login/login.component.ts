@@ -92,32 +92,32 @@ export class LoginComponent implements OnInit {
     return 'Error al iniciar sesión. Intenta nuevamente';
   }
   async onRegister(): Promise<void> {
-  if (!this.validateRegisterForm()) return;
+    if (!this.validateRegisterForm()) return;
 
-  this.isLoading = true;
-  this.clearMessages();
+    this.isLoading = true;
+    this.clearMessages();
 
-  try {
-    const result = await this.authService.registerWithEmailPassword(
-      this.registerData.username,
-      this.registerData.password,
-      this.registerData.nombre,
-      this.registerData.email
-    );
+    try {
+      const result = await this.authService.registerWithEmailPassword(
+        this.registerData.username,
+        this.registerData.password,
+        this.registerData.nombre,
+        this.registerData.email
+      );
 
-    if (result.success) {
-      this.successMessage = 'Registro exitoso. Redirigiendo al registro de compañía...';
-      
-      await this.router.navigate(['/companyregister'], {
-        queryParams: { userId: result.userId }
-      });
+      if (result.success) {
+        this.successMessage = 'Registro exitoso. Redirigiendo al registro de compañía...';
+
+        await this.router.navigate(['/companyregister'], {
+          queryParams: { userId: result.userId }
+        });
+      }
+    } catch (error: any) {
+      this.errorMessage = this.getUserFriendlyError(error);
+    } finally {
+      this.isLoading = false;
     }
-  } catch (error: any) {
-    this.errorMessage = this.getUserFriendlyError(error);
-  } finally {
-    this.isLoading = false;
   }
-}
 
   async onGoogleLogin(): Promise<void> {
     this.isLoading = true;
@@ -129,19 +129,15 @@ export class LoginComponent implements OnInit {
       this.successMessage = 'Login con Google exitoso';
 
       if (result.isNewUser && result.userId) {
-        setTimeout(() => {
-          this.router.navigate(['/company-register'], {
-            queryParams: { userId: result.userId }
-          });
-        }, 1500);
+        await this.router.navigate(['/companyregister'], {
+          queryParams: { userId: result.userId }
+        });
       } else {
-        setTimeout(() => {
-          this.router.navigateByUrl(this.returnUrl);
-        }, 1000);
+        await this.router.navigateByUrl(this.returnUrl);
       }
 
     } catch (error: any) {
-      this.errorMessage = error;
+      this.errorMessage = this.getUserFriendlyError(error);
     } finally {
       this.isLoading = false;
     }

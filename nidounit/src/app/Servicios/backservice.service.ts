@@ -122,8 +122,29 @@ export class BackserviceService {
     return this.http.post(this.urlService.apiUrlValidateToken, { token });
   }
 
-  refreshToken(refreshToken: string): Observable<any> {
-    return this.http.post(this.urlService.apiUrlRefreshToken, { refreshToken });
+  refreshToken(): Observable<{ token: string }> {
+    return this.http.post<{ token: string }>(
+      this.urlService.apiUrlRefreshToken,
+      {},
+      { withCredentials: true }
+    );
+  }
+
+  logout(): Observable<any> {
+    return this.http.post(
+      this.urlService.apiUrlLogout,
+      {},
+      { withCredentials: true }
+    );
+  }
+  loginWithGoogle(accessToken: string): Observable<any> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json'
+    });
+
+    return this.http.post(`${environment.apiUrl}/api/auth/login/google`, {
+      accessToken: accessToken
+    }, { headers });
   }
 
 
@@ -145,7 +166,7 @@ export class BackserviceService {
     });
 
     return this.http.put(
-      `${this.baseUrl}/users/${userId}/company/${companyId}`,
+      `${this.baseUrl}/api/users/${userId}/company/${companyId}`,
       { companyId },
       { headers }
     );
@@ -159,4 +180,5 @@ export class BackserviceService {
     const url = `${this.urlService.apiUrlGetCompaniaByUser}/${userId}/company`;
     return this.http.get<any>(url);
   }
+
 }
