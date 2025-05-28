@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { catchError, map, Observable, of } from 'rxjs';
 import { UrlserviceService } from './urlservice.service';
 import { AuthUser } from './auth.service';
 import { environment } from '../../enviroments/environment.staging';
@@ -130,11 +130,24 @@ export class BackserviceService {
     );
   }
 
+
   logout(): Observable<any> {
     return this.http.post(
       this.urlService.apiUrlLogout,
-      {},
-      { withCredentials: true }
+      {}, 
+      {
+        withCredentials: true, 
+        observe: 'response'
+      }
+    ).pipe(
+      map(response => {
+        console.log('Logout successful:', response.body);
+        return response.body;
+      }),
+      catchError(error => {
+        console.error('Error en logout:', error);
+        return of({ message: 'Logout completado localmente' });
+      })
     );
   }
   loginWithGoogle(accessToken: string): Observable<any> {

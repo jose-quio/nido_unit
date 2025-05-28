@@ -437,7 +437,8 @@
 </head>
 
 <body>
-  <div class="sidebar" [ngClass]="{'visible': authService.hasCompany(), 'hidden': !authService.hasCompany()}">
+  <div class="sidebar" [ngClass]="{'visible': (authService.currentUser$ | async)?.idCompany, 
+                 'hidden': !(authService.currentUser$ | async)?.idCompany}">
     <div class="sidebar-header">
       <a href="#" class="sidebar-logo">
         <i class="fas fa-building"></i>

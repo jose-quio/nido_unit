@@ -36,6 +36,7 @@ export class AuthService {
     this.initAuthState();
     this.loadUserFromStorage();
   }
+
   isAuthenticated(): boolean {
     if (!isPlatformBrowser(this.platformId)) return false;
 
@@ -108,6 +109,7 @@ export class AuthService {
     this.currentUserSubject.next(null);
     localStorage.removeItem('isLoggedIn');
     localStorage.removeItem('currentUser');
+    localStorage.removeItem('token');
   }
 
   private validateTokenWithBackend(token: string): Observable<any> {
@@ -267,8 +269,6 @@ export class AuthService {
     }
   }
 
-
-
   refreshToken(): Observable<string | null> {
     return this.backService.refreshToken().pipe(
       map(response => {
@@ -280,7 +280,6 @@ export class AuthService {
       })
     );
   }
-
 
   private loadUserFromStorage(): void {
     if (isPlatformBrowser(this.platformId)) {
@@ -295,8 +294,6 @@ export class AuthService {
       }
     }
   }
-
-
 
   getCurrentUser(): AuthUser | null {
     return this.currentUserSubject.value;
@@ -358,8 +355,11 @@ export class AuthService {
   }
 
   clearAuthData(): void {
+    this.currentUserSubject.next(null);
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    localStorage.removeItem('currentUser');
+    localStorage.removeItem('isLoggedIn');
   }
 
   getAuthData(): { token: string | null, user: any | null } {
@@ -368,7 +368,6 @@ export class AuthService {
       user: JSON.parse(localStorage.getItem('user') || 'null')
     };
   }
-
 
   updateCompanyInfo(companyId: number): void {
     const currentUser = this.currentUserSubject.value;
@@ -379,13 +378,31 @@ export class AuthService {
     }
   }
 
-  logout(): void {
-    localStorage.removeItem('token');
-    localStorage.removeItem('currentUser');
-    localStorage.removeItem('isLoggedIn');
+  async logout(): Promise<void> {
+    try {
+      this.currentUserSubject.next(null);
+      
+      localStorage.removeItem('token');
+      localStorage.removeItem('currentUser');
+      localStorage.removeItem('isLoggedIn');
+      localStorage.removeItem('user');
 
-    this.backService.logout().subscribe();
+      if (this.auth.currentUser) {
+        await signOut(this.auth);
+      }
 
-    this.router.navigate(['/login']);
+      this.backService.logout().subscribe({
+        next: () => console.log('Backend logout successful'),
+        error: (error) => console.warn('Backend logout failed, but local logout completed:', error)
+      });
+
+      this.router.navigate(['/login']);
+
+    } catch (error) {
+      console.error('Error durante logout:', error);
+      this.currentUserSubject.next(null);
+      localStorage.clear(); 
+      this.router.navigate(['/login']);
+    }
   }
 }

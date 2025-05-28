@@ -21,10 +21,6 @@ export class AppComponent {
   }
 
   logout(): void {
-    this.localStorage?.removeItem('token');
-    this.localStorage?.removeItem('user');
-    this.localStorage?.removeItem('isLoggedIn')
-    this.localStorage?.removeItem('currentUser')
-    this.router.navigate(['/login']);
+    this.authService.logout();
   }
 }
