@@ -40,8 +40,8 @@ public class WebSecurityConfig {
         return http
                 .cors(withDefaults())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST,"/api/auth/register").permitAll()
-                        .requestMatchers("/api/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/auth/**").permitAll()
+                        .requestMatchers("/api/auth/login","/api/auth/login/google","/api/auth/refresh","/api/auth/logout").permitAll()
                         .requestMatchers("/api/company/**").hasRole("ADMIN_COMPANY")
                         .requestMatchers("/api/users/**").hasRole("ADMIN_COMPANY")
                         .anyRequest().authenticated()

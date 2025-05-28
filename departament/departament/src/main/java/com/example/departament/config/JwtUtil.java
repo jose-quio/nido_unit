@@ -73,6 +73,26 @@ public class JwtUtil {
             throw e;
         }
     }
+    //refresh token
+    public String generateRefreshToken(User user) {
+        Claims claims = Jwts.claims().setSubject(user.getUsername());
+        claims.put("usuarioId", user.getId());
+
+        // 7 días de validez
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + TimeUnit.DAYS.toMillis(7));
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(now)
+                .setExpiration(expiryDate)
+                .signWith(SignatureAlgorithm.HS256, secret_key)
+                .compact();
+    }
+
+    public Claims parseToken(String token) {
+        return jwtParser.parseClaimsJws(token).getBody();
+    }
 
     public String getNombre(Claims claims) {
         return claims.getSubject();
