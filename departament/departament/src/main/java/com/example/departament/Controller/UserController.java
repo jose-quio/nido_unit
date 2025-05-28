@@ -69,7 +69,7 @@ public class UserController {
         // crear user
         User user = new User();
         user.setUsername(userDTO.getUsername());
-        user.setPassword("{noop}" + userDTO.getPassword()); // {noop} solo para desarrollo
+        user.setPassword(userDTO.getPassword()); // {noop} solo para desarrollo
         user.setNombre(userDTO.getNombre());
         user.setEmail(userDTO.getEmail());
         user.setCompany(company);

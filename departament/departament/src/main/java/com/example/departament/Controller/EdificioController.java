@@ -41,6 +41,11 @@ public class EdificioController {
         List<Edificio> edificios = edificioRepository.findAll();
         return ResponseEntity.ok(edificios);
     }
+    @GetMapping("/company/{companyId}")
+    public ResponseEntity<List<Edificio>> getEdificiosByCompanyId(@PathVariable Long companyId) {
+        List<Edificio> edificios = edificioRepository.findByCompanyId(companyId);
+        return ResponseEntity.ok(edificios);
+    }
 
     // READ ONE
     @GetMapping("/{id}")

@@ -10,6 +10,8 @@ public interface EdificioRepository extends JpaRepository<Edificio, Long> {
     @Query("SELECT e.id as id, e.nombre as nombre FROM Edificio e")
     List<EdificioProjection> findAllEdificiosSimplified();
 
+    List<Edificio> findByCompanyId(Long companyId);
+
     interface EdificioProjection {
         Long getId();
         String getNombre();

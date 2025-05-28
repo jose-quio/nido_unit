@@ -23,8 +23,11 @@ export class BackserviceService {
   }
 
   getApartamentos(): Observable<any[]> {
-    return this.http.get<any[]>(this.urlService.apiUrlGetApartamentos);
-  }
+  const companyId = localStorage.getItem('idCompany'); 
+  const url = `${this.urlService.apiUrlGetApartamentos}/company/${companyId}`; 
+  return this.http.get<any[]>(url);
+}
+
 
   eliminarApartamento(codigoApartamento: string): Observable<any> {
     return this.http.delete<any>(`${this.urlService.apiUrlDeleteApartamento}/${codigoApartamento}`);
@@ -191,7 +194,7 @@ export class BackserviceService {
       'Authorization': `Bearer ${token}`
     });
 
-    return this.http.post(`${this.baseUrl}/api/company`, companyData, { headers });
+    return this.http.post(`${this.baseUrl}/api/company`, companyData, { headers, withCredentials: true });
   }
 
   asociarUsuarioCompania(userId: number, companyId: number, token: string): Observable<any> {
@@ -203,7 +206,7 @@ export class BackserviceService {
     return this.http.put(
       `${this.baseUrl}/api/users/${userId}/company/${companyId}`,
       { companyId },
-      { headers }
+      { headers, withCredentials: true }
     );
   }
 
