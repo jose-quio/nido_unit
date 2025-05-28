@@ -75,7 +75,7 @@ public class JwtUtil {
     }
     //refresh token
     public String generateRefreshToken(User user) {
-        Claims claims = Jwts.claims().setSubject(user.getUsername());
+        Claims claims = Jwts.claims().setSubject(user.getEmail());
         claims.put("usuarioId", user.getId());
 
         // 7 días de validez
