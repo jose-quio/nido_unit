@@ -40,9 +40,9 @@ public class MyUserDetailsService implements UserDetailsService {
                 .map(rol ->"ROLE_" + rol.getNombre().name())
                 .collect(Collectors.toList());
 
-        String tk = jwtUtil.createToken(u, roles);
-        System.out.println("Token generado:");
-        System.out.println(tk);
+        //String tk = jwtUtil.createToken(u, roles);
+        //System.out.println("Token generado:");
+        //System.out.println(tk);
         return new MyUserPrincipal(u, roles);
     }
 }
