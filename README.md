@@ -43,4 +43,8 @@ Esta estrategia asegura:
 Versión: v1.0 (Primera versión estable)
 Fecha de publicación: 26 de abril de 2025
 
+
+Versión: v2.0 (Segunda versión estable)
+Fecha de publicación: 28 de mayo de 2025
+
 Para más información, consulte las Releases.
