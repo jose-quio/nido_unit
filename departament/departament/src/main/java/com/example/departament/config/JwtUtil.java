@@ -18,7 +18,7 @@ import jakarta.servlet.http.HttpServletRequest;
 @Component
 public class JwtUtil {
     private final String secret_key = "mysecretkey";
-    private long accessTokenValidity = 30 * 1000;
+    private long accessTokenValidity = 100 * 30 * 1000;
     private final JwtParser jwtParser;
     private final String TOKEN_HEADER = "Authorization";
     private final String TOKEN_PREFIX = "Bearer ";
