@@ -25,7 +25,7 @@ export class ContratosComponent implements OnInit {
     this.FormularioContrato = this.fb.group({
       tipo: ['', [Validators.required]],
       fechaInicio: ['', [Validators.required]],
-      numeroMeses: [''],
+      cantidadMeses: [''],
       departamentoId: ['', [Validators.required]],
       propietarioId: ['', [Validators.required]]
     });
@@ -46,8 +46,8 @@ export class ContratosComponent implements OnInit {
       const contratoData = {
         tipo: this.FormularioContrato.value.tipo,
         fechaInicio: this.FormularioContrato.value.fechaInicio,
-        numeroMeses: this.FormularioContrato.value.tipo === 'ALQUILER' ?
-          parseInt(this.FormularioContrato.value.numeroMeses) :
+        cantidadMeses: this.FormularioContrato.value.tipo === 'ALQUILER' ?
+          parseInt(this.FormularioContrato.value.cantidadMeses) :
           null,
         departamentoId: parseInt(this.FormularioContrato.value.departamentoId),
         propietarioId: parseInt(this.FormularioContrato.value.propietarioId)
@@ -119,8 +119,8 @@ export class ContratosComponent implements OnInit {
     const contratoActualizado = {
       tipo: contrato.tipo,
       fechaInicio: contrato.fechaInicio,
-      numeroMeses: contrato.tipo === 'ALQUILER' ?
-        parseInt(contrato.numeroMeses) :
+      cantidadMeses: contrato.tipo === 'ALQUILER' ?
+        parseInt(contrato.cantidadMeses) :
         null,
       departamentoId: parseInt(contrato.departamentoId),
       propietarioId: parseInt(contrato.propietarioId)
@@ -165,11 +165,11 @@ export class ContratosComponent implements OnInit {
 
   getEstadoContrato(contrato: any): string {
     if (contrato.tipo === 'VENTA') return 'finalizado';
-    if (!contrato.fechaInicio || !contrato.numeroMeses) return 'activo';
+    if (!contrato.fechaInicio || !contrato.cantidadMeses) return 'activo';
 
     const fechaInicio = new Date(contrato.fechaInicio);
     const fechaFin = new Date(fechaInicio);
-    fechaFin.setMonth(fechaFin.getMonth() + contrato.numeroMeses);
+    fechaFin.setMonth(fechaFin.getMonth() + contrato.cantidadMeses);
 
     return new Date() > fechaFin ? 'vencido' : 'activo';
   }
@@ -180,11 +180,11 @@ export class ContratosComponent implements OnInit {
     return date.toLocaleDateString('es-ES');
   }
 
-  calcularFechaFin(fechaInicio: string, numeroMeses: number): string {
-    if (!fechaInicio || !numeroMeses) return '';
+  calcularFechaFin(fechaInicio: string, cantidadMeses: number): string {
+    if (!fechaInicio || !cantidadMeses) return '';
 
     const fecha = new Date(fechaInicio);
-    fecha.setMonth(fecha.getMonth() + numeroMeses);
+    fecha.setMonth(fecha.getMonth() + cantidadMeses);
     return fecha.toLocaleDateString('es-ES');
   }
 
@@ -193,11 +193,11 @@ export class ContratosComponent implements OnInit {
       return 'finalizado';
     }
 
-    if (!contrato.fechaInicio || !contrato.numeroMeses) return 'activo';
+    if (!contrato.fechaInicio || !contrato.cantidadMeses) return 'activo';
 
     const fechaInicio = new Date(contrato.fechaInicio);
     const fechaFin = new Date(fechaInicio);
-    fechaFin.setMonth(fechaFin.getMonth() + contrato.numeroMeses);
+    fechaFin.setMonth(fechaFin.getMonth() + contrato.cantidadMeses);
 
     const hoy = new Date();
 
@@ -211,17 +211,17 @@ export class ContratosComponent implements OnInit {
   }
 
   onTipoChange(tipo: string): void {
-    const numeroMesesControl = this.FormularioContrato.get('numeroMeses');
+    const cantidadMesesControl = this.FormularioContrato.get('cantidadMeses');
 
     if (tipo === 'ALQUILER') {
-      numeroMesesControl?.setValidators([Validators.required, Validators.min(1)]);
-      numeroMesesControl?.setValue('');
+      cantidadMesesControl?.setValidators([Validators.required, Validators.min(1)]);
+      cantidadMesesControl?.setValue('');
     } else if (tipo === 'VENTA') {
-      numeroMesesControl?.clearValidators();
-      numeroMesesControl?.setValue(null);
+      cantidadMesesControl?.clearValidators();
+      cantidadMesesControl?.setValue(null);
     }
 
-    numeroMesesControl?.updateValueAndValidity();
+    cantidadMesesControl?.updateValueAndValidity();
   }
 
   tieneContratosAlquiler(): boolean {
