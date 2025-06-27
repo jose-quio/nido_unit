@@ -219,4 +219,22 @@ export class BackserviceService {
     return this.http.get<any>(url);
   }
 
+
+  //Contratos
+   getContratos(): Observable<any[]> {
+    return this.http.get<any[]>(this.urlService.apiUrlGetContratos);
+  }
+
+  postContrato(contrato: any): Observable<any> {
+    return this.http.post<any>(this.urlService.apiUrlPostContrato, contrato);
+  }
+
+  putContrato(id: number, contrato: any): Observable<any> {
+    return this.http.put<any>(`${this.urlService.apiUrlPutContrato}/${id}`, contrato);
+  }
+
+  deleteContrato(id: number): Observable<any> {
+    return this.http.delete<any>(`${this.urlService.apiUrlDeleteContrato}/${id}`);
+  }
+
 }
