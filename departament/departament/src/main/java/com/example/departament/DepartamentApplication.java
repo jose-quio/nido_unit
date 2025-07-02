@@ -9,7 +9,7 @@ public class DepartamentApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(DepartamentApplication.class, args);
 		System.out.println("Bienvenido");
-		//Implementación de Backend CI/CD
+		//Implementación del Backend CI/CD
 	}
 
 }
