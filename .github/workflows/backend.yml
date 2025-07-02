@@ -1,0 +1,32 @@
+name: Spring Boot CI - departament
+
+on:
+  push:
+    paths:
+      - 'departament/**'
+  pull_request:
+    paths:
+      - 'departament/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: departament/departament
+
+    steps:
+      - name: Clonar repositorio
+        uses: actions/checkout@v3
+
+      - name: Configurar Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Dar permisos a Maven Wrapper (si lo tienes)
+        run: chmod +x mvnw
+
+      - name: Compilar y testear
+        run: ./mvnw clean verify
