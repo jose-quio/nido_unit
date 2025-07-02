@@ -25,8 +25,8 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Dar permisos a Maven Wrapper (si lo tienes)
-        run: chmod +x mvnw
+      - name: Dar permisos a Gradle Wrapper
+        run: chmod +x gradlew
 
-      - name: Compilar y testear
-        run: ./mvnw clean verify
+      - name: Compilar y testear con Gradle
+        run: ./gradlew build
