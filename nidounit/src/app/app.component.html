@@ -437,6 +437,7 @@
 </head>
 
 <body>
+  <!-- Cambio de prueba para CI -->
   <div class="sidebar" [ngClass]="{'visible': (authService.currentUser$ | async)?.idCompany, 
                  'hidden': !(authService.currentUser$ | async)?.idCompany}">
     <div class="sidebar-header">
