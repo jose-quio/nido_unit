@@ -45,5 +45,5 @@ Fecha de publicación: 26 de abril de 2025
 
 Para más información, consulte las Releases.
 
-## CI test - disparo del workflow
+## CI test - Disparo del workflow
 
