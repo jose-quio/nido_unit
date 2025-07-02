@@ -38,7 +38,7 @@ export class AuthService {
     private backService: BackserviceService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
-    this.initAuthState();
+    //this.initAuthState();
     this.loadUserFromStorage();
     const initialName = isPlatformBrowser(this.platformId)
       ? localStorage.getItem('nameCompany')
