@@ -7,6 +7,7 @@ import { ApartamentoHabComponent } from './departamento/apartamento-hab.componen
 import { LoginComponent } from './login/login.component';
 import { authGuard } from './auth.guard';
 import { CompanyRegisterComponent } from './companyregister/companyregister.component';
+import { ContratosComponent } from './contratos/contratos.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -21,6 +22,7 @@ export const routes: Routes = [
       { path: 'propietario', component: PropietarioComponent },
       { path: 'pago', component: PagoComponent },
       { path: 'caja', component: CajaComponent },
+      { path: 'contrato', component: ContratosComponent },
       
     ]
   },

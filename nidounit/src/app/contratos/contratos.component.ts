@@ -25,9 +25,13 @@ export class ContratosComponent implements OnInit {
     this.FormularioContrato = this.fb.group({
       tipo: ['', [Validators.required]],
       fechaInicio: ['', [Validators.required]],
-      numeroMeses: ['', [Validators.required, Validators.min(1)]],
+      cantidadMeses: [''],
       departamentoId: ['', [Validators.required]],
       propietarioId: ['', [Validators.required]]
+    });
+
+    this.FormularioContrato.get('tipo')?.valueChanges.subscribe(tipo => {
+      this.onTipoChange(tipo);
     });
   }
 
@@ -42,7 +46,9 @@ export class ContratosComponent implements OnInit {
       const contratoData = {
         tipo: this.FormularioContrato.value.tipo,
         fechaInicio: this.FormularioContrato.value.fechaInicio,
-        numeroMeses: parseInt(this.FormularioContrato.value.numeroMeses),
+        cantidadMeses: this.FormularioContrato.value.tipo === 'ALQUILER' ?
+          parseInt(this.FormularioContrato.value.cantidadMeses) :
+          null,
         departamentoId: parseInt(this.FormularioContrato.value.departamentoId),
         propietarioId: parseInt(this.FormularioContrato.value.propietarioId)
       };
@@ -51,7 +57,7 @@ export class ContratosComponent implements OnInit {
         response => {
           console.log('Contrato creado exitosamente:', response);
           this.FormularioContrato.reset();
-          this.obtenerContratos(); // Actualizar la lista
+          this.obtenerContratos();
         },
         error => {
           console.error('Error al crear el contrato:', error);
@@ -109,11 +115,13 @@ export class ContratosComponent implements OnInit {
 
   guardarEdicion(index: number): void {
     const contrato = this.contratos[index];
-    
+
     const contratoActualizado = {
       tipo: contrato.tipo,
       fechaInicio: contrato.fechaInicio,
-      numeroMeses: parseInt(contrato.numeroMeses),
+      cantidadMeses: contrato.tipo === 'ALQUILER' ?
+        parseInt(contrato.cantidadMeses) :
+        null,
       departamentoId: parseInt(contrato.departamentoId),
       propietarioId: parseInt(contrato.propietarioId)
     };
@@ -122,7 +130,7 @@ export class ContratosComponent implements OnInit {
       response => {
         console.log('Contrato actualizado exitosamente:', response);
         this.editingRowIndex = -1;
-        this.obtenerContratos(); // Actualizar la lista
+        this.obtenerContratos();
       },
       error => {
         console.error('Error al actualizar el contrato:', error);
@@ -133,11 +141,11 @@ export class ContratosComponent implements OnInit {
   eliminar(index: number): void {
     if (confirm('¿Está seguro de que desea eliminar este contrato?')) {
       const contratoId = this.contratos[index].id;
-      
+
       this.miServicio.deleteContrato(contratoId).subscribe(
         response => {
           console.log('Contrato eliminado exitosamente:', response);
-          this.obtenerContratos(); // Actualizar la lista
+          this.obtenerContratos();
         },
         error => {
           console.error('Error al eliminar el contrato:', error);
@@ -145,15 +153,25 @@ export class ContratosComponent implements OnInit {
       );
     }
   }
-
-  obtenerNombreDepartamento(departamentoId: number): string {
+  getDepartamentoInfo(departamentoId: number): string {
     const departamento = this.departamentosDisponibles.find(d => d.id === departamentoId);
-    return departamento ? (departamento.nombre || `Depto ${departamento.id}`) : `ID: ${departamentoId}`;
+    return departamento ? `${departamento.numero} (${departamento.edificio?.nombre})` : `${departamentoId}`;
   }
 
-  obtenerNombrePropietario(propietarioId: number): string {
+  getPropietarioInfo(propietarioId: number): string {
     const propietario = this.propietarios.find(p => p.id === propietarioId);
-    return propietario ? `${propietario.nombre} ${propietario.apellido}` : `ID: ${propietarioId}`;
+    return propietario ? `${propietario.nombres} ${propietario.apellidos}` : `${propietarioId}`;
+  }
+
+  getEstadoContrato(contrato: any): string {
+    if (contrato.tipo === 'VENTA') return 'finalizado';
+    if (!contrato.fechaInicio || !contrato.cantidadMeses) return 'activo';
+
+    const fechaInicio = new Date(contrato.fechaInicio);
+    const fechaFin = new Date(fechaInicio);
+    fechaFin.setMonth(fechaFin.getMonth() + contrato.cantidadMeses);
+
+    return new Date() > fechaFin ? 'vencido' : 'activo';
   }
 
   formatearFecha(fecha: string): string {
@@ -162,23 +180,27 @@ export class ContratosComponent implements OnInit {
     return date.toLocaleDateString('es-ES');
   }
 
-  calcularFechaFin(fechaInicio: string, numeroMeses: number): string {
-    if (!fechaInicio || !numeroMeses) return '';
-    
+  calcularFechaFin(fechaInicio: string, cantidadMeses: number): string {
+    if (!fechaInicio || !cantidadMeses) return '';
+
     const fecha = new Date(fechaInicio);
-    fecha.setMonth(fecha.getMonth() + numeroMeses);
+    fecha.setMonth(fecha.getMonth() + cantidadMeses);
     return fecha.toLocaleDateString('es-ES');
   }
 
   obtenerEstadoContrato(contrato: any): string {
-    if (!contrato.fechaInicio || !contrato.numeroMeses) return 'activo';
-    
+    if (contrato.tipo === 'VENTA') {
+      return 'finalizado';
+    }
+
+    if (!contrato.fechaInicio || !contrato.cantidadMeses) return 'activo';
+
     const fechaInicio = new Date(contrato.fechaInicio);
     const fechaFin = new Date(fechaInicio);
-    fechaFin.setMonth(fechaFin.getMonth() + contrato.numeroMeses);
-    
+    fechaFin.setMonth(fechaFin.getMonth() + contrato.cantidadMeses);
+
     const hoy = new Date();
-    
+
     if (hoy > fechaFin) {
       return 'vencido';
     } else if (hoy >= fechaInicio && hoy <= fechaFin) {
@@ -186,6 +208,24 @@ export class ContratosComponent implements OnInit {
     } else {
       return 'activo';
     }
+  }
+
+  onTipoChange(tipo: string): void {
+    const cantidadMesesControl = this.FormularioContrato.get('cantidadMeses');
+
+    if (tipo === 'ALQUILER') {
+      cantidadMesesControl?.setValidators([Validators.required, Validators.min(1)]);
+      cantidadMesesControl?.setValue('');
+    } else if (tipo === 'VENTA') {
+      cantidadMesesControl?.clearValidators();
+      cantidadMesesControl?.setValue(null);
+    }
+
+    cantidadMesesControl?.updateValueAndValidity();
+  }
+
+  tieneContratosAlquiler(): boolean {
+    return this.contratos.some(contrato => contrato.tipo === 'ALQUILER');
   }
 
   private markFormGroupTouched(): void {

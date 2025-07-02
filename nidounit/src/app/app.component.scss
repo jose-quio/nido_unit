@@ -8,7 +8,7 @@
     position: fixed;
     left: 0;
     top: 0;
-    width: 250px; 
+    width: 250px;
     height: 100vh;
 
     &.visible {
@@ -16,17 +16,76 @@
     }
 
     &.hidden {
-        display: none; 
+        display: none;
     }
 }
 
 .main-content {
     &.authenticated {
-        margin-left: 250px; 
+        margin-left: 250px;
     }
 
     &.login-page {
         margin-left: 0;
         width: 100%;
     }
+}
+
+.logout-btn {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 1rem 1.5rem;
+    background: linear-gradient(135deg, #26d0dc 0%, #ee2fde 100%);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.logout-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.logout-btn:hover::before {
+    left: 100%;
+}
+
+.logout-btn:hover {
+    background: linear-gradient(135deg, #cb5af8 0%, #32bbdd 100%);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(220, 38, 38, 0.4);
+}
+
+.logout-btn:active {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+}
+
+.logout-btn i {
+    font-size: 1.25rem;
+    margin-right: 1rem;
+    width: 24px;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+}
+
+.logout-btn .nav-text {
+    position: relative;
+    z-index: 1;
 }
