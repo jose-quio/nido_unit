@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { environment } from '../../enviroments/environment.staging';
+import { environment } from '../../environments/environment.staging';
 import { BackserviceService } from '../Servicios/backservice.service';
 
 
