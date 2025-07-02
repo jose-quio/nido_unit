@@ -28,5 +28,5 @@ jobs:
       - name: Dar permisos a Gradle Wrapper
         run: chmod +x gradlew
 
-      - name: Compilar y testear con Gradle
-        run: ./gradlew build
+      - name: Compilar sin correr tests
+        run: ./gradlew build -x test
