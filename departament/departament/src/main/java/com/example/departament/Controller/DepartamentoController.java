@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/apartamentos")
@@ -36,17 +37,27 @@ public class DepartamentoController {
 
     // CREATE asociado a edificio
     @PostMapping("/edificio/{edificioId}")
-    public ResponseEntity<Departamento> createApartamentoByEdificio(
+    public ResponseEntity<?> createApartamentoByEdificio(
             @PathVariable Long edificioId,
             @RequestBody Departamento apartamento) {
 
-        return edificioRepository.findById(edificioId)
-                .map(edificio -> {
-                    apartamento.setEdificio(edificio);
-                    Departamento savedApartamento = departamentoRepository.save(apartamento);
-                    return ResponseEntity.status(HttpStatus.CREATED).body(savedApartamento);
-                })
-                .orElse(ResponseEntity.notFound().build());
+        Optional<Edificio> edificioOpt = edificioRepository.findById(edificioId);
+
+        if(edificioOpt.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("El edificio no existe");
+        }
+
+        //validart el numero de departamento
+        boolean existeDuplicado = departamentoRepository.existsByNumeroAndEdificioId(apartamento.getNumero(),edificioId);
+
+        if(existeDuplicado){
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("Ya existe un departamento con el número '" + apartamento.getNumero() + "' en este edificio.");
+        }
+        apartamento.setEdificio(edificioOpt.get());
+        Departamento savedApartamento = departamentoRepository.save(apartamento);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedApartamento);
+
     }
 
     // READ ALL

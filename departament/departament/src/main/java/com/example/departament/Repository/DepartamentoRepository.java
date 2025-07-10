@@ -11,4 +11,6 @@ public interface DepartamentoRepository extends JpaRepository<Departamento, Long
 
     // Método para encontrar departamentos por ID de edificio
     List<Departamento> findByEdificioId(Long edificioId);
+
+    boolean existsByNumeroAndEdificioId(String numero,Long edificioId);
 }

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -63,7 +64,9 @@ public class EdificioController {
                     edificio.setNombre(edificioDetails.getNombre());
                     edificio.setDireccion(edificioDetails.getDireccion());
                     edificio.setNroPisos(edificioDetails.getNroPisos());
+                    edificio.setTipo(edificioDetails.getTipo());
                     edificio.setDescripcion(edificioDetails.getDescripcion());
+
                     Edificio updatedEdificio = edificioRepository.save(edificio);
                     return ResponseEntity.ok(updatedEdificio);
                 })
@@ -72,13 +75,22 @@ public class EdificioController {
 
     // DELETE
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteEdificio(@PathVariable Long id) {
-        return edificioRepository.findById(id)
-                .map(edificio -> {
-                    edificioRepository.delete(edificio);
-                    return ResponseEntity.noContent().<Void>build();
-                })
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<?> deleteEdificio(@PathVariable Long id) {
+        Optional<Edificio> edificioOpt = edificioRepository.findById(id);
+
+        if (edificioOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("El edificio que quieres eliminar no existe.");
+        }
+
+        List<Departamento> departamentos = departamentoRepository.findByEdificioId(id);
+        if (!departamentos.isEmpty()) {
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body("No se puede eliminar el edificio porque tiene departamentos asociados.");
+        }
+
+        edificioRepository.delete(edificioOpt.get());
+        return ResponseEntity.noContent().build();
     }
 
     // Obtener apartamentos de un edificio Eliminado
