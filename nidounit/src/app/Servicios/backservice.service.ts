@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { catchError, map, Observable, of, tap, throwError } from 'rxjs';
 import { UrlserviceService } from './urlservice.service';
 import { AuthUser } from './auth.service';
-import { environment } from '../../enviroments/environment.staging';
+import { environment } from '../../environments/environment.staging';
 
 @Injectable({
   providedIn: 'root'
@@ -217,6 +217,24 @@ export class BackserviceService {
   getCompaniaByUser(userId: number): Observable<any> {
     const url = `${this.urlService.apiUrlGetCompaniaByUser}/${userId}/company`;
     return this.http.get<any>(url);
+  }
+
+
+  //Contratos
+   getContratos(): Observable<any[]> {
+    return this.http.get<any[]>(this.urlService.apiUrlGetContratos);
+  }
+
+  postContrato(contrato: any): Observable<any> {
+    return this.http.post<any>(this.urlService.apiUrlPostContrato, contrato);
+  }
+
+  putContrato(id: number, contrato: any): Observable<any> {
+    return this.http.put<any>(`${this.urlService.apiUrlPutContrato}/${id}`, contrato);
+  }
+
+  deleteContrato(id: number): Observable<any> {
+    return this.http.delete<any>(`${this.urlService.apiUrlDeleteContrato}/${id}`);
   }
 
 }

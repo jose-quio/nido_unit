@@ -1,0 +1,31 @@
+name: Angular CI - nidounit
+
+on:
+  push:
+    paths:
+      - 'nidounit/**'
+  pull_request:
+    paths:
+      - 'nidounit/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: nidounit
+
+    steps:
+      - name: Clonar repositorio
+        uses: actions/checkout@v3
+
+      - name: Instalar Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Instalar dependencias
+        run: npm install
+
+      - name: Compilar Angular
+        run: npm run build -- --configuration=production

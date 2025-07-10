@@ -9,7 +9,7 @@ import {
 } from '@angular/common/http';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { getAuth, provideAuth } from '@angular/fire/auth';
-import { environment } from '../enviroments/environment';
+import { environment } from '../environments/environment';
 import { authInterceptor } from './interceptors/auth.interceptor';
 import { refreshTokenInterceptor } from './interceptors/refresh-token.interceptor';
 

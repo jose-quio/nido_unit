@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { environment } from '../../enviroments/environment.staging';
+import { environment } from '../../environments/environment.staging';
 import { BackserviceService } from '../Servicios/backservice.service';
 
 @Component({

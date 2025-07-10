@@ -38,7 +38,7 @@ export class AuthService {
     private backService: BackserviceService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
-    this.initAuthState();
+    //this.initAuthState();
     this.loadUserFromStorage();
     const initialName = isPlatformBrowser(this.platformId)
       ? localStorage.getItem('nameCompany')
@@ -149,6 +149,7 @@ export class AuthService {
 
     localStorage.setItem('isLoggedIn', 'true');
     localStorage.setItem('token', response.token);
+    
 
     const authUser: AuthUser = {
       uid: response.userId.toString(),
@@ -162,7 +163,9 @@ export class AuthService {
 
     this.currentUserSubject.next(authUser);
     localStorage.setItem('currentUser', JSON.stringify(authUser));
-
+    if (response.idCompany) {
+        localStorage.setItem('idCompany', response.idCompany.toString());
+      }
     return {
       token: response.token,
       userId: response.userId,

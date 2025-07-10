@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../enviroments/environment.staging';
+import { environment } from '../../environments/environment.staging';
 @Injectable({
   providedIn: 'root'
 })
@@ -48,4 +48,9 @@ export class UrlserviceService {
   public apiUrlGetCompanias = `${this.baseUrl}/api/company`;
   public apiUrlGetCompaniaByUser = `${this.baseUrl}/api/users`;
   
+  //ENDPOINTS DE CONTRATOS
+  public apiUrlGetContratos = `${this.baseUrl}/api/contratos`;
+  public apiUrlPostContrato = `${this.baseUrl}/api/contratos`;
+  public apiUrlPutContrato = `${this.baseUrl}/api/contratos`;
+  public apiUrlDeleteContrato = `${this.baseUrl}/api/contratos`;
 }
