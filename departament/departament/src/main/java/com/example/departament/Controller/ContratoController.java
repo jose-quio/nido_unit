@@ -138,6 +138,7 @@ public class ContratoController {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class ContratoResponseDTO {
+        private Long idContrato;
         private String nombrePropietario;
         private String numeroDepartamento;
         private Double montoTotal;
@@ -148,6 +149,7 @@ public class ContratoController {
 
     private ContratoResponseDTO mapToDTO(Contrato contrato) {
         return new ContratoResponseDTO(
+                contrato.getId(),
                 contrato.getPropietario().getNombres() + " " + contrato.getPropietario().getApellidos(),
                 contrato.getDepartamento().getNumero(),
                 contrato.getMontoTotal(),
