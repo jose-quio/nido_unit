@@ -30,4 +30,10 @@ public class Propietario {
     @ManyToMany(mappedBy = "propietarios",cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JsonIgnoreProperties({"propietarios"})
     private Set<Departamento> departamentos = new HashSet<>();
+
+    @ManyToOne
+    @JoinColumn(name = "company_id")
+    @JsonIgnoreProperties({"usuarios", "edificios"})
+    private Company company;
+
 }

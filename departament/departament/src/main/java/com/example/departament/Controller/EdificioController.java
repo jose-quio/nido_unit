@@ -56,6 +56,21 @@ public class EdificioController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/{id}/nroPisos")
+    public ResponseEntity<?> getPisosByEdificio(@PathVariable Long id) {
+        if (!edificioRepository.existsById(id)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("El edificio no existe");
+        }
+        Integer nroPisos = edificioRepository.findNroPisosById(id);
+
+        if (nroPisos == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("El edificio no tiene asignado la cantidad de pisos");
+        }
+        return ResponseEntity.ok(Map.of("nroPisos", nroPisos));
+    }
+
+
+
     // UPDATE
     @PutMapping("/{id}")
     public ResponseEntity<Edificio> updateEdificio(@PathVariable Long id, @RequestBody Edificio edificioDetails) {
@@ -112,6 +127,7 @@ public class EdificioController {
                     Map<String, Object> map = new HashMap<>();
                     map.put("id", e.getId());
                     map.put("nombre", e.getNombre());
+                    map.put("nroPisos", e.getNroPisos());
                     return map;
                 })
                 .collect(Collectors.toList());

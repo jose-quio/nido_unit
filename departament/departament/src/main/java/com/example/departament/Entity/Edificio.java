@@ -24,7 +24,7 @@ public class Edificio {
 
     private String nombre;
     private String direccion;
-    private String nroPisos;
+    private Integer nroPisos;
     private String tipo;
     private String descripcion;
 
@@ -58,11 +58,10 @@ public class Edificio {
         this.direccion = direccion;
     }
 
-    public String getNroPisos() {
-        return nroPisos;
-    }
+    public Integer getNroPisos() {
+        return nroPisos;}
 
-    public void setNroPisos(String nroPisos) {
+    public void setNroPisos(Integer nroPisos) {
         this.nroPisos = nroPisos;
     }
 
