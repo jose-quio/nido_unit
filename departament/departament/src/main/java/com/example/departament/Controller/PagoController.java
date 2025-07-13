@@ -1,10 +1,12 @@
 package com.example.departament.Controller;
 
 import com.example.departament.Entity.Pago;
+import com.example.departament.Repository.CompanyRepository;
 import com.example.departament.Repository.PagoRepository;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,10 +20,15 @@ import java.util.stream.Collectors;
 public class PagoController {
     @Autowired
     private PagoRepository pagoRepository;
+    @Autowired
+    private CompanyRepository companyRepository;
 
-    @GetMapping
-    public List<PagoDTO> listarPagos() {
-        return pagoRepository.findAll().stream()
+    @GetMapping("/company/{companyId}")
+    public ResponseEntity<?> listarPagos(@PathVariable Long companyId) {
+        if (!companyRepository.existsById(companyId)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Empresa no encontrada.");
+        }
+        List<PagoDTO> pagos = pagoRepository.findByCompanyId(companyId).stream()
                 .map(pago -> new PagoDTO(
                         pago.getId(),
                         pago.getMonto(),
@@ -31,6 +38,8 @@ public class PagoController {
                         pago.getContrato().getDepartamento().getNumero()
                 ))
                 .collect(Collectors.toList());
+
+        return ResponseEntity.ok(pagos);
     }
 
     @GetMapping("/por-estado")
