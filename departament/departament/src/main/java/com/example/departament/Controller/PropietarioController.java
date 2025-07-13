@@ -31,18 +31,21 @@ public class PropietarioController {
     // CREATE
     @PostMapping("company/{companyId}")
     public ResponseEntity<?> createPropietario(@PathVariable Long companyId, @RequestBody Propietario propietario) {
-        // Validar que el DNI no exista
-        if (propietarioRepository.existsByDni(propietario.getDni())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body("Ya existe un propietario con el DNI: " + propietario.getDni());
-        }
+
         // Verificar que la empresa exista
         Optional<Company> companyOpt = companyRepository.findById(companyId);
         if (companyOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("La empresa con ID " + companyId + " no existe.");
         }
-        propietario.setCompany(companyOpt.get());
+
+        Company company = companyOpt.get();
+        // Validar que el DNI no exista
+        if (propietarioRepository.existsByDniAndCompanyId(propietario.getDni(),companyId)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("Ya existe un propietario con el DNI: " + propietario.getDni()+ " en esta empresa");
+        }
+        propietario.setCompany(company);
         Propietario savedPropietario = propietarioRepository.save(propietario);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedPropietario);
     }
@@ -82,11 +85,18 @@ public class PropietarioController {
 
         return propietarioRepository.findById(id)
                 .map(propietario -> {
-                    // Validar que el nuevo DNI no esté asignado a otro propietario
-                    if (!propietario.getDni().equals(propietarioDetails.getDni()) &&
-                            propietarioRepository.existsByDni(propietarioDetails.getDni())) {
+                    // Obtener el companyId actual del propietario
+                    Long companyId = propietario.getCompany().getId();
+                    // Validar que el nuevo DNI no esté duplicado en la misma empresa,
+                    // excluyendo al mismo propietario
+                    boolean dniDuplicado = propietarioRepository
+                            .findByDniAndCompanyId(propietarioDetails.getDni(), companyId)
+                            .filter(p -> !p.getId().equals(propietario.getId()))
+                            .isPresent();
+
+                    if (dniDuplicado) {
                         return ResponseEntity.status(HttpStatus.CONFLICT)
-                                .body("Ya existe otro propietario con el DNI: " + propietarioDetails.getDni());
+                                .body("Ya existe otro propietario con el DNI: " + propietarioDetails.getDni() + " en esta empresa.");
                     }
                     propietario.setNombres(propietarioDetails.getNombres());
                     propietario.setApellidos(propietarioDetails.getApellidos());

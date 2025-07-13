@@ -11,9 +11,11 @@ public interface PropietarioRepository extends JpaRepository<Propietario, Long> 
     boolean existsById(Long id);
 
     // Comprobar si ya existe un propietario con un DNI dado
-    boolean existsByDni(String dni);
+    boolean existsByDniAndCompanyId(String dni,Long companyId);
 
     List<Propietario> findByCompanyId(Long companyId);
+
+    Optional<Propietario> findByDniAndCompanyId(String dni, Long companyId);
 
     // Comprobar si existe por correo
     boolean existsByCorreo(String correo);
