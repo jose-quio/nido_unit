@@ -23,4 +23,8 @@ public interface DepartamentoRepository extends JpaRepository<Departamento, Long
     @Query("SELECT d FROM Departamento d JOIN FETCH d.edificio WHERE d.id = :id")
     Optional<Departamento> findByIdWithEdificio(@Param("id") Long id);
 
+    @Query("SELECT d FROM Departamento d WHERE d.disponible = true AND d.edificio.company.id = :companyId")
+    List<Departamento> findDisponiblesByCompanyId(@Param("companyId") Long companyId);
+
+
 }

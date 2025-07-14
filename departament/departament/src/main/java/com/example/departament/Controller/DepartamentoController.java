@@ -124,10 +124,13 @@ public class DepartamentoController {
     }
 
     // Obtener departamentos disponibles
-    @GetMapping("/disponibles")
-    public ResponseEntity<List<Departamento>> getApartamentosDisponibles() {
+    @GetMapping("/disponibles/company/{companyId}")
+    public ResponseEntity<?> getApartamentosDisponibles(@PathVariable Long companyId) {
+        if(!companyRepository.existsById(companyId)){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Empresa no encontrada.");
+        }
         try {
-            List<Departamento> apartamentos = departamentoRepository.findByDisponibleTrue();
+            List<Departamento> apartamentos = departamentoRepository.findDisponiblesByCompanyId(companyId);
 
             if (apartamentos.isEmpty()) {
                 return ResponseEntity.noContent().build(); // 204

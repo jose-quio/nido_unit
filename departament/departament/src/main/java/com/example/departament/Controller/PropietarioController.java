@@ -56,17 +56,8 @@ public class PropietarioController {
         if (!companyRepository.existsById(companyId)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Empresa no encontrada.");
         }
-        List<PropietarioController.PropietarioDTO> propietarioDTOS = propietarioRepository.findByCompanyId(companyId).stream()
-                .map(propietario -> new PropietarioController.PropietarioDTO(
-                        propietario.getId(),
-                        propietario.getNombres(),
-                        propietario.getApellidos(),
-                        propietario.getDni(),
-                        propietario.getTelefono(),
-                        propietario.getCorreo()
-                ))
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(propietarioDTOS);
+        List<Propietario> propietarios = propietarioRepository.findByCompanyId(companyId);
+        return ResponseEntity.ok(propietarios);
     }
 
     // READ ONE

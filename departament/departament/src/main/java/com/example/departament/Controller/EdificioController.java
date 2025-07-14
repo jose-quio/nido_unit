@@ -43,7 +43,7 @@ public class EdificioController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("La empresa no existe.");
         }
-        // Validar que el DNI no exista
+        // Validar el nombre de edificio no exista
         if (edificioRepository.existsByNombreAndCompanyId(edificio.getNombre(),edificio.getCompany().getId())) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body("Ya existe un edificio con el nombre: " + edificio.getNombre()+ " en esta empresa");
