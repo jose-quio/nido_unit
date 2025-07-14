@@ -90,6 +90,7 @@ public class AuthController {
         // Añadir companyId solo si existe
         if (user.getCompany() != null) {
             response.put("idCompany", user.getCompany().getId());
+            response.put("nombreCompany", user.getCompany().getNombre());
         } else {
             response.put("idCompany", null);
         }
@@ -153,6 +154,7 @@ public class AuthController {
 
         if (savedUser.getCompany() != null) {
             response.put("idCompany", savedUser.getCompany().getId());
+            response.put("nombreCompany", user.getCompany().getNombre());
         } else {
             response.put("idCompany", null);
         }
@@ -224,6 +226,7 @@ public class AuthController {
         response.put("roles", roles);
         response.put("userId", user.getId());
         response.put("idCompany", user.getCompany() != null ? user.getCompany().getId() : null);
+        response.put("nombreCompany", user.getCompany() != null ? user.getCompany().getNombre() : null);
 
         return ResponseEntity.ok(response);
     }

@@ -18,7 +18,7 @@ public interface EdificioRepository extends JpaRepository<Edificio, Long> {
     @Query("SELECT e.nroPisos FROM Edificio e WHERE e.id = :id")
     Integer findNroPisosById(@Param("id") Long id);
 
-
+    boolean existsByNombreAndCompanyId(String nombre,Long companyId);
 
 
 

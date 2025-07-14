@@ -42,9 +42,17 @@ public class PagoController {
         return ResponseEntity.ok(pagos);
     }
 
-    @GetMapping("/por-estado")
-    public ResponseEntity<List<PagoDTO>> listarPorEstado(@RequestParam("estado") Pago.EstadoPago estado) {
-        List<PagoDTO> pagos = pagoRepository.findByEstado(estado).stream()
+    @GetMapping("/company/{companyId}/dni/{dni}")
+    public ResponseEntity<?> listarPagosPorDni(
+            @PathVariable Long companyId,
+            @PathVariable String dni) {
+
+        if (!companyRepository.existsById(companyId)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Empresa no encontrada.");
+        }
+
+        List<PagoDTO> pagos = pagoRepository.findByDniAndCompanyId(dni, companyId).stream()
                 .map(pago -> new PagoDTO(
                         pago.getId(),
                         pago.getMonto(),
@@ -68,9 +76,30 @@ public class PagoController {
         pago.setFechaPago(LocalDate.now());
         pagoRepository.save(pago);
 
-        return ResponseEntity.ok("Pago registrado con éxito.");
+        return ResponseEntity.status(HttpStatus.OK).body("Pago registrado con éxito.");
     }
 
+
+    // no implementado
+    @GetMapping("/company/{companyId}/por-estado")
+    public ResponseEntity<?> listarPorEstado(@PathVariable Long companyId,@RequestParam("estado") Pago.EstadoPago estado) {
+        if (!companyRepository.existsById(companyId)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Empresa no encontrada.");
+        }
+        List<PagoDTO> pagos = pagoRepository.findByEstado(estado).stream()
+                .map(pago -> new PagoDTO(
+                        pago.getId(),
+                        pago.getMonto(),
+                        pago.getPeriodo().toString(),
+                        pago.getEstado().name(),
+                        pago.getContrato().getPropietario().getNombres() + " " + pago.getContrato().getPropietario().getApellidos(),
+                        pago.getContrato().getDepartamento().getNumero()
+                ))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(pagos);
+    }
+    //no implementado
     @GetMapping("/por-contrato/{contratoId}")
     public ResponseEntity<List<PagoDTO>> listarPorContrato(@PathVariable Long contratoId) {
         List<PagoDTO> pagos = pagoRepository.findByContratoId(contratoId).stream()

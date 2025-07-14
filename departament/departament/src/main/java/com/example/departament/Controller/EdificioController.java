@@ -1,8 +1,10 @@
 package com.example.departament.Controller;
 
 
+import com.example.departament.Entity.Company;
 import com.example.departament.Entity.Departamento;
 import com.example.departament.Entity.Edificio;
+import com.example.departament.Repository.CompanyRepository;
 import com.example.departament.Repository.DepartamentoRepository;
 import com.example.departament.Repository.EdificioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,17 +23,31 @@ import java.util.stream.Collectors;
 public class EdificioController {
     private final EdificioRepository edificioRepository;
     private final DepartamentoRepository departamentoRepository;
+    private final CompanyRepository companyRepository;
 
     @Autowired
     public EdificioController(EdificioRepository edificioRepository,
-                              DepartamentoRepository departamentoRepository) {
+                              DepartamentoRepository departamentoRepository,
+                                CompanyRepository companyRepository) {
         this.edificioRepository = edificioRepository;
         this.departamentoRepository = departamentoRepository;
+        this.companyRepository = companyRepository;
     }
 
     // CREATE
     @PostMapping
-    public ResponseEntity<Edificio> createEdificio(@RequestBody Edificio edificio) {
+    public ResponseEntity<?> createEdificio(@RequestBody Edificio edificio) {
+        // Verificar que la empresa exista
+        Optional<Company> companyOpt = companyRepository.findById(edificio.getCompany().getId());
+        if (companyOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("La empresa no existe.");
+        }
+        // Validar que el DNI no exista
+        if (edificioRepository.existsByNombreAndCompanyId(edificio.getNombre(),edificio.getCompany().getId())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("Ya existe un edificio con el nombre: " + edificio.getNombre()+ " en esta empresa");
+        }
         Edificio savedEdificio = edificioRepository.save(edificio);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedEdificio);
     }

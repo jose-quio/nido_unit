@@ -128,6 +128,21 @@ public class UserController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/roles")
+    public ResponseEntity<List<Map<String, Object>>> listarRoles() {
+        List<Rol> roles = rolRepository.findAll();
+
+        // Convertimos los roles a un formato simplificado si no quieres enviar toda la entidad
+        List<Map<String, Object>> response = roles.stream().map(rol -> {
+            Map<String, Object> map = new HashMap<>();
+            map.put("id", rol.getId());
+            map.put("nombre", rol.getNombre().name());
+            return map;
+        }).collect(Collectors.toList());
+
+        return ResponseEntity.ok(response);
+    }
+
     public static class LoginRequest {
         private String username;
         private String password;
