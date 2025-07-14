@@ -92,7 +92,8 @@ public class ContratoController {
 
         // Guardar contrato primero
         Contrato contratoGuardado = contratoRepository.save(contrato);
-
+        departamento.setDisponible(false);
+        departamentoRepository.save(departamento);
 
         Company company = departamento.getEdificio().getCompany();
         // Generar pagos
