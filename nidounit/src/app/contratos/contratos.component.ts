@@ -11,6 +11,8 @@ import { AuthService } from '../Servicios/auth.service';
   templateUrl: './contratos.component.html',
   styleUrl: './contratos.component.scss'
 })
+
+
 export class ContratosComponent implements OnInit {
 
   FormularioContrato: FormGroup;
@@ -28,17 +30,30 @@ export class ContratosComponent implements OnInit {
       tipo: ['', [Validators.required]],
       fechaInicio: ['', [Validators.required, this.minDateValidator]],
       cantidadMeses: [''],
+      pagoFraccionado: [false],
       departamentoId: ['', [Validators.required]],
       propietarioId: ['', [Validators.required]]
     });
-
     this.FormularioContrato.get('tipo')?.valueChanges.subscribe(tipo => {
       const cantidadMesesControl = this.FormularioContrato.get('cantidadMeses');
+      const pagoFraccionadoControl = this.FormularioContrato.get('pagoFraccionado');
+
       if (tipo === 'ALQUILER') {
         cantidadMesesControl?.setValidators([Validators.required, Validators.min(1)]);
+        pagoFraccionadoControl?.setValue(false);
+        pagoFraccionadoControl?.disable();
+      } else if (tipo === 'VENTA') {
+        pagoFraccionadoControl?.enable();
+        if (!pagoFraccionadoControl?.value) {
+          cantidadMesesControl?.clearValidators();
+          cantidadMesesControl?.setValue(1);
+        }
       } else {
         cantidadMesesControl?.clearValidators();
+        pagoFraccionadoControl?.setValue(false);
+        pagoFraccionadoControl?.disable();
       }
+
       cantidadMesesControl?.updateValueAndValidity();
     });
   }
@@ -57,12 +72,21 @@ export class ContratosComponent implements OnInit {
 
   onSubmit(): void {
     if (this.FormularioContrato.valid) {
+      const tipo = this.FormularioContrato.value.tipo;
+      const pagoFraccionado = this.FormularioContrato.value.pagoFraccionado;
+
+      let cantidadMeses = 1;
+
+      if (tipo === 'ALQUILER') {
+        cantidadMeses = parseInt(this.FormularioContrato.value.cantidadMeses);
+      } else if (tipo === 'VENTA' && pagoFraccionado) {
+        cantidadMeses = parseInt(this.FormularioContrato.value.cantidadMeses);
+      }
+
       const contratoData = {
-        tipo: this.FormularioContrato.value.tipo,
+        tipo: tipo,
         fechaInicio: this.FormularioContrato.value.fechaInicio,
-        cantidadMeses: this.FormularioContrato.value.tipo === 'ALQUILER' ?
-          parseInt(this.FormularioContrato.value.cantidadMeses) :
-          null,
+        cantidadMeses: cantidadMeses,
         departamentoId: parseInt(this.FormularioContrato.value.departamentoId),
         propietarioId: parseInt(this.FormularioContrato.value.propietarioId)
       };
@@ -247,5 +271,32 @@ export class ContratosComponent implements OnInit {
       const control = this.FormularioContrato.controls[key];
       control.markAsTouched();
     });
+  }
+
+  onPagoFraccionadoChange(esFraccionado: boolean): void {
+    const cantidadMesesControl = this.FormularioContrato.get('cantidadMeses');
+
+    if (esFraccionado) {
+      cantidadMesesControl?.setValidators([Validators.required, Validators.min(1)]);
+      cantidadMesesControl?.setValue('');
+    } else {
+      cantidadMesesControl?.clearValidators();
+      cantidadMesesControl?.setValue(1);
+    }
+
+    cantidadMesesControl?.updateValueAndValidity();
+  }
+
+
+  getColClass(): string {
+    const tipo = this.FormularioContrato.get('tipo')?.value;
+    if (tipo === 'ALQUILER') {
+      return 'col-md-6';
+    } else if (tipo === 'VENTA' && this.FormularioContrato.get('pagoFraccionado')?.value) {
+      return 'col-md-12';
+    } else if (tipo === 'VENTA') {
+      return 'col-md-6';
+    }
+    return 'col-md-12';
   }
 }

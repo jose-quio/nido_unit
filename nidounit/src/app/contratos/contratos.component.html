@@ -333,26 +333,55 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-md-6" *ngIf="FormularioContrato.get('tipo')?.value === 'ALQUILER'">
+                    <!-- Campo para Ventas: Checkbox de pago fraccionado -->
+                    <div class="col-md-6" *ngIf="FormularioContrato.get('tipo')?.value === 'VENTA'">
                         <div class="input-group">
                             <span class="input-group-text">
-                                <i class="fas fa-clock me-2"></i>N° Meses
+                                <i class="fas fa-credit-card me-2"></i>Pago Fraccionado
                             </span>
-                            <input type="number" class="form-control" placeholder="Número de meses"
-                                formControlName="cantidadMeses" min="1">
-                        </div>
-                        <div *ngIf="FormularioContrato.get('cantidadMeses')?.invalid && (FormularioContrato.get('cantidadMeses')?.dirty || FormularioContrato.get('cantidadMeses')?.touched)"
-                            class="text-danger small mt-1">
-                            <div *ngIf="FormularioContrato.get('cantidadMeses')?.hasError('required')">
-                                El número de meses es requerido para alquileres
-                            </div>
-                            <div *ngIf="FormularioContrato.get('cantidadMeses')?.hasError('min')">
-                                Mínimo 1 mes
+                            <div class="form-control d-flex align-items-center">
+                                <input 
+                                    type="checkbox" 
+                                    class="form-check-input me-2" 
+                                    id="pagoFraccionado"
+                                    formControlName="pagoFraccionado"
+                                    #pagoFraccionadoRef
+                                    (change)="onPagoFraccionadoChange(pagoFraccionadoRef.checked)">
+                                <label class="form-check-label" for="pagoFraccionado">
+                                    ¿Desea fraccionar el pago?
+                                </label>
                             </div>
                         </div>
                     </div>
 
-                    <div [class]="FormularioContrato.get('tipo')?.value === 'ALQUILER' ? 'col-md-6' : 'col-md-12'">
+                    <!-- Campo para número de cuotas/meses (tanto para alquiler como venta fraccionada) -->
+                    <div class="col-md-6" *ngIf="FormularioContrato.get('tipo')?.value === 'ALQUILER' || 
+                                                  (FormularioContrato.get('tipo')?.value === 'VENTA' && FormularioContrato.get('pagoFraccionado')?.value)">
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="fas fa-clock me-2"></i>
+                                {{ FormularioContrato.get('tipo')?.value === 'ALQUILER' ? 'N° Meses' : 'N° Cuotas' }}
+                            </span>
+                            <input 
+                                type="number" 
+                                class="form-control" 
+                                [placeholder]="FormularioContrato.get('tipo')?.value === 'ALQUILER' ? 'Número de meses' : 'Número de cuotas'"
+                                formControlName="cantidadMeses" 
+                                min="1">
+                        </div>
+                        <div *ngIf="FormularioContrato.get('cantidadMeses')?.invalid && (FormularioContrato.get('cantidadMeses')?.dirty || FormularioContrato.get('cantidadMeses')?.touched)"
+                            class="text-danger small mt-1">
+                            <div *ngIf="FormularioContrato.get('cantidadMeses')?.hasError('required')">
+                                {{ FormularioContrato.get('tipo')?.value === 'ALQUILER' ? 'El número de meses es requerido' : 'El número de cuotas es requerido' }}
+                            </div>
+                            <div *ngIf="FormularioContrato.get('cantidadMeses')?.hasError('min')">
+                                {{ FormularioContrato.get('tipo')?.value === 'ALQUILER' ? 'Mínimo 1 mes' : 'Mínimo 1 cuota' }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Campo de departamento se ajusta según el espacio disponible -->
+                    <div [class]="getColClass()">
                         <div class="input-group">
                             <span class="input-group-text">
                                 <i class="fas fa-home me-2"></i>Departamento
@@ -456,26 +485,13 @@
                                 <span *ngIf="contrato.tipo !== 'ALQUILER'">N/A</span>
                             </td>
                             <td>
-                                <select *ngIf="isEditingRow(i)" [(ngModel)]="contrato.departamentoId"
-                                    class="edit-select">
-                                    <option *ngFor="let departamento of departamentosDisponibles"
-                                        [value]="departamento.id">
-                                        {{ departamento.numero }} ({{ departamento.edificio?.nombre }})
-                                    </option>
-                                </select>
-                                <span *ngIf="!isEditingRow(i)">
-                                    {{ getDepartamentoInfo(contrato.numeroDepartamento) }}
+                                <span>
+                                    {{ contrato.numeroDepartamento }}
                                 </span>
                             </td>
                             <td>
-                                <select *ngIf="isEditingRow(i)" [(ngModel)]="contrato.propietarioId"
-                                    class="edit-select">
-                                    <option *ngFor="let propietario of propietarios" [value]="propietario.id">
-                                        {{ propietario.nombres }} {{ propietario.apellidos }}
-                                    </option>
-                                </select>
-                                <span *ngIf="!isEditingRow(i)">
-                                    {{ getPropietarioInfo(contrato.nombrePropietario) }}
+                                <span>
+                                    {{ contrato.nombrePropietario}}
                                 </span>
                             </td>
                             <td>

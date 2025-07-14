@@ -15,7 +15,7 @@ export class PropietarioComponent {
   propietarios: any[] = [];
   isEditingRowIndexProp: number | null = null;
   departamentosDisponibles: any[] = [];
-
+  errorMessage: string | null = null;
 
   constructor(private miServicio: BackserviceService, public authService: AuthService) {
     this.obtenerPropietarios();
@@ -80,6 +80,8 @@ export class PropietarioComponent {
   }
 
   onSubmit() {
+    this.errorMessage = null; 
+
     if (this.FormularioPropietario.valid) {
       const departamentoId = Number(this.FormularioPropietario.value.departamentoId);
 
@@ -138,12 +140,19 @@ export class PropietarioComponent {
             message: registroError.message,
             error: registroError.error
           });
+
+          if (registroError.status === 409) {
+            this.errorMessage = 'Ya existe un propietario registrado con este DNI';
+          } else {
+            this.errorMessage = 'Error al registrar el propietario. Por favor intente nuevamente.';
+          }
         }
       });
     } else {
       console.warn('Formulario inválido. No se puede enviar.');
       console.log('Errores del formulario:', this.FormularioPropietario.errors);
       console.log('Valores actuales:', this.FormularioPropietario.value);
+      this.errorMessage = 'Por favor complete todos los campos requeridos correctamente';
     }
   }
 

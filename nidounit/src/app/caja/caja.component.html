@@ -1,11 +1,32 @@
-<h1>Vista <span class="badge text-bg-warning --bs-warning-border-subtle fs-2">Caja Ingresos</span>
-</h1>
+<div class="page-header">
+    <div class="container">
+        <h1 class="page-title">
+            <div class="title-icon">
+                <i class="fas fa-cash-register"></i>
+            </div>
+            Gestión de Caja
+        </h1>
+    </div>
+</div>
 <br>
-<!--<div class="nav-item" *ngIf="authService.canAccessSection('caja')">-->
+
 <div class="contenedor">
     <div class="caja-fuerte">
         <div class="puerta-caja">
-            <div class="num-capital">{{totalCapital}}</div>
+            <div class="datos-caja">
+                <div class="dato-caja ingreso">
+                    <i class="fas fa-arrow-up"></i>
+                    <span class="valor">{{totalIngresos | currency:'S/ '}}</span>
+                </div>
+                <div class="dato-caja gasto">
+                    <i class="fas fa-arrow-down"></i>
+                    <span class="valor">{{totalGastos | currency:'S/ '}}</span>
+                </div>
+                <div class="dato-caja utilidad">
+                    <i class="fas fa-coins"></i>
+                    <span class="valor">{{utilidad | currency:'S/ '}}</span>
+                </div>
+            </div>
         </div>
     </div>
 </div>

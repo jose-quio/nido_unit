@@ -10,7 +10,10 @@ interface Colaborador {
   username: string;
   nombre: string;
   email: string;
-  roles: string[];
+  roles: {
+    id: number;
+    nombre: string;
+  }[];
   activo: boolean;
   fechaRegistro: string;
   companyId: number;
@@ -60,12 +63,10 @@ export class ColaboradoresComponent implements OnInit {
       password: ['', [Validators.required, Validators.minLength(6)]],
       nombre: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
-      roleIds: [[], [this.atLeastOneRoleValidator]]
+      roleIds: [[]]
     });
   }
-  atLeastOneRoleValidator(control: AbstractControl): ValidationErrors | null {
-    return control.value && control.value.length > 0 ? null : { required: true };
-  }
+  
   ngOnInit(): void {
     this.cargarColaboradores();
   }

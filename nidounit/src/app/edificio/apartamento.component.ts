@@ -23,19 +23,22 @@ export class ApartamentoComponent {
   apartamentos: any[] = [];
   isEditing: boolean = false;
   isEditingRowIndex: number | null = null;
+  errorMessage: string | null = null;
 
   FormularioApartamento = new FormGroup({
-    nombre: new FormControl<string>('', [Validators.required]),  
+    nombre: new FormControl<string>('', [Validators.required]),
     direccion: new FormControl<string>('', [Validators.required]),
-    nroPisos: new FormControl<number | null>(null, [Validators.required]),  
+    nroPisos: new FormControl<number | null>(null, [Validators.required]),
     tipo: new FormControl<string>('residencial', [Validators.required]),
     descripcion: new FormControl<string>('')
-});
+  });
 
   onSubmit() {
+    this.errorMessage = null; 
+    
     if (this.FormularioApartamento.valid) {
       const idCompany = localStorage.getItem('idCompany');
-      
+
       if (!idCompany) {
         console.error('No se encontró idCompany en el localStorage');
         return;
@@ -47,7 +50,7 @@ export class ApartamentoComponent {
       };
 
       console.log('Enviando datos:', buildingData);
-      
+
       this.backService.registrarApartamento(buildingData)
         .subscribe({
           next: (response) => {
@@ -56,11 +59,17 @@ export class ApartamentoComponent {
             this.FormularioApartamento.reset({ tipo: 'residencial' });
           },
           error: (error) => {
-            console.error('Error al registrar:', error);
+            if (error.status === 409) {
+              this.errorMessage = 'Ya existe un edificio registrado con este nombre';
+            } else {
+              console.error('Error al registrar:', error);
+              this.errorMessage = 'Ocurrió un error al registrar el edificio';
+            }
           }
         });
     } else {
       console.warn('Formulario inválido', this.FormularioApartamento.errors);
+      this.errorMessage = 'Por favor complete todos los campos requeridos correctamente';
     }
 }
 

@@ -461,7 +461,10 @@
                         </div>
                     </div>
                 </div>
-
+                <div class="alert alert-danger mt-3" *ngIf="errorMessage">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    {{ errorMessage }}
+                </div>
                 <div class="text-center mt-3">
                     <button type="submit" class="btn-submit" [disabled]="FormularioApartamentoHab.invalid">
                         <i class="fas fa-save"></i>

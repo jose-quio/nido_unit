@@ -417,7 +417,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="row">
                     <div class="col-12">
                         <label class="form-label">
@@ -463,8 +463,6 @@
                             <th>Nombre</th>
                             <th>Email</th>
                             <th>Roles</th>
-                            <th>Estado</th>
-                            <th>Fecha Registro</th>
                             <th *ngIf="authService.hasRole('ADMIN_COMPANY')">Acciones</th>
                         </tr>
                     </thead>
@@ -484,18 +482,9 @@
                             </td>
                             <td>
                                 <span *ngFor="let role of colaborador.roles" class="role-badge"
-                                    [ngClass]="getRoleClass(role)">
-                                    {{ role }}
+                                    [ngClass]="getRoleClass(role.nombre)">
+                                    {{ role.nombre }}
                                 </span>
-                            </td>
-                            <td>
-                                <span class="status-badge"
-                                    [ngClass]="colaborador.activo ? 'status-active' : 'status-inactive'">
-                                    {{ colaborador.activo ? 'Activo' : 'Inactivo' }}
-                                </span>
-                            </td>
-                            <td>
-                                {{ colaborador.fechaRegistro | date:'dd/MM/yyyy' }}
                             </td>
                             <td *ngIf="authService.hasRole('ADMIN_COMPANY')">
                                 <div class="d-flex justify-content-center gap-1">

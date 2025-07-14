@@ -32,11 +32,6 @@ export const authGuard: CanActivateFn = (route, state) => {
       }
 
       if (allowedRoles && allowedRoles.length > 0) {
-        console.log('[AuthGuard] Verificando roles...');
-        console.log('[AuthGuard] Roles requeridos:', allowedRoles);
-        console.log('[AuthGuard] Roles del usuario:', user.roles);
-        console.log('[AuthGuard] Tipo de user.roles:', typeof user.roles);
-        console.log('[AuthGuard] Es array user.roles:', Array.isArray(user.roles));
 
         if (!user.roles || !Array.isArray(user.roles)) {
           console.log('[AuthGuard] Usuario no tiene roles válidos');

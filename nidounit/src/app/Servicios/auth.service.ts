@@ -17,6 +17,7 @@ export interface AuthUser {
   roles?: string[];
   isNewUser?: boolean;
   idCompany?: number | null;
+  nombreCompany?: string | null;
 }
 
 @Injectable({
@@ -85,10 +86,15 @@ export class AuthService {
                 displayName: user.displayName,
                 token: idToken,
                 refreshToken: user.refreshToken,
-                userId: response.userId
+                userId: response.userId,
+                nombreCompany: response.nombreCompany
               };
               this.currentUserSubject.next(authUser);
               localStorage.setItem('currentUser', JSON.stringify(authUser));
+
+              if (response.nombreCompany) {
+                this.setNameCompany(response.nombreCompany);
+              }
             },
             (error) => {
               console.error('Token validation failed:', error);
@@ -121,6 +127,9 @@ export class AuthService {
     localStorage.removeItem('isLoggedIn');
     localStorage.removeItem('currentUser');
     localStorage.removeItem('token');
+    localStorage.removeItem('nameCompany');
+    localStorage.removeItem('idCompany');
+    this.clearNameCompany();
   }
 
   private validateTokenWithBackend(token: string): Observable<any> {
@@ -140,6 +149,7 @@ export class AuthService {
     username: string;
     roles: string[];
     idCompany?: number;
+    nombreCompany?: string;
   }> {
     const response = await this.backService.login(email, password).toPromise();
 
@@ -150,7 +160,6 @@ export class AuthService {
     localStorage.setItem('isLoggedIn', 'true');
     localStorage.setItem('token', response.token);
 
-
     const authUser: AuthUser = {
       uid: response.userId.toString(),
       email: email,
@@ -158,20 +167,28 @@ export class AuthService {
       token: response.token,
       userId: response.userId,
       roles: response.roles,
-      idCompany: response.idCompany
+      idCompany: response.idCompany,
+      nombreCompany: response.nombreCompany
     };
 
     this.currentUserSubject.next(authUser);
     localStorage.setItem('currentUser', JSON.stringify(authUser));
+
     if (response.idCompany) {
       localStorage.setItem('idCompany', response.idCompany.toString());
     }
+
+    if (response.nombreCompany) {
+      this.setNameCompany(response.nombreCompany);
+    }
+
     return {
       token: response.token,
       userId: response.userId,
       username: response.username,
       roles: response.roles,
-      idCompany: response.idCompany
+      idCompany: response.idCompany,
+      nombreCompany: response.nombreCompany
     };
   }
 
@@ -200,12 +217,21 @@ export class AuthService {
           token: response.token,
           refreshToken: '',
           userId: response.userId,
-          roles: response.roles
+          roles: response.roles,
+          idCompany: response.idCompany,
+          nombreCompany: response.nombreCompany
         };
 
         localStorage.setItem('token', response.token);
         localStorage.setItem('currentUser', JSON.stringify(authUser));
-        localStorage.setItem('idCompany', response.idCompany);
+
+        if (response.idCompany) {
+          localStorage.setItem('idCompany', response.idCompany.toString());
+        }
+
+        if (response.nombreCompany) {
+          this.setNameCompany(response.nombreCompany);
+        }
 
         this.currentUserSubject.next(authUser);
 
@@ -248,7 +274,8 @@ export class AuthService {
         userId: loginResponse.userId,
         isNewUser: loginResponse.isNewUser,
         roles: loginResponse.roles,
-        idCompany: loginResponse.idCompany
+        idCompany: loginResponse.idCompany,
+        nombreCompany: loginResponse.nombreCompany
       };
 
       this.currentUserSubject.next(authUser);
@@ -256,8 +283,13 @@ export class AuthService {
       localStorage.setItem('currentUser', JSON.stringify(authUser));
       localStorage.setItem('token', loginResponse.token);
       localStorage.setItem('isLoggedIn', 'true');
+
       if (loginResponse.idCompany) {
-        localStorage.setItem('idCompany', loginResponse.idCompany);
+        localStorage.setItem('idCompany', loginResponse.idCompany.toString());
+      }
+
+      if (loginResponse.nombreCompany) {
+        this.setNameCompany(loginResponse.nombreCompany);
       }
 
       if (loginResponse.idCompany === null) {
@@ -330,6 +362,10 @@ export class AuthService {
         try {
           const user = JSON.parse(userData);
           this.currentUserSubject.next(user);
+
+          if (user.nombreCompany) {
+            this.setNameCompany(user.nombreCompany);
+          }
         } catch (e) {
           this.clearAuthData();
         }
@@ -354,6 +390,14 @@ export class AuthService {
 
   getUserId(): number | null {
     return this.currentUserSubject.value?.userId || null;
+  }
+
+  getCompanyName(): string | null {
+    return this.currentUserSubject.value?.nombreCompany || null;
+  }
+
+  getCompanyId(): number | null {
+    return this.currentUserSubject.value?.idCompany || null;
   }
 
   private handleAuthError(error: any): string {
@@ -402,6 +446,9 @@ export class AuthService {
     localStorage.removeItem('user');
     localStorage.removeItem('currentUser');
     localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('idCompany');
+    localStorage.removeItem('nameCompany');
+    this.clearNameCompany();
   }
 
   getAuthData(): { token: string | null, user: any | null } {
@@ -411,12 +458,20 @@ export class AuthService {
     };
   }
 
-  updateCompanyInfo(companyId: number): void {
+  updateCompanyInfo(companyId: number, companyName?: string): void {
     const currentUser = this.currentUserSubject.value;
     if (currentUser) {
-      const updatedUser = { ...currentUser, idCompany: companyId };
+      const updatedUser = {
+        ...currentUser,
+        idCompany: companyId,
+        nombreCompany: companyName || currentUser.nombreCompany
+      };
       this.currentUserSubject.next(updatedUser);
       localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+
+      if (companyName) {
+        this.setNameCompany(companyName);
+      }
     }
   }
 
@@ -431,6 +486,7 @@ export class AuthService {
       localStorage.removeItem('idCompany');
       localStorage.removeItem('nameCompany');
       this.clearNameCompany();
+
       if (this.auth.currentUser) {
         await signOut(this.auth);
       }
@@ -460,6 +516,7 @@ export class AuthService {
     }
     this.nameCompanySubject.next(value);
   }
+
   clearNameCompany(): void {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem('nameCompany');
@@ -478,22 +535,22 @@ export class AuthService {
   }
 
   canAccessSection(section: string): boolean {
-  const roles = this.getUserRoles();
-  
-  switch (section) {
-    case 'edificios':
-    case 'departamentos':
-    case 'caja':
-    case 'gastos':
-      return roles.includes('ADMIN_COMPANY');
-    
-    case 'propietarios':
-    case 'contratos':
-    case 'pagos':
-      return roles.includes('ADMIN_COMPANY') || roles.includes('MANAGER_EDIFICIO');
-    
-    default:
-      return false;
+    const roles = this.getUserRoles();
+
+    switch (section) {
+      case 'edificios':
+      case 'departamentos':
+      case 'caja':
+      case 'gastos':
+        return roles.includes('ADMIN_COMPANY');
+
+      case 'propietarios':
+      case 'contratos':
+      case 'pagos':
+        return roles.includes('ADMIN_COMPANY') || roles.includes('MANAGER_EDIFICIO');
+
+      default:
+        return false;
+    }
   }
-}
 }

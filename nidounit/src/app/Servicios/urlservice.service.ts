@@ -17,19 +17,19 @@ export class UrlserviceService {
   public apiUrlActualizarApartamento = `${this.baseUrl}/api/edificio`;
   //CRUD Habitaciones
   public apiUrlRegistrarApartamentoHab = `${this.baseUrl}/api/apartamentos`;
-  public apiUrlGetApartamentosHab = `${this.baseUrl}/api/apartamentos`;
+  public apiUrlGetApartamentosHab = `${this.baseUrl}/api/apartamentos/company`;
   public apiUrlUpdateApartamentoHab = `${this.baseUrl}/api/apartamentos`;
   public apiUrlDeleteApartamentoHab = `${this.baseUrl}/api/apartamentos`
   //Caja
-  public apiUrlGetTotalCapital = `${this.baseUrl}/api/capital`;
+  public apiUrlGetTotalCapital = `${this.baseUrl}/api/gastos/company`;
   public apiUrlGuardarPago = `${this.baseUrl}/api/caja`;
   //Pagos
-  public apiUrlGetPagosDNI = `${this.baseUrl}/api/pagos`;
+  public apiUrlGetPagosDNI = `${this.baseUrl}/api/pagos/company`;
   public apiUrlGetTodosPagos = `${this.baseUrl}/api/pagos`;
   //CRUD Propietarios
-  public apiUrlGetDepartamentosDisponibles = `${this.baseUrl}/api/apartamentos/disponibles`;
-  public apiUrlRegistrarPropietario = `${this.baseUrl}/api/propietario`;
-  public apiUrlGetPropietarios = `${this.baseUrl}/api/propietario`;
+  public apiUrlGetDepartamentosDisponibles = `${this.baseUrl}/api/apartamentos/disponibles/company`;
+  public apiUrlRegistrarPropietario = `${this.baseUrl}/api/propietario/company`;
+  public apiUrlGetPropietarios = `${this.baseUrl}/api/propietario/company`;
   public apiUrlUpdatePropietario = `${this.baseUrl}/api/propietario`;
   public apiUrlDeletePropietario = `${this.baseUrl}/api/propietario`;
   public apiUrlGetEdificioSimple = `${this.baseUrl}/api/edificio/EdificioSimple`;
@@ -49,14 +49,14 @@ export class UrlserviceService {
   public apiUrlGetCompaniaByUser = `${this.baseUrl}/api/users`;
   
   //ENDPOINTS DE CONTRATOS
-  public apiUrlGetContratos = `${this.baseUrl}/api/contratos`;
-  public apiUrlPostContrato = `${this.baseUrl}/api/contratos`;
+  public apiUrlGetContratos = `${this.baseUrl}/api/contratos/company`;
+  public apiUrlPostContrato = `${this.baseUrl}/api/contratos/company`;
   public apiUrlPutContrato = `${this.baseUrl}/api/contratos`;
   public apiUrlDeleteContrato = `${this.baseUrl}/api/contratos`;
 
   //ENDPOINTS DE COLABORADORES
   public apiUrlGuardarColaborador = `${this.baseUrl}/api/users`;
-  public apiUrlObtenerColaboradores = `${this.baseUrl}/api/users`;
+  public apiUrlObtenerColaboradores = `${this.baseUrl}/api/users/company`;
   public apiUrlEliminarColaborador = `${this.baseUrl}/api/users`;
   public apiUrlActualizarColaborador = `${this.baseUrl}/api/users`;
 

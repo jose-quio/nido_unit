@@ -13,7 +13,7 @@ export class BackserviceService {
 
   constructor(private http: HttpClient, private urlService: UrlserviceService) { }
 
-  // Operaciones de Apartamentos
+  // Operaciones de Edificios
   registrarApartamento(apartamento: any): Observable<any> {
     if (!apartamento.company?.id) {
       return throwError(() => new Error('ID de compañía no proporcionado'));
@@ -37,13 +37,14 @@ export class BackserviceService {
     return this.http.put<any>(`${this.urlService.apiUrlActualizarApartamento}/${codigoApartamento}`, apartamento);
   }
 
-  // Operaciones de Apartamento-Habitación
+  // Operaciones de Departamentos
   registrarApartamentoHab(apartamentoHab: any): Observable<any> {
     return this.http.post<any>(this.urlService.apiUrlRegistrarApartamentoHab, apartamentoHab);
   }
 
   getApartamentosHab(): Observable<any[]> {
-    return this.http.get<any[]>(this.urlService.apiUrlGetApartamentosHab);
+    const companyId = localStorage.getItem('idCompany');
+    return this.http.get<any[]>(`${this.urlService.apiUrlGetApartamentosHab}/${companyId}`);
   }
 
   actualizarApartamentoHab(codigoHabitacion: string, apartamentoHab: any): Observable<any> {
@@ -56,7 +57,8 @@ export class BackserviceService {
 
   // Operaciones de Caja
   getTotalCapital(): Observable<any> {
-    return this.http.get<any>(this.urlService.apiUrlGetTotalCapital);
+    const companyId = localStorage.getItem('idCompany');
+    return this.http.get<any>(`${this.urlService.apiUrlGetTotalCapital}/${companyId}/caja`);
   }
 
   guardarPago(pago: any): Observable<any> {
@@ -65,7 +67,8 @@ export class BackserviceService {
 
   // Operaciones de Pago
   getPagosDNI(dni: string): Observable<any> {
-    return this.http.get<any>(`${this.urlService.apiUrlGetPagosDNI}/${dni}`);
+    const companyId = localStorage.getItem('idCompany');
+    return this.http.get<any>(`${this.urlService.apiUrlGetPagosDNI}/${companyId}/dni/${dni}`);
   }
 
   getTodosLosPagos(): Observable<any[]> {
@@ -79,15 +82,18 @@ export class BackserviceService {
   }
   // Operaciones de propietario
   getDepartamentosDisponibles(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.urlService.apiUrlGetDepartamentosDisponibles}`);
+    const companyId = localStorage.getItem('idCompany');
+    return this.http.get<any[]>(`${this.urlService.apiUrlGetDepartamentosDisponibles}/${companyId}`);
   }
 
   registrarPropietario(propietario: any): Observable<any> {
-    return this.http.post<any>(this.urlService.apiUrlRegistrarPropietario, propietario);
+    const companyId = localStorage.getItem('idCompany');
+    return this.http.post<any>(`${this.urlService.apiUrlRegistrarPropietario}/${companyId}`, propietario);
   }
 
   getPropietarios(): Observable<any[]> {
-    return this.http.get<any[]>(this.urlService.apiUrlGetPropietarios);
+    const companyId = localStorage.getItem('idCompany');
+    return this.http.get<any[]>(`${this.urlService.apiUrlGetPropietarios}/${companyId}`);
   }
 
   actualizarPropietario(codigoPropietario: string, propietario: any): Observable<any> {
@@ -115,6 +121,7 @@ export class BackserviceService {
     username: string;
     roles: string[];
     idCompany: number;
+    nombreCompany: string;
   }> {
     return this.http.post<{
       token: string;
@@ -122,6 +129,7 @@ export class BackserviceService {
       username: string;
       roles: string[];
       idCompany: number;
+      nombreCompany: string;
     }>(
       this.urlService.apiUrlLogin,
       { email, password },
@@ -227,11 +235,13 @@ export class BackserviceService {
 
   //Contratos
   getContratos(): Observable<any[]> {
-    return this.http.get<any[]>(this.urlService.apiUrlGetContratos);
+    const companyId = localStorage.getItem('idCompany');
+    return this.http.get<any[]>(`${this.urlService.apiUrlGetContratos}/${companyId}`);
   }
 
   postContrato(contrato: any): Observable<any> {
-    return this.http.post<any>(this.urlService.apiUrlPostContrato, contrato);
+    const companyId = localStorage.getItem('idCompany');
+    return this.http.post<any>(`${this.urlService.apiUrlPostContrato}/${companyId}`, contrato);
   }
 
   putContrato(id: number, contrato: any): Observable<any> {
@@ -248,7 +258,8 @@ export class BackserviceService {
   }
 
   obtenerColaboradores(): Observable<any> {
-    return this.http.get(this.urlService.apiUrlObtenerColaboradores);
+    const companyId = localStorage.getItem('idCompany');
+    return this.http.get(`${this.urlService.apiUrlObtenerColaboradores}/${companyId}`);
   }
 
   eliminarColaborador(id: number): Observable<any> {

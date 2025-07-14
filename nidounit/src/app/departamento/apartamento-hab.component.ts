@@ -21,17 +21,18 @@ export class ApartamentoHabComponent {
   isEditingHab: boolean = false;
   isEditingRowIndexHab: number | null = null;
   apartamentos: any[] = [];
+  errorMessage: string | null = null;
 
   FormularioApartamentoHab = new FormGroup({
-    edificioId: new FormControl<number | null>(null, [Validators.required]), 
+    edificioId: new FormControl<number | null>(null, [Validators.required]),
     numero: new FormControl<string>('', [Validators.required]),
-    piso: new FormControl<string>('', [Validators.required, Validators.min(0)]), 
-    nroHabitaciones: new FormControl<string>('', [Validators.required, Validators.min(1)]), 
-    area: new FormControl<number | null>(null, [Validators.required, Validators.min(1)]), 
+    piso: new FormControl<string>('', [Validators.required, Validators.min(0)]),
+    nroHabitaciones: new FormControl<string>('', [Validators.required, Validators.min(1)]),
+    area: new FormControl<number | null>(null, [Validators.required, Validators.min(1)]),
     precioVenta: new FormControl<number | null>(null, [Validators.required, Validators.min(0.01)]),
     precioAlquiler: new FormControl<number | null>(null, [Validators.required, Validators.min(0.01)]),
     disponible: new FormControl<boolean>(true)
-});
+  });
 
   obtenerApartamentosHab() {
     this.miServicio.getApartamentosHab().subscribe(
@@ -48,7 +49,7 @@ export class ApartamentoHabComponent {
   obtenerApartamentos() {
     this.miServicio.getEdificioSimple().subscribe(
       (data) => {
-        this.apartamentos = data; 
+        this.apartamentos = data;
         console.log('Edificios obtenidos:', this.apartamentos);
       },
       (error) => {
@@ -58,10 +59,12 @@ export class ApartamentoHabComponent {
   }
 
   onSubmit() {
+    this.errorMessage = null; 
+
     if (this.FormularioApartamentoHab.valid) {
       const formData = {
         numero: this.FormularioApartamentoHab.value.numero,
-        piso: String(this.FormularioApartamentoHab.value.piso), 
+        piso: String(this.FormularioApartamentoHab.value.piso),
         nroHabitaciones: String(this.FormularioApartamentoHab.value.nroHabitaciones),
         area: Number(this.FormularioApartamentoHab.value.area),
         precioVenta: Number(this.FormularioApartamentoHab.value.precioVenta),
@@ -71,9 +74,9 @@ export class ApartamentoHabComponent {
           id: Number(this.FormularioApartamentoHab.value.edificioId)
         }
       };
-  
-      console.log('Datos a enviar:', formData); 
-  
+
+      console.log('Datos a enviar:', formData);
+
       this.miServicio.registrarApartamentoHab(formData)
         .subscribe(
           response => {
@@ -84,11 +87,17 @@ export class ApartamentoHabComponent {
             });
           },
           error => {
-            console.error('Error al registrar el departamento:', error);
+            if (error.status === 409) {
+              this.errorMessage = 'Ya existe un departamento con este número en el edificio seleccionado';
+            } else {
+              console.error('Error al registrar el departamento:', error);
+              this.errorMessage = 'Ocurrió un error al registrar el departamento';
+            }
           }
         );
     } else {
       console.warn('Formulario inválido', this.FormularioApartamentoHab.errors);
+      this.errorMessage = 'Por favor complete todos los campos requeridos correctamente';
     }
   }
 
@@ -134,5 +143,5 @@ export class ApartamentoHabComponent {
     }
   }
 
-  
+
 }
