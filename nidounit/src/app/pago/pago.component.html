@@ -1,42 +1,598 @@
-<h1>Formulario de  <span class="badge text-bg-warning --bs-warning-border-subtle fs-2">Pagos</span></h1>
-<br>
-<div class="input-group mb-3">
-    <span class="input-group-text" id="basic-addon1">DNI</span>
-    <input type="number" class="form-control" placeholder="DNI">
-    <button class="btn btn-info" (click)="buscar()">Buscar</button>
-</div>
-<form [formGroup]="FormularioPago" (ngSubmit)="onSubmit()">
-    <div class="input-group mb-3">
-        <span class="input-group-text" id="basic-addon1">Pago Mensual</span>
-        <input type="number" class="form-control" placeholder="Pago Mensual"  formControlName = "PagoMensual">
-    </div>
-    
-    <div class="input-group mb-3">
-        <span class="input-group-text" id="basic-addon1">Fecha de Pago</span>
-        <input type="date" class="form-control" placeholder="Fecha de Pago"  formControlName = "FechaPago">
-    </div>
-    <br>
-    <button type="submit"  class="btn btn-info">Registrar Pago</button>
-</form>
+<!DOCTYPE html>
+<html lang="es">
 
-<div class="apartamentos mt-4">
-    <h2 class="badge text-bg-warning custom-border fs-3 mb-3">Lista de Pagos Realizados</h2>
-    <table class="table table-striped table-bordered table-hover" style="width: 100%;">
-        <thead class="table-dark">
-        <tr>
-            <th>Id Pago</th>
-          <th>DNI</th>
-          <th>Pago Realizado</th>
-          <th>Fecha de Pago</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let pago of PagosMensuales">
-            <td>{{ pago.IdPago }}</td>
-          <td>{{ pago.DNI }}</td>
-          <td>{{ pago.PagoMensual }}</td>
-          <td>{{ pago.FechaPago | date }}</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Pagos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .title-icon {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 1rem;
+            border-radius: 15px;
+            font-size: 2rem;
+        }
+
+        .search-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            margin-bottom: 2rem;
+        }
+
+        .search-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .search-title i {
+            color: #3b82f6;
+        }
+
+        .table-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+        }
+
+        .table-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .table-title i {
+            color: #f59e0b;
+        }
+
+        .table-responsive {
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table thead th {
+            background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+            color: white;
+            border: none;
+            padding: 1rem 0.75rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .table tbody td {
+            padding: 1rem 0.75rem;
+            vertical-align: middle;
+            border-color: #f1f5f9;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .btn-action {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-search {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-search:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-clear {
+            background: #6b7280;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-clear:hover {
+            background: #4b5563;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-success:disabled {
+            background: #9ca3af;
+            color: #d1d5db;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .status-pendiente {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-pagado {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-vencido {
+            background: #fecaca;
+            color: #991b1b;
+        }
+
+        .modal-content {
+            border-radius: 20px;
+            border: none;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            border-radius: 20px 20px 0 0;
+            border-bottom: none;
+            padding: 1.5rem 2rem;
+        }
+
+        .modal-title {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .modal-footer {
+            border-top: 1px solid #e2e8f0;
+            padding: 1.5rem 2rem;
+        }
+
+        .btn-close {
+            filter: brightness(0) invert(1);
+        }
+
+        .btn-confirm {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-confirm:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-cancel {
+            background: #6b7280;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-cancel:hover {
+            background: #4b5563;
+            transform: translateY(-2px);
+        }
+
+        .btn-accept {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-accept:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        .payment-info {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .payment-info h6 {
+            color: #374151;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .payment-info p {
+            color: #6b7280;
+            margin-bottom: 0.5rem;
+        }
+
+        .payment-amount {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #10b981;
+        }
+
+        .loading-spinner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+            border-width: 0.3em;
+        }
+
+        .success-message {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .success-icon {
+            font-size: 4rem;
+            color: #10b981;
+        }
+
+        .success-text {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #10b981;
+        }
+
+        .form-control {
+            border-radius: 10px;
+            border: 2px solid #e2e8f0;
+            padding: 0.75rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+        }
+
+        .invalid-feedback {
+            display: block;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 3rem;
+            color: #6b7280;
+        }
+
+        .no-results i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #9ca3af;
+        }
+
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .search-card,
+            .table-card {
+                padding: 1rem;
+            }
+
+            .table-responsive {
+                font-size: 0.875rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page-header">
+        <div class="container">
+            <h1 class="page-title">
+                <div class="title-icon">
+                    <i class="fas fa-credit-card"></i>
+                </div>
+                Gestión de Pagos
+            </h1>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Formulario de Búsqueda -->
+        <div class="search-card">
+            <h2 class="search-title">
+                <i class="fas fa-search"></i>
+                Buscar Pagos por DNI
+            </h2>
+            
+            <form [formGroup]="formularioBusqueda" (ngSubmit)="buscarPagosPorDNI()">
+                <div class="row align-items-end">
+                    <div class="col-md-6">
+                        <label for="dni" class="form-label">DNI del Propietario</label>
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="dni" 
+                            formControlName="dni"
+                            placeholder="Ingrese el DNI (8 dígitos)"
+                            maxlength="8"
+                            [class.is-invalid]="formularioBusqueda.get('dni')?.invalid && formularioBusqueda.get('dni')?.touched">
+                        <div class="invalid-feedback" *ngIf="formularioBusqueda.get('dni')?.invalid && formularioBusqueda.get('dni')?.touched">
+                            <div *ngIf="formularioBusqueda.get('dni')?.errors?.['required']">
+                                El DNI es requerido
+                            </div>
+                            <div *ngIf="formularioBusqueda.get('dni')?.errors?.['pattern']">
+                                El DNI debe tener exactamente 8 dígitos
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex gap-2">
+                            <button 
+                                type="submit" 
+                                class="btn btn-search"
+                                [disabled]="formularioBusqueda.invalid || buscandoPagos">
+                                <i class="fas fa-search" *ngIf="!buscandoPagos"></i>
+                                <span class="spinner-border spinner-border-sm" *ngIf="buscandoPagos"></span>
+                                {{ buscandoPagos ? 'Buscando...' : 'Buscar' }}
+                            </button>
+                            <button 
+                                type="button" 
+                                class="btn btn-clear"
+                                (click)="limpiarBusqueda()"
+                                [disabled]="buscandoPagos">
+                                <i class="fas fa-times"></i>
+                                Limpiar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Tabla de Pagos -->
+        <div class="table-card">
+            <h2 class="table-title">
+                <i class="fas fa-list"></i>
+                <span *ngIf="!dniFiltrado">Lista de Pagos Mensuales</span>
+                <span *ngIf="dniFiltrado">Pagos para DNI: {{ dniFiltrado }}</span>
+            </h2>
+
+            <div *ngIf="PagosMensuales.length > 0" class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Monto</th>
+                            <th>Período</th>
+                            <th>Estado</th>
+                            <th>Propietario</th>
+                            <th>Departamento</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let pago of PagosMensuales">
+                            <td class="text-center">
+                                <strong>{{ pago.id }}</strong>
+                            </td>
+                            <td class="text-center">
+                                <span class="payment-amount">
+                                    S/. {{ pago.monto | number:'1.2-2' }}
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                {{ pago.periodo }}
+                            </td>
+                            <td class="text-center">
+                                <span class="status-badge" [ngClass]="'status-' + pago.estado.toLowerCase()">
+                                    {{ pago.estado | titlecase }}
+                                </span>
+                            </td>
+                            <td>
+                                {{ pago.nombrePropietario }}
+                            </td>
+                            <td class="text-center">
+                                <strong>{{ pago.numeroDepartamento }}</strong>
+                            </td>
+                            <td class="text-center">
+                                <button 
+                                    class="btn btn-success btn-action" 
+                                    [disabled]="pago.estado === 'PAGADO'"
+                                    (click)="abrirModalPago(pago)"
+                                    title="Procesar Pago">
+                                    <i class="fas fa-credit-card"></i>
+                                    <span *ngIf="pago.estado === 'PENDIENTE'">Pagar</span>
+                                    <span *ngIf="pago.estado === 'PAGADO'">Pagado</span>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div *ngIf="PagosMensuales.length === 0 && !buscandoPagos" class="no-results">
+                <i class="fas fa-search"></i>
+                <h4>No se encontraron pagos</h4>
+                <p>Utilice el formulario de búsqueda para encontrar pagos por DNI</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmación de Pago -->
+    <div class="modal fade" id="modalConfirmarPago" tabindex="-1" aria-labelledby="modalConfirmarPagoLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalConfirmarPagoLabel">
+                        <i class="fas fa-credit-card"></i>
+                        <span *ngIf="!pagoExitoso">Confirmar Pago</span>
+                        <span *ngIf="pagoExitoso">Pago Exitoso</span>
+                    </h5>
+                    <button 
+                        type="button" 
+                        class="btn-close" 
+                        data-bs-dismiss="modal" 
+                        aria-label="Close"
+                        *ngIf="!cargandoPago"
+                        (click)="cerrarModal()"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Información del pago -->
+                    <div class="payment-info" *ngIf="pagoSeleccionado && !pagoExitoso">
+                        <h6>Detalles del Pago</h6>
+                        <p><strong>ID:</strong> {{ pagoSeleccionado.id }}</p>
+                        <p><strong>Propietario:</strong> {{ pagoSeleccionado.nombrePropietario }}</p>
+                        <p><strong>Departamento:</strong> {{ pagoSeleccionado.numeroDepartamento }}</p>
+                        <p><strong>Período:</strong> {{ pagoSeleccionado.periodo }}</p>
+                        <p><strong>Monto:</strong> <span class="payment-amount">S/. {{ pagoSeleccionado.monto | number:'1.2-2' }}</span></p>
+                    </div>
+                    
+                    <!-- Estado de carga -->
+                    <div *ngIf="cargandoPago" class="loading-spinner">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                        <p class="text-center mb-0">Procesando pago...</p>
+                    </div>
+
+                    <!-- Confirmación inicial -->
+                    <div *ngIf="!cargandoPago && !pagoExitoso" class="text-center">
+                        <p>
+                            <i class="fas fa-question-circle text-warning fs-3"></i>
+                        </p>
+                        <p>
+                            ¿Está seguro de que desea procesar este pago?
+                        </p>
+                    </div>
+
+                    <!-- Mensaje de éxito -->
+                    <div *ngIf="pagoExitoso" class="success-message">
+                        <i class="fas fa-check-circle success-icon"></i>
+                        <p class="success-text">¡Pago realizado con éxito!</p>
+                        <p class="text-center text-muted">
+                            El pago ha sido procesado correctamente.
+                        </p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <!-- Botones de confirmación inicial -->
+                    <div *ngIf="!cargandoPago && !pagoExitoso">
+                        <button type="button" class="btn btn-cancel" (click)="cerrarModal()">
+                            <i class="fas fa-times"></i>
+                            Cancelar
+                        </button>
+                        <button type="button" class="btn btn-confirm" (click)="confirmarPago()">
+                            <i class="fas fa-check"></i>
+                            Confirmar Pago
+                        </button>
+                    </div>
+                    
+                    <!-- Botón de aceptar después del éxito -->
+                    <div *ngIf="pagoExitoso">
+                        <button type="button" class="btn btn-accept" (click)="aceptarPagoExitoso()">
+                            <i class="fas fa-check"></i>
+                            Aceptar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

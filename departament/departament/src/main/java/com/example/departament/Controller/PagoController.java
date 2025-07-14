@@ -5,6 +5,7 @@ import com.example.departament.Repository.PagoRepository;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -59,7 +60,7 @@ public class PagoController {
         pago.setFechaPago(LocalDate.now());
         pagoRepository.save(pago);
 
-        return ResponseEntity.ok("Pago registrado con éxito.");
+        return ResponseEntity.status(HttpStatus.OK).body("Pago registrado con éxito.");
     }
 
     @GetMapping("/por-contrato/{contratoId}")

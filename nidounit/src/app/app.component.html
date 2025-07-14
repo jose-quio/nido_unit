@@ -478,13 +478,27 @@
           </a>
         </div>
       </div>
-
+      <div class="nav-section" *ngIf="authService.hasRole('ADMIN_COMPANY')">
+        <div class="nav-section-title">Administración</div>
+        <div class="nav-item">
+          <a href="#" class="nav-link" routerLink="colaboradores">
+            <i class="fas fa-users-cog"></i>
+            <span class="nav-text">Colaboradores</span>
+          </a>
+        </div>
+      </div>
       <div class="nav-section">
         <div class="nav-section-title">Finanzas</div>
         <div class="nav-item">
           <a href="#" class="nav-link" routerLink="pago">
             <i class="fas fa-credit-card"></i>
             <span class="nav-text">Pagos</span>
+          </a>
+        </div>
+        <div class="nav-item" *ngIf="authService.canAccessSection('gastos')">
+          <a href="#" class="nav-link" routerLink="gastos">
+            <i class="fas fa-credit-card"></i>
+            <span class="nav-text">Gastos</span>
           </a>
         </div>
         <div class="nav-item">

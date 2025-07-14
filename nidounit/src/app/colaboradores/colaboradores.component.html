@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Colaboradores</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .title-icon {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 1rem;
+            border-radius: 15px;
+            font-size: 2rem;
+        }
+
+        .form-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            margin-bottom: 2rem;
+        }
+
+        .form-section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-section-title i {
+            color: #8b5cf6;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group-text {
+            background: #f1f5f9;
+            border: 2px solid #e2e8f0;
+            color: #475569;
+            font-weight: 500;
+            min-width: 140px;
+            border-radius: 12px 0 0 12px;
+        }
+
+        .form-control,
+        .form-select {
+            border: 2px solid #e2e8f0;
+            border-radius: 0 12px 12px 0;
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        }
+
+        .role-checkbox {
+            margin-bottom: 1rem;
+        }
+
+        .role-checkbox .form-check {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .role-checkbox .form-check:hover {
+            background: #f1f5f9;
+            border-color: #8b5cf6;
+        }
+
+        .role-checkbox .form-check-input:checked {
+            background-color: #8b5cf6;
+            border-color: #8b5cf6;
+        }
+
+        .role-checkbox .form-check-input:checked~.form-check-label {
+            color: #8b5cf6;
+            font-weight: 600;
+        }
+
+        .role-checkbox .form-check-label {
+            font-weight: 500;
+            color: #475569;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        }
+
+        .table-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+        }
+
+        .table-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .table-title i {
+            color: #f59e0b;
+        }
+
+        .table-responsive {
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table thead th {
+            background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+            color: white;
+            border: none;
+            padding: 1rem 0.75rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .table tbody td {
+            padding: 1rem 0.75rem;
+            vertical-align: middle;
+            border-color: #f1f5f9;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .btn-action {
+            padding: 0.5rem;
+            border-radius: 8px;
+            border: none;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .btn-warning {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #d97706;
+            transform: scale(1.1);
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: scale(1.1);
+        }
+
+        .btn-info {
+            background: #06b6d4;
+            color: white;
+        }
+
+        .btn-info:hover {
+            background: #0891b2;
+            transform: scale(1.1);
+        }
+
+        .role-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin: 0.125rem;
+            display: inline-block;
+        }
+
+        .role-admin {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .role-manager {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .role-user {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-inactive {
+            background: #fecaca;
+            color: #991b1b;
+        }
+
+        .alert-success {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+            border-radius: 12px;
+        }
+
+        .alert-danger {
+            background: #fecaca;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+            border-radius: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .form-card,
+            .table-card {
+                padding: 1rem;
+            }
+
+            .table-responsive {
+                font-size: 0.875rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page-header">
+        <div class="container">
+            <h1 class="page-title">
+                <div class="title-icon">
+                    <i class="fas fa-users-cog"></i>
+                </div>
+                Gestión de Colaboradores
+            </h1>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="form-card" *ngIf="authService.hasRole('ADMIN_COMPANY')">
+            <h2 class="form-section-title">
+                <i class="fas fa-user-plus"></i>
+                Agregar Nuevo Colaborador
+            </h2>
+
+            <div class="alert alert-success" *ngIf="successMessage">
+                <i class="fas fa-check-circle me-2"></i>
+                {{ successMessage }}
+            </div>
+
+            <div class="alert alert-danger" *ngIf="errorMessage">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                {{ errorMessage }}
+            </div>
+
+            <form [formGroup]="colaboradorForm" (ngSubmit)="onSubmit()">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="fas fa-user me-2"></i>Usuario
+                            </span>
+                            <input type="text" class="form-control" placeholder="Nombre de usuario"
+                                formControlName="username">
+                        </div>
+                        <div *ngIf="colaboradorForm.get('username')?.invalid && (colaboradorForm.get('username')?.dirty || colaboradorForm.get('username')?.touched)"
+                            class="text-danger small mt-1">
+                            <div *ngIf="colaboradorForm.get('username')?.hasError('required')">
+                                El nombre de usuario es requerido
+                            </div>
+                            <div *ngIf="colaboradorForm.get('username')?.hasError('minlength')">
+                                Mínimo 3 caracteres
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="fas fa-envelope me-2"></i>Email
+                            </span>
+                            <input type="email" class="form-control" placeholder="correo@ejemplo.com"
+                                formControlName="email">
+                        </div>
+                        <div *ngIf="colaboradorForm.get('email')?.invalid && (colaboradorForm.get('email')?.dirty || colaboradorForm.get('email')?.touched)"
+                            class="text-danger small mt-1">
+                            <div *ngIf="colaboradorForm.get('email')?.hasError('required')">
+                                El email es requerido
+                            </div>
+                            <div *ngIf="colaboradorForm.get('email')?.hasError('email')">
+                                Ingrese un email válido
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="fas fa-id-card me-2"></i>Nombre
+                            </span>
+                            <input type="text" class="form-control" placeholder="Nombre completo"
+                                formControlName="nombre">
+                        </div>
+                        <div *ngIf="colaboradorForm.get('nombre')?.invalid && (colaboradorForm.get('nombre')?.dirty || colaboradorForm.get('nombre')?.touched)"
+                            class="text-danger small mt-1">
+                            <div *ngIf="colaboradorForm.get('nombre')?.hasError('required')">
+                                El nombre completo es requerido
+                            </div>
+                            <div *ngIf="colaboradorForm.get('nombre')?.hasError('minlength')">
+                                Mínimo 2 caracteres
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="fas fa-lock me-2"></i>Contraseña
+                            </span>
+                            <input type="password" class="form-control" placeholder="Contraseña"
+                                formControlName="password">
+                        </div>
+                        <div *ngIf="colaboradorForm.get('password')?.invalid && (colaboradorForm.get('password')?.dirty || colaboradorForm.get('password')?.touched)"
+                            class="text-danger small mt-1">
+                            <div *ngIf="colaboradorForm.get('password')?.hasError('required')">
+                                La contraseña es requerida
+                            </div>
+                            <div *ngIf="colaboradorForm.get('password')?.hasError('minlength')">
+                                Mínimo 6 caracteres
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-12">
+                        <label class="form-label">
+                            <i class="fas fa-shield-alt me-2"></i>
+                            <strong>Roles y Permisos</strong>
+                        </label>
+                        <div class="role-checkbox">
+                            <div class="form-check" *ngFor="let role of availableRoles">
+                                <input class="form-check-input" type="checkbox" [id]="'role_' + role.id"
+                                    [value]="role.id" (change)="onRoleChange($event, role.id)">
+                                <label class="form-check-label" [for]="'role_' + role.id">
+                                    <strong>{{ role.name }}</strong>
+                                    <div class="text-muted small">{{ role.description }}</div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="btn-submit" [disabled]="!colaboradorForm.valid || isSubmitting">
+                        <i class="fas fa-spinner fa-spin me-2" *ngIf="isSubmitting"></i>
+                        <i class="fas fa-user-plus me-2" *ngIf="!isSubmitting"></i>
+                        {{ isSubmitting ? 'Registrando...' : 'Registrar Colaborador' }}
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Tabla de colaboradores -->
+        <div class="table-card">
+            <h2 class="table-title">
+                <i class="fas fa-list"></i>
+                Lista de Colaboradores
+            </h2>
+
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Usuario</th>
+                            <th>Nombre</th>
+                            <th>Email</th>
+                            <th>Roles</th>
+                            <th>Estado</th>
+                            <th>Fecha Registro</th>
+                            <th *ngIf="authService.hasRole('ADMIN_COMPANY')">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let colaborador of colaboradores; let i = index">
+                            <td class="text-center">
+                                <strong>{{ colaborador.id }}</strong>
+                            </td>
+                            <td>
+                                <strong>{{ colaborador.username }}</strong>
+                            </td>
+                            <td>
+                                {{ colaborador.nombre }}
+                            </td>
+                            <td>
+                                {{ colaborador.email }}
+                            </td>
+                            <td>
+                                <span *ngFor="let role of colaborador.roles" class="role-badge"
+                                    [ngClass]="getRoleClass(role)">
+                                    {{ role }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="status-badge"
+                                    [ngClass]="colaborador.activo ? 'status-active' : 'status-inactive'">
+                                    {{ colaborador.activo ? 'Activo' : 'Inactivo' }}
+                                </span>
+                            </td>
+                            <td>
+                                {{ colaborador.fechaRegistro | date:'dd/MM/yyyy' }}
+                            </td>
+                            <td *ngIf="authService.hasRole('ADMIN_COMPANY')">
+                                <div class="d-flex justify-content-center gap-1">
+                                    <button class="btn btn-warning btn-action" (click)="editarColaborador(colaborador)"
+                                        title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-action"
+                                        (click)="eliminarColaborador(colaborador.id)" title="Eliminar">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr *ngIf="colaboradores.length === 0">
+                            <td [attr.colspan]="authService.hasRole('ADMIN_COMPANY') ? 8 : 7"
+                                class="text-center text-muted">
+                                <i class="fas fa-users fa-3x mb-3"></i>
+                                <p>No hay colaboradores registrados</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

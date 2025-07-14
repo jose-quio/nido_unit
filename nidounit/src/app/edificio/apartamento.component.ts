@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { environment } from '../../environments/environment.staging';
 import { BackserviceService } from '../Servicios/backservice.service';
+import { AuthService } from '../Servicios/auth.service';
 
 
 @Component({
@@ -16,7 +17,7 @@ import { BackserviceService } from '../Servicios/backservice.service';
 export class ApartamentoComponent {
   private baseUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient, private backService: BackserviceService) {
+  constructor(private http: HttpClient, private backService: BackserviceService, public authService: AuthService) {
     this.obtenerApartamentos();
   }
   apartamentos: any[] = [];
@@ -24,12 +25,12 @@ export class ApartamentoComponent {
   isEditingRowIndex: number | null = null;
 
   FormularioApartamento = new FormGroup({
-    nombre: new FormControl<string>(''),  
-    direccion: new FormControl<string>(''),
-    nroPisos: new FormControl<number | null>(null),  
-    tipo: new FormControl<string>('residencial'),
+    nombre: new FormControl<string>('', [Validators.required]),  
+    direccion: new FormControl<string>('', [Validators.required]),
+    nroPisos: new FormControl<number | null>(null, [Validators.required]),  
+    tipo: new FormControl<string>('residencial', [Validators.required]),
     descripcion: new FormControl<string>('')
-  });
+});
 
   onSubmit() {
     if (this.FormularioApartamento.valid) {

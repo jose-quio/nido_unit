@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { BackserviceService } from '../Servicios/backservice.service';
+import { AuthService } from '../Servicios/auth.service';
 
 @Component({
   selector: 'app-propietario',
@@ -16,19 +17,42 @@ export class PropietarioComponent {
   departamentosDisponibles: any[] = [];
 
 
-  constructor(private miServicio: BackserviceService) {
+  constructor(private miServicio: BackserviceService, public authService: AuthService) {
     this.obtenerPropietarios();
     this.obtenerDepartamentosDisponibles();
 
   }
 
   FormularioPropietario = new FormGroup({
-    nombres: new FormControl(''),
-    apellidos: new FormControl(''),
-    dni: new FormControl(''),
-    telefono: new FormControl(''),
-    correo: new FormControl(''),
-    departamentoId: new FormControl<number | null>(null)
+    nombres: new FormControl('', [
+      Validators.required,
+      Validators.minLength(3),
+      Validators.pattern(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/)
+    ]),
+    apellidos: new FormControl('', [
+      Validators.required,
+      Validators.minLength(3),
+      Validators.pattern(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/)
+    ]),
+    dni: new FormControl('', [
+      Validators.required,
+      Validators.minLength(8),
+      Validators.maxLength(8),
+      Validators.pattern(/^[0-9]*$/)
+    ]),
+    telefono: new FormControl('', [
+      Validators.required,
+      Validators.minLength(9),
+      Validators.maxLength(9),
+      Validators.pattern(/^[0-9]*$/)
+    ]),
+    correo: new FormControl('', [
+      Validators.required,
+      Validators.email
+    ]),
+    departamentoId: new FormControl<number | null>(null, [
+      Validators.required
+    ])
   });
 
   obtenerPropietarios() {
@@ -127,11 +151,11 @@ export class PropietarioComponent {
   editarPropietario(index: number) {
     const propietario = this.propietarios[index];
     this.isEditingRowIndexProp = index;
-  
-    const departamentoId = propietario.departamentos?.length > 0 
-      ? propietario.departamentos[0].id 
+
+    const departamentoId = propietario.departamentos?.length > 0
+      ? propietario.departamentos[0].id
       : null;
-  
+
     this.FormularioPropietario.patchValue({
       nombres: propietario.nombres || '',
       apellidos: propietario.apellidos || '',
@@ -140,14 +164,14 @@ export class PropietarioComponent {
       correo: propietario.correo || '',
       departamentoId: departamentoId
     });
-  
+
     console.log('Editando propietario:', propietario);
   }
 
   guardarEdicionProp(index: number) {
     const propietarioEditado = this.propietarios[index];
     const departamentoId = this.FormularioPropietario.value.departamentoId;
-  
+
     const datosActualizados = {
       ...propietarioEditado,
       nombres: this.propietarios[index].nombres,
@@ -157,15 +181,15 @@ export class PropietarioComponent {
       correo: this.propietarios[index].correo,
       departamentos: departamentoId ? [{ id: departamentoId }] : []
     };
-  
+
     console.log('Datos a actualizar:', datosActualizados);
-  
+
     this.miServicio.actualizarPropietario(propietarioEditado.id, datosActualizados)
       .subscribe({
         next: (response) => {
           console.log('Propietario actualizado:', response);
           this.isEditingRowIndexProp = null;
-          this.obtenerPropietarios(); 
+          this.obtenerPropietarios();
         },
         error: (error) => {
           console.error('Error al actualizar:', error);
@@ -200,7 +224,7 @@ export class PropietarioComponent {
 
   getDepartamentoInfo(propietario: any): string {
     if (propietario.departamentos && propietario.departamentos.length > 0) {
-      const departamento = propietario.departamentos[0]; 
+      const departamento = propietario.departamentos[0];
       return `Dpto ${departamento.numero}, Piso ${departamento.piso} (${departamento.edificio?.nombre || 'Sin edificio'})`;
     }
     return 'Sin departamento asignado';

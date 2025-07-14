@@ -149,7 +149,7 @@ export class AuthService {
 
     localStorage.setItem('isLoggedIn', 'true');
     localStorage.setItem('token', response.token);
-    
+
 
     const authUser: AuthUser = {
       uid: response.userId.toString(),
@@ -164,8 +164,8 @@ export class AuthService {
     this.currentUserSubject.next(authUser);
     localStorage.setItem('currentUser', JSON.stringify(authUser));
     if (response.idCompany) {
-        localStorage.setItem('idCompany', response.idCompany.toString());
-      }
+      localStorage.setItem('idCompany', response.idCompany.toString());
+    }
     return {
       token: response.token,
       userId: response.userId,
@@ -247,6 +247,7 @@ export class AuthService {
         token: loginResponse.token,
         userId: loginResponse.userId,
         isNewUser: loginResponse.isNewUser,
+        roles: loginResponse.roles,
         idCompany: loginResponse.idCompany
       };
 
@@ -466,4 +467,33 @@ export class AuthService {
     this.nameCompanySubject.next(null);
   }
 
+  hasRole(role: string): boolean {
+    const currentUser = this.currentUserSubject.value;
+    return currentUser?.roles?.includes(role) || false;
+  }
+
+  getUserRoles(): string[] {
+    const currentUser = this.currentUserSubject.value;
+    return currentUser?.roles || [];
+  }
+
+  canAccessSection(section: string): boolean {
+  const roles = this.getUserRoles();
+  
+  switch (section) {
+    case 'edificios':
+    case 'departamentos':
+    case 'caja':
+    case 'gastos':
+      return roles.includes('ADMIN_COMPANY');
+    
+    case 'propietarios':
+    case 'contratos':
+    case 'pagos':
+      return roles.includes('ADMIN_COMPANY') || roles.includes('MANAGER_EDIFICIO');
+    
+    default:
+      return false;
+  }
+}
 }

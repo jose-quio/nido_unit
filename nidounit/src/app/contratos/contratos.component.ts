@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { AbstractControl, FormsModule, ReactiveFormsModule, ValidationErrors } from '@angular/forms';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { BackserviceService } from '../Servicios/backservice.service';
+import { AuthService } from '../Servicios/auth.service';
 
 @Component({
   selector: 'app-contratos',
@@ -20,21 +21,34 @@ export class ContratosComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private miServicio: BackserviceService
+    private miServicio: BackserviceService,
+    public authService: AuthService
   ) {
     this.FormularioContrato = this.fb.group({
       tipo: ['', [Validators.required]],
-      fechaInicio: ['', [Validators.required]],
+      fechaInicio: ['', [Validators.required, this.minDateValidator]],
       cantidadMeses: [''],
       departamentoId: ['', [Validators.required]],
       propietarioId: ['', [Validators.required]]
     });
 
     this.FormularioContrato.get('tipo')?.valueChanges.subscribe(tipo => {
-      this.onTipoChange(tipo);
+      const cantidadMesesControl = this.FormularioContrato.get('cantidadMeses');
+      if (tipo === 'ALQUILER') {
+        cantidadMesesControl?.setValidators([Validators.required, Validators.min(1)]);
+      } else {
+        cantidadMesesControl?.clearValidators();
+      }
+      cantidadMesesControl?.updateValueAndValidity();
     });
   }
+  minDateValidator(control: AbstractControl): ValidationErrors | null {
+    const selectedDate = new Date(control.value);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
+    return selectedDate < today ? { minDate: true } : null;
+  }
   ngOnInit(): void {
     this.obtenerContratos();
     this.obtenerDepartamentosDisponibles();

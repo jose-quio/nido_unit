@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Edificios</title>
+    <title>Gestión de Gastos</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -60,7 +60,7 @@
         }
 
         .form-section-title i {
-            color: #3b82f6;
+            color: #059669;
         }
 
         .input-group {
@@ -72,7 +72,7 @@
             border: 2px solid #e2e8f0;
             color: #475569;
             font-weight: 500;
-            min-width: 120px;
+            min-width: 140px;
             border-radius: 12px 0 0 12px;
         }
 
@@ -87,12 +87,12 @@
 
         .form-control:focus,
         .form-select:focus {
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            border-color: #059669;
+            box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
         }
 
         .btn-submit {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
             border: none;
             padding: 1rem 2rem;
             border-radius: 12px;
@@ -107,7 +107,7 @@
 
         .btn-submit:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+            box-shadow: 0 8px 25px rgba(5, 150, 105, 0.3);
         }
 
         .table-card {
@@ -204,25 +204,17 @@
         }
 
         .edit-input {
-            border: 2px solid #3b82f6;
+            border: 2px solid #059669;
             border-radius: 8px;
             padding: 0.5rem;
             width: 100%;
         }
 
         .edit-select {
-            border: 2px solid #3b82f6;
+            border: 2px solid #059669;
             border-radius: 8px;
             padding: 0.5rem;
             width: 100%;
-        }
-
-        .edit-textarea {
-            border: 2px solid #3b82f6;
-            border-radius: 8px;
-            padding: 0.5rem;
-            width: 100%;
-            resize: vertical;
         }
 
         .type-badge {
@@ -232,24 +224,44 @@
             font-weight: 500;
         }
 
-        .type-residencial {
+        .tipo-servicio {
             background: #dbeafe;
             color: #1e40af;
         }
 
-        .type-comercial {
+        .tipo-mantenimiento {
             background: #fef3c7;
             color: #92400e;
         }
 
-        .type-mixto {
-            background: #ecfdf5;
-            color: #065f46;
+        .tipo-infraestructura {
+            background: #f3e8ff;
+            color: #7c3aed;
         }
 
-        .type-oficinas {
-            background: #fce7f3;
-            color: #be185d;
+        .tipo-administrativo {
+            background: #ecfdf5;
+            color: #059669;
+        }
+
+        .tipo-otro {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .monto-cell {
+            font-weight: 600;
+            color: #059669;
+        }
+
+        .total-row {
+            background: #f8fafc;
+            font-weight: 600;
+        }
+
+        .total-amount {
+            color: #059669;
+            font-size: 1.1rem;
         }
 
         @media (max-width: 768px) {
@@ -274,105 +286,101 @@
         <div class="container">
             <h1 class="page-title">
                 <div class="title-icon">
-                    <i class="fas fa-building"></i>
+                    <i class="fas fa-calculator"></i>
                 </div>
-                Gestión de Edificios
+                Gestión de Gastos
             </h1>
         </div>
     </div>
 
     <div class="container">
-        <div class="form-card" *ngIf="authService.canAccessSection('edificios')">
+        <div class="form-card" *ngIf="authService.canAccessSection('gastos')">
             <h2 class="form-section-title">
                 <i class="fas fa-plus-circle"></i>
-                Registrar Nuevo Edificio
+                Registrar Nuevo Gasto
             </h2>
 
-            <form [formGroup]="FormularioApartamento" (ngSubmit)="onSubmit()">
+            <form [formGroup]="FormularioGasto" (ngSubmit)="onSubmit()">
                 <div class="row">
-                    <div class="col-md-6">
-                        <div class="input-group">
-                            <span class="input-group-text">
-                                <i class="fas fa-building me-2"></i>Nombre
-                            </span>
-                            <input type="text" class="form-control" placeholder="Nombre del edificio"
-                                formControlName="nombre">
-                        </div>
-                        <div *ngIf="FormularioApartamento.get('nombre')?.invalid && (FormularioApartamento.get('nombre')?.dirty || FormularioApartamento.get('nombre')?.touched)"
-                            class="text-danger small mt-1">
-                            <div *ngIf="FormularioApartamento.get('nombre')?.hasError('required')">
-                                El nombre del edificio es requerido
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <div class="input-group">
-                            <span class="input-group-text">
-                                <i class="fas fa-map-marker-alt me-2"></i>Dirección
-                            </span>
-                            <input type="text" class="form-control" placeholder="Dirección completa"
-                                formControlName="direccion">
-                        </div>
-                        <div *ngIf="FormularioApartamento.get('direccion')?.invalid && (FormularioApartamento.get('direccion')?.dirty || FormularioApartamento.get('direccion')?.touched)"
-                            class="text-danger small mt-1">
-                            <div *ngIf="FormularioApartamento.get('direccion')?.hasError('required')">
-                                La dirección es requerida
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="input-group">
-                            <span class="input-group-text">
-                                <i class="fas fa-layer-group me-2"></i>N° Pisos
-                            </span>
-                            <input type="number" class="form-control" placeholder="Número de pisos"
-                                formControlName="nroPisos">
-                        </div>
-                        <div *ngIf="FormularioApartamento.get('nroPisos')?.invalid && (FormularioApartamento.get('nroPisos')?.dirty || FormularioApartamento.get('nroPisos')?.touched)"
-                            class="text-danger small mt-1">
-                            <div *ngIf="FormularioApartamento.get('nroPisos')?.hasError('required')">
-                                El número de pisos es requerido
-                            </div>
-                        </div>
-                    </div>
-
                     <div class="col-md-6">
                         <div class="input-group">
                             <span class="input-group-text">
                                 <i class="fas fa-tag me-2"></i>Tipo
                             </span>
                             <select class="form-select" formControlName="tipo">
-                                <option value="residencial">Residencial</option>
-                                <option value="comercial">Comercial</option>
-                                <option value="mixto">Mixto</option>
-                                <option value="oficinas">Oficinas</option>
+                                <option value="">Seleccionar tipo</option>
+                                <option value="SERVICIO">Servicio</option>
+                                <option value="MANTENIMIENTO">Mantenimiento</option>
+                                <option value="INFRAESTRUCTURA">Infraestructura</option>
+                                <option value="ADMINISTRATIVO">Administrativo</option>
+                                <option value="OTRO">Otro</option>
                             </select>
+                        </div>
+                        <div *ngIf="FormularioGasto.get('tipo')?.invalid && (FormularioGasto.get('tipo')?.dirty || FormularioGasto.get('tipo')?.touched)"
+                            class="text-danger small mt-1">
+                            <div *ngIf="FormularioGasto.get('tipo')?.hasError('required')">
+                                Debe seleccionar un tipo de gasto
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="fas fa-calendar-alt me-2"></i>Fecha
+                            </span>
+                            <input type="date" class="form-control" formControlName="fecha">
+                        </div>
+                        <div *ngIf="FormularioGasto.get('fecha')?.invalid && (FormularioGasto.get('fecha')?.dirty || FormularioGasto.get('fecha')?.touched)"
+                            class="text-danger small mt-1">
+                            <div *ngIf="FormularioGasto.get('fecha')?.hasError('required')">
+                                La fecha es requerida
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="input-group">
-                    <span class="input-group-text">
-                        <i class="fas fa-align-left me-2"></i>Descripción
-                    </span>
-                    <textarea class="form-control" placeholder="Descripción del edificio" formControlName="descripcion"
-                        rows="3"></textarea>
-                </div>
-                <div *ngIf="FormularioApartamento.get('descripcion')?.invalid && (FormularioApartamento.get('descripcion')?.dirty || FormularioApartamento.get('descripcion')?.touched)"
-                    class="text-danger small mt-1">
-                    <div *ngIf="FormularioApartamento.get('descripcion')?.hasError('required')">
-                        La descripción es requerida
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="fas fa-dollar-sign me-2"></i>Monto
+                            </span>
+                            <input type="number" class="form-control" placeholder="0.00" 
+                                   formControlName="monto" min="0" step="0.01">
+                        </div>
+                        <div *ngIf="FormularioGasto.get('monto')?.invalid && (FormularioGasto.get('monto')?.dirty || FormularioGasto.get('monto')?.touched)"
+                            class="text-danger small mt-1">
+                            <div *ngIf="FormularioGasto.get('monto')?.hasError('required')">
+                                El monto es requerido
+                            </div>
+                            <div *ngIf="FormularioGasto.get('monto')?.hasError('min')">
+                                El monto debe ser mayor a 0
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="fas fa-file-alt me-2"></i>Descripción
+                            </span>
+                            <input type="text" class="form-control" placeholder="Descripción del gasto" 
+                                   formControlName="descripcion">
+                        </div>
+                        <div *ngIf="FormularioGasto.get('descripcion')?.invalid && (FormularioGasto.get('descripcion')?.dirty || FormularioGasto.get('descripcion')?.touched)"
+                            class="text-danger small mt-1">
+                            <div *ngIf="FormularioGasto.get('descripcion')?.hasError('required')">
+                                La descripción es requerida
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 <div class="text-center mt-3">
-                    <button type="submit" class="btn-submit" [disabled]="FormularioApartamento.invalid">
+                    <button type="submit" class="btn-submit" [disabled]="FormularioGasto.invalid">
                         <i class="fas fa-save"></i>
-                        Registrar Edificio
+                        Registrar Gasto
                     </button>
                 </div>
             </form>
@@ -381,7 +389,7 @@
         <div class="table-card">
             <h2 class="table-title">
                 <i class="fas fa-list"></i>
-                Lista de Edificios Registrados
+                Lista de Gastos Registrados
             </h2>
 
             <div class="table-responsive">
@@ -389,66 +397,46 @@
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Nombre</th>
-                            <th>Dirección</th>
-                            <th>N° Pisos</th>
                             <th>Tipo</th>
                             <th>Descripción</th>
-                            <th *ngIf="authService.canAccessSection('edificios')">Acciones</th>
+                            <th>Fecha</th>
+                            <th>Monto</th>
+                            <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr *ngFor="let apartamento of apartamentos; let i = index">
+                        <tr *ngFor="let gasto of gastos; let i = index">
                             <td class="text-center">
-                                <strong>{{ apartamento.id }}</strong>
+                                <strong>{{ gasto.id }}</strong>
                             </td>
                             <td>
-                                <input *ngIf="isEditingRow(i)" [(ngModel)]="apartamento.nombre" class="edit-input"
-                                    type="text" />
-                                <span *ngIf="!isEditingRow(i)">{{ apartamento.nombre }}</span>
-                            </td>
-                            <td>
-                                <input *ngIf="isEditingRow(i)" [(ngModel)]="apartamento.direccion" class="edit-input"
-                                    type="text" />
-                                <span *ngIf="!isEditingRow(i)">{{ apartamento.direccion }}</span>
-                            </td>
-                            <td class="text-center">
-                                <input *ngIf="isEditingRow(i)" [(ngModel)]="apartamento.nroPisos" class="edit-input"
-                                    type="number" />
-                                <span *ngIf="!isEditingRow(i)">{{ apartamento.nroPisos }}</span>
-                            </td>
-                            <td>
-                                <select *ngIf="isEditingRow(i)" [(ngModel)]="apartamento.tipo" class="edit-select">
-                                    <option value="residencial">Residencial</option>
-                                    <option value="comercial">Comercial</option>
-                                    <option value="mixto">Mixto</option>
-                                    <option value="oficinas">Oficinas</option>
-                                </select>
-                                <span *ngIf="!isEditingRow(i)" class="type-badge"
-                                    [ngClass]="'type-' + apartamento.tipo">
-                                    {{ apartamento.tipo | titlecase }}
+                                <span class="type-badge" [ngClass]="'tipo-' + gasto.tipo.toLowerCase()">
+                                    {{ getTipoGastoLabel(gasto.tipo) }}
                                 </span>
                             </td>
                             <td>
-                                <textarea *ngIf="isEditingRow(i)" [(ngModel)]="apartamento.descripcion"
-                                    class="edit-textarea" rows="2"></textarea>
-                                <span *ngIf="!isEditingRow(i)">{{ apartamento.descripcion }}</span>
+                                <span>{{ gasto.descripcion }}</span>
                             </td>
-                            <td *ngIf="authService.canAccessSection('edificios')">
+                            <td>
+                                <span>{{ gasto.fecha | date:'dd/MM/yyyy' }}</span>
+                            </td>
+                            <td class="text-center monto-cell">
+                                S/. {{ gasto.monto | number:'1.2-2' }}
+                            </td>
+                            <td>
                                 <div class="d-flex justify-content-center gap-1">
-                                    <button *ngIf="!isEditingRow(i)" class="btn btn-warning btn-action"
-                                        (click)="editar(i)" title="Editar">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button *ngIf="isEditingRow(i)" class="btn btn-info btn-action"
-                                        (click)="guardarEdicion(i)" title="Guardar">
-                                        <i class="fas fa-save"></i>
-                                    </button>
-                                    <button class="btn btn-danger btn-action" (click)="eliminar(i)" title="Eliminar">
+                                    <button class="btn btn-danger btn-action" (click)="eliminar(gasto.id)" title="Eliminar">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </div>
                             </td>
+                        </tr>
+                        <tr class="total-row" *ngIf="gastos.length > 0">
+                            <td colspan="4" class="text-end"><strong>Total de Gastos:</strong></td>
+                            <td class="text-center total-amount">
+                                <strong>S/. {{ getTotalGastos() | number:'1.2-2' }}</strong>
+                            </td>
+                            <td></td>
                         </tr>
                     </tbody>
                 </table>

@@ -24,8 +24,8 @@ export class UrlserviceService {
   public apiUrlGetTotalCapital = `${this.baseUrl}/api/capital`;
   public apiUrlGuardarPago = `${this.baseUrl}/api/caja`;
   //Pagos
-  public apiUrlGetPagosDNI = `${this.baseUrl}/api/pago`;
-  public apiUrlGetTodosPagos = `${this.baseUrl}/api/pago`;
+  public apiUrlGetPagosDNI = `${this.baseUrl}/api/pagos`;
+  public apiUrlGetTodosPagos = `${this.baseUrl}/api/pagos`;
   //CRUD Propietarios
   public apiUrlGetDepartamentosDisponibles = `${this.baseUrl}/api/apartamentos/disponibles`;
   public apiUrlRegistrarPropietario = `${this.baseUrl}/api/propietario`;
@@ -53,4 +53,15 @@ export class UrlserviceService {
   public apiUrlPostContrato = `${this.baseUrl}/api/contratos`;
   public apiUrlPutContrato = `${this.baseUrl}/api/contratos`;
   public apiUrlDeleteContrato = `${this.baseUrl}/api/contratos`;
+
+  //ENDPOINTS DE COLABORADORES
+  public apiUrlGuardarColaborador = `${this.baseUrl}/api/users`;
+  public apiUrlObtenerColaboradores = `${this.baseUrl}/api/users`;
+  public apiUrlEliminarColaborador = `${this.baseUrl}/api/users`;
+  public apiUrlActualizarColaborador = `${this.baseUrl}/api/users`;
+
+  //ENDPOINT DE GASTOS
+  public apiUrlRegistrarGastos = `${this.baseUrl}/api/gastos/company`;
+  public apiUrlGetGastos = `${this.baseUrl}/api/gastos/company`;
+  public apiUrlEliminarGastos = `${this.baseUrl}/api/gastos/`;
 }

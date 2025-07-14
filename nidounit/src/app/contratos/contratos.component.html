@@ -286,7 +286,7 @@
     </div>
 
     <div class="container">
-        <div class="form-card">
+        <div class="form-card" *ngIf="authService.canAccessSection('contratos')">
             <h2 class="form-section-title">
                 <i class="fas fa-plus-circle"></i>
                 Registrar Nuevo Contrato
@@ -305,6 +305,12 @@
                                 <option value="VENTA">Venta</option>
                             </select>
                         </div>
+                        <div *ngIf="FormularioContrato.get('tipo')?.invalid && (FormularioContrato.get('tipo')?.dirty || FormularioContrato.get('tipo')?.touched)"
+                            class="text-danger small mt-1">
+                            <div *ngIf="FormularioContrato.get('tipo')?.hasError('required')">
+                                Debe seleccionar un tipo de contrato
+                            </div>
+                        </div>
                     </div>
 
                     <div class="col-md-6">
@@ -313,6 +319,15 @@
                                 <i class="fas fa-calendar-alt me-2"></i>Fecha Inicio
                             </span>
                             <input type="date" class="form-control" formControlName="fechaInicio">
+                        </div>
+                        <div *ngIf="FormularioContrato.get('fechaInicio')?.invalid && (FormularioContrato.get('fechaInicio')?.dirty || FormularioContrato.get('fechaInicio')?.touched)"
+                            class="text-danger small mt-1">
+                            <div *ngIf="FormularioContrato.get('fechaInicio')?.hasError('required')">
+                                La fecha de inicio es requerida
+                            </div>
+                            <div *ngIf="FormularioContrato.get('fechaInicio')?.hasError('minDate')">
+                                La fecha no puede ser anterior a hoy
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -325,6 +340,15 @@
                             </span>
                             <input type="number" class="form-control" placeholder="Número de meses"
                                 formControlName="cantidadMeses" min="1">
+                        </div>
+                        <div *ngIf="FormularioContrato.get('cantidadMeses')?.invalid && (FormularioContrato.get('cantidadMeses')?.dirty || FormularioContrato.get('cantidadMeses')?.touched)"
+                            class="text-danger small mt-1">
+                            <div *ngIf="FormularioContrato.get('cantidadMeses')?.hasError('required')">
+                                El número de meses es requerido para alquileres
+                            </div>
+                            <div *ngIf="FormularioContrato.get('cantidadMeses')?.hasError('min')">
+                                Mínimo 1 mes
+                            </div>
                         </div>
                     </div>
 
@@ -341,10 +365,16 @@
                                 </option>
                             </select>
                         </div>
+                        <div *ngIf="FormularioContrato.get('departamentoId')?.invalid && (FormularioContrato.get('departamentoId')?.dirty || FormularioContrato.get('departamentoId')?.touched)"
+                            class="text-danger small mt-1">
+                            <div *ngIf="FormularioContrato.get('departamentoId')?.hasError('required')">
+                                Debe seleccionar un departamento
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="input-group">
+                <div class="input-group mt-3">
                     <span class="input-group-text">
                         <i class="fas fa-user me-2"></i>Propietario
                     </span>
@@ -355,9 +385,15 @@
                         </option>
                     </select>
                 </div>
+                <div *ngIf="FormularioContrato.get('propietarioId')?.invalid && (FormularioContrato.get('propietarioId')?.dirty || FormularioContrato.get('propietarioId')?.touched)"
+                    class="text-danger small mt-1">
+                    <div *ngIf="FormularioContrato.get('propietarioId')?.hasError('required')">
+                        Debe seleccionar un propietario
+                    </div>
+                </div>
 
-                <div class="text-center">
-                    <button type="submit" class="btn-submit">
+                <div class="text-center mt-3">
+                    <button type="submit" class="btn-submit" [disabled]="FormularioContrato.invalid">
                         <i class="fas fa-save"></i>
                         Registrar Contrato
                     </button>

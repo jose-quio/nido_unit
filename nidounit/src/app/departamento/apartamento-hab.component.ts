@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { BackserviceService } from '../Servicios/backservice.service';
+import { AuthService } from '../Servicios/auth.service';
 
 @Component({
   selector: 'app-apartamento-hab',
@@ -11,7 +12,7 @@ import { BackserviceService } from '../Servicios/backservice.service';
   styleUrl: './apartamento-hab.component.scss'
 })
 export class ApartamentoHabComponent {
-  constructor(private miServicio: BackserviceService) {
+  constructor(private miServicio: BackserviceService, public authService: AuthService) {
     this.obtenerApartamentos();
     this.obtenerApartamentosHab();
   }
@@ -22,15 +23,15 @@ export class ApartamentoHabComponent {
   apartamentos: any[] = [];
 
   FormularioApartamentoHab = new FormGroup({
-    edificioId: new FormControl<number | null>(null), 
-    numero: new FormControl<string>(''),
-    piso: new FormControl<string>(''), 
-    nroHabitaciones: new FormControl<string>(''), 
-    area: new FormControl<number | null>(null), 
-    precioVenta: new FormControl<number | null>(null),
-    precioAlquiler: new FormControl<number | null>(null),
+    edificioId: new FormControl<number | null>(null, [Validators.required]), 
+    numero: new FormControl<string>('', [Validators.required]),
+    piso: new FormControl<string>('', [Validators.required, Validators.min(0)]), 
+    nroHabitaciones: new FormControl<string>('', [Validators.required, Validators.min(1)]), 
+    area: new FormControl<number | null>(null, [Validators.required, Validators.min(1)]), 
+    precioVenta: new FormControl<number | null>(null, [Validators.required, Validators.min(0.01)]),
+    precioAlquiler: new FormControl<number | null>(null, [Validators.required, Validators.min(0.01)]),
     disponible: new FormControl<boolean>(true)
-  });
+});
 
   obtenerApartamentosHab() {
     this.miServicio.getApartamentosHab().subscribe(
@@ -79,7 +80,7 @@ export class ApartamentoHabComponent {
             console.log('Departamento registrado con éxito:', response);
             this.obtenerApartamentosHab();
             this.FormularioApartamentoHab.reset({
-              disponible: false
+              disponible: true
             });
           },
           error => {

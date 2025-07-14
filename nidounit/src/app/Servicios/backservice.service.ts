@@ -23,10 +23,10 @@ export class BackserviceService {
   }
 
   getApartamentos(): Observable<any[]> {
-  const companyId = localStorage.getItem('idCompany'); 
-  const url = `${this.urlService.apiUrlGetApartamentos}/company/${companyId}`; 
-  return this.http.get<any[]>(url);
-}
+    const companyId = localStorage.getItem('idCompany');
+    const url = `${this.urlService.apiUrlGetApartamentos}/company/${companyId}`;
+    return this.http.get<any[]>(url);
+  }
 
 
   eliminarApartamento(codigoApartamento: string): Observable<any> {
@@ -72,6 +72,11 @@ export class BackserviceService {
     return this.http.get<any[]>(this.urlService.apiUrlGetTodosPagos);
   }
 
+  procesarPago(pagoId: number): Observable<string> {
+    return this.http.put(`${this.urlService.apiUrlGetTodosPagos}/${pagoId}/pagar`, {}, {
+      responseType: 'text'
+    });
+  }
   // Operaciones de propietario
   getDepartamentosDisponibles(): Observable<any[]> {
     return this.http.get<any[]>(`${this.urlService.apiUrlGetDepartamentosDisponibles}`);
@@ -179,7 +184,7 @@ export class BackserviceService {
       access_token: accessToken
     }, {
       headers,
-      withCredentials: true 
+      withCredentials: true
     });
   }
 
@@ -221,7 +226,7 @@ export class BackserviceService {
 
 
   //Contratos
-   getContratos(): Observable<any[]> {
+  getContratos(): Observable<any[]> {
     return this.http.get<any[]>(this.urlService.apiUrlGetContratos);
   }
 
@@ -237,4 +242,34 @@ export class BackserviceService {
     return this.http.delete<any>(`${this.urlService.apiUrlDeleteContrato}/${id}`);
   }
 
+  //Colaboradores
+  guardarColaborador(colaborador: any): Observable<any> {
+    return this.http.post(this.urlService.apiUrlGuardarColaborador, colaborador);
+  }
+
+  obtenerColaboradores(): Observable<any> {
+    return this.http.get(this.urlService.apiUrlObtenerColaboradores);
+  }
+
+  eliminarColaborador(id: number): Observable<any> {
+    return this.http.delete(`${this.urlService.apiUrlEliminarColaborador}/${id}`);
+  }
+
+  actualizarColaborador(id: number, colaborador: any): Observable<any> {
+    return this.http.put(`${this.urlService.apiUrlActualizarColaborador}/${id}`, colaborador);
+
+  }
+
+  //Gastos
+  createGasto(idCompany: string, gastoData: any): Observable<any> {
+    return this.http.post(`${this.urlService.apiUrlRegistrarGastos}/${idCompany}`, gastoData);
+  }
+
+  getGastos(idCompany: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.urlService.apiUrlGetGastos}/${idCompany}`);
+  }
+
+  deleteGasto(gastoId: number): Observable<any> {
+    return this.http.delete(`${this.urlService.apiUrlEliminarGastos}/${gastoId}`);
+  }
 }
