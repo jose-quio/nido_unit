@@ -81,9 +81,12 @@ public class UserController {
     }
 
     // READ ALL
-    @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
-        List<User> usuarios = userRepository.findAll();
+    @GetMapping("/company/{companyId}")
+    public ResponseEntity<?> getAllUsers(@PathVariable Long companyId) {
+        if (!companyRepository.existsById(companyId)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Empresa no encontrada.");
+        }
+        List<User> usuarios = userRepository.findByCompanyId(companyId);
         return ResponseEntity.ok(usuarios);
     }
 
