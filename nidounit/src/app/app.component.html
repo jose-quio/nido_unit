@@ -501,7 +501,7 @@
             <span class="nav-text">Gastos</span>
           </a>
         </div>
-        <div class="nav-item">
+        <div class="nav-item" *ngIf="authService.hasRole('ADMIN_COMPANY')">
           <a href="#" class="nav-link" routerLink="caja">
             <i class="fas fa-cash-register"></i>
             <span class="nav-text">Caja de Ingresos</span>

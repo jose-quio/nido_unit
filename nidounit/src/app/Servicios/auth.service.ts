@@ -521,7 +521,10 @@ export class AuthService {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem('nameCompany');
     }
-    this.nameCompanySubject.next(null);
+    if (this.nameCompanySubject) {
+      this.nameCompanySubject.next(null);
+    }
+
   }
 
   hasRole(role: string): boolean {
