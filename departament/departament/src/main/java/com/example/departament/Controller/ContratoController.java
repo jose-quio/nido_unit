@@ -1,18 +1,13 @@
 package com.example.departament.Controller;
 
-import com.example.departament.Entity.Contrato;
-import com.example.departament.Entity.Departamento;
-import com.example.departament.Entity.Pago;
-import com.example.departament.Entity.Propietario;
-import com.example.departament.Repository.ContratoRepository;
-import com.example.departament.Repository.DepartamentoRepository;
-import com.example.departament.Repository.PagoRepository;
-import com.example.departament.Repository.PropietarioRepository;
+import com.example.departament.Entity.*;
+import com.example.departament.Repository.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,16 +30,18 @@ public class ContratoController {
     private  PropietarioRepository propietarioRepository;
     @Autowired
     private  PagoRepository pagoRepository;
+    @Autowired
+    private CompanyRepository companyRepository;
 
-    @PostMapping
-    public ResponseEntity<?> crearContrato(@RequestBody ContratoRequestDTO dto) {
+    @PostMapping("/company/{companyId}")
+    public ResponseEntity<?> crearContrato(@PathVariable Long companyId,@RequestBody ContratoRequestDTO dto) {
 
         // Validación de existencia de IDs
         if (dto.getDepartamentoId() == null || dto.getPropietarioId() == null) {
             return ResponseEntity.badRequest().body("Debe proporcionar IDs válidos para departamento y propietario.");
         }
 
-        Optional<Departamento> depOpt = departamentoRepository.findById(dto.getDepartamentoId());
+        Optional<Departamento> depOpt = departamentoRepository.findByIdWithEdificio(dto.getDepartamentoId());
         Optional<Propietario> propOpt = propietarioRepository.findById(dto.getPropietarioId());
 
         if (depOpt.isEmpty() || propOpt.isEmpty()) {
@@ -53,6 +50,18 @@ public class ContratoController {
 
         Departamento departamento = depOpt.get();
         Propietario propietario = propOpt.get();
+
+        // Validar que el departamento pertenece a la empresa
+        if (!departamento.getEdificio().getCompany().getId().equals(companyId)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("El departamento no pertenece a la empresa con ID " + companyId);
+        }
+
+        // Validar que el propietario pertenece a la misma empresa
+        if (!propietario.getCompany().getId().equals(companyId)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("El propietario no pertenece a la empresa con ID " + companyId);
+        }
 
         Contrato contrato = new Contrato();
         contrato.setTipo(dto.getTipo());
@@ -84,36 +93,52 @@ public class ContratoController {
         // Guardar contrato primero
         Contrato contratoGuardado = contratoRepository.save(contrato);
 
+
+        Company company = departamento.getEdificio().getCompany();
         // Generar pagos
         if (dto.getTipo() == Contrato.TipoContrato.ALQUILER) {
             List<Pago> pagos = new ArrayList<>();
             LocalDate fecha = dto.getFechaInicio();
             for (int i = 0; i < dto.getCantidadMeses(); i++) {
-                Pago pago = new Pago();
-                pago.setContrato(contratoGuardado);
-                pago.setMonto(departamento.getPrecioAlquiler());
-                pago.setPeriodo(YearMonth.from(fecha));
-                pago.setEstado(Pago.EstadoPago.PENDIENTE);
-                pagos.add(pago);
+                pagos.add(Pago.builder()
+                        .contrato(contratoGuardado)
+                        .monto(departamento.getPrecioAlquiler())
+                        .periodo(YearMonth.from(fecha))
+                        .estado(Pago.EstadoPago.PENDIENTE)
+                        .company(company)
+                        .build()
+                );
                 fecha = fecha.plusMonths(1);
             }
             pagoRepository.saveAll(pagos);
 
         } else if (dto.getTipo() == Contrato.TipoContrato.VENTA) {
-            Pago pago = new Pago();
-            pago.setContrato(contratoGuardado);
-            pago.setMonto(departamento.getPrecioVenta());
-            pago.setPeriodo(YearMonth.now());
-            pago.setEstado(Pago.EstadoPago.PENDIENTE);
-            pagoRepository.save(pago);
+            List<Pago> pagos = new ArrayList<>();
+            LocalDate fecha = dto.getFechaInicio();
+            Double montoVentaDividido = departamento.getPrecioVenta()/dto.getCantidadMeses();
+            for (int i = 0; i < dto.getCantidadMeses(); i++) {
+                pagos.add(Pago.builder()
+                        .contrato(contratoGuardado)
+                        .monto(montoVentaDividido)
+                        .periodo(YearMonth.from(fecha))
+                        .estado(Pago.EstadoPago.PENDIENTE)
+                        .company(company)
+                        .build()
+                );
+                fecha = fecha.plusMonths(1);
+            }
+            pagoRepository.saveAll(pagos);
         }
 
         return ResponseEntity.ok(contratoGuardado);
     }
 
-    @GetMapping
-    public ResponseEntity<List<ContratoResponseDTO>> listarContratos() {
-        List<Contrato> contratos = contratoRepository.findAll();
+    @GetMapping("/company/{companyId}")
+    public ResponseEntity<?> listarContratos(@PathVariable Long companyId) {
+        if (!companyRepository.existsById(companyId)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Empresa no encontrada.");
+        }
+        List<Contrato> contratos = contratoRepository.findByCompanyId(companyId);
 
         List<ContratoResponseDTO> contratosDTO = contratos.stream()
                 .map(this::mapToDTO)

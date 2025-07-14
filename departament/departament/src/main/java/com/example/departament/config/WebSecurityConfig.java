@@ -52,6 +52,13 @@ public class WebSecurityConfig {
                         //.requestMatchers("/api/users/**").permitAll()
                         .requestMatchers("/api/company/**").hasRole("ADMIN_COMPANY")
                         .requestMatchers("/api/users/**").hasRole("ADMIN_COMPANY")
+                        .requestMatchers("/api/gastos/**").hasRole("ADMIN_COMPANY")
+                        .requestMatchers("/api/pagos/**").hasRole("ADMIN_COMPANY")
+                        .requestMatchers("/api/contratos/**").hasRole("ADMIN_COMPANY")
+                        .requestMatchers("/api/users/**").hasRole("ADMIN_COMPANY")
+                        .requestMatchers("/api/propietario/**").hasRole("ADMIN_COMPANY")
+                        .requestMatchers("/api/edificio/**").hasRole("ADMIN_COMPANY")
+                        .requestMatchers("/api/apartamentos/**").hasRole("ADMIN_COMPANY")
 
                         .anyRequest().authenticated()
                 )

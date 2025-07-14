@@ -21,4 +21,14 @@ public interface PagoRepository extends JpaRepository<Pago,Long> {
 
     @Query("SELECT p FROM Pago p WHERE p.estado = 'PENDIENTE' AND p.periodo = :periodo")
     List<Pago> findPagosPendientesPorPeriodo(@Param("periodo") YearMonth periodo);
+
+    @Query("SELECT p FROM Pago p WHERE p.contrato.departamento.edificio.company.id = :companyId")
+    List<Pago> findByCompanyId(@Param("companyId") Long companyId);
+    @Query("""
+    SELECT p FROM Pago p 
+    WHERE p.contrato.propietario.dni = :dni 
+    AND p.contrato.departamento.edificio.company.id = :companyId
+""")
+    List<Pago> findByDniAndCompanyId(@Param("dni") String dni, @Param("companyId") Long companyId);
+
 }

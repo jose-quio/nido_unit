@@ -1,4 +1,5 @@
 package com.example.departament.Entity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.persistence.Entity;
@@ -38,4 +39,10 @@ public class Pago {
     @JoinColumn(name = "contrato_id")
     @JsonIgnoreProperties({"pagos"})
     private Contrato contrato;
+
+    @ManyToOne
+    @JoinColumn(name = "company_id")
+    @JsonIgnore
+    private Company company;
+
 }

@@ -1,17 +1,22 @@
 package com.example.departament.Controller;
 
 
+import com.example.departament.Entity.Company;
 import com.example.departament.Entity.Departamento;
 import com.example.departament.Entity.Propietario;
+import com.example.departament.Repository.CompanyRepository;
 import com.example.departament.Repository.DepartamentoRepository;
 import com.example.departament.Repository.PropietarioRepository;
 import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/propietario")
@@ -20,19 +25,48 @@ public class PropietarioController {
     private PropietarioRepository propietarioRepository;
     @Autowired
     private DepartamentoRepository departamentoRepository;
+    @Autowired
+    private CompanyRepository companyRepository;
 
     // CREATE
-    @PostMapping
-    public ResponseEntity<Propietario> createPropietario(@RequestBody Propietario propietario) {
+    @PostMapping("company/{companyId}")
+    public ResponseEntity<?> createPropietario(@PathVariable Long companyId, @RequestBody Propietario propietario) {
+
+        // Verificar que la empresa exista
+        Optional<Company> companyOpt = companyRepository.findById(companyId);
+        if (companyOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("La empresa con ID " + companyId + " no existe.");
+        }
+
+        Company company = companyOpt.get();
+        // Validar que el DNI no exista
+        if (propietarioRepository.existsByDniAndCompanyId(propietario.getDni(),companyId)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("Ya existe un propietario con el DNI: " + propietario.getDni()+ " en esta empresa");
+        }
+        propietario.setCompany(company);
         Propietario savedPropietario = propietarioRepository.save(propietario);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedPropietario);
     }
 
     // READ ALL
-    @GetMapping
-    public ResponseEntity<List<Propietario>> getAllPropietarios() {
-        List<Propietario> propietarios = propietarioRepository.findAll();
-        return ResponseEntity.ok(propietarios);
+    @GetMapping("/company/{companyId}")
+    public ResponseEntity<?> getAllPropietarios(@PathVariable Long companyId) {
+        if (!companyRepository.existsById(companyId)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Empresa no encontrada.");
+        }
+        List<PropietarioController.PropietarioDTO> propietarioDTOS = propietarioRepository.findByCompanyId(companyId).stream()
+                .map(propietario -> new PropietarioController.PropietarioDTO(
+                        propietario.getId(),
+                        propietario.getNombres(),
+                        propietario.getApellidos(),
+                        propietario.getDni(),
+                        propietario.getTelefono(),
+                        propietario.getCorreo()
+                ))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(propietarioDTOS);
     }
 
     // READ ONE
@@ -45,12 +79,25 @@ public class PropietarioController {
 
     // UPDATE
     @PutMapping("/{id}")
-    public ResponseEntity<Propietario> updatePropietario(
+    public ResponseEntity<?> updatePropietario(
             @PathVariable Long id,
             @RequestBody Propietario propietarioDetails) {
 
         return propietarioRepository.findById(id)
                 .map(propietario -> {
+                    // Obtener el companyId actual del propietario
+                    Long companyId = propietario.getCompany().getId();
+                    // Validar que el nuevo DNI no esté duplicado en la misma empresa,
+                    // excluyendo al mismo propietario
+                    boolean dniDuplicado = propietarioRepository
+                            .findByDniAndCompanyId(propietarioDetails.getDni(), companyId)
+                            .filter(p -> !p.getId().equals(propietario.getId()))
+                            .isPresent();
+
+                    if (dniDuplicado) {
+                        return ResponseEntity.status(HttpStatus.CONFLICT)
+                                .body("Ya existe otro propietario con el DNI: " + propietarioDetails.getDni() + " en esta empresa.");
+                    }
                     propietario.setNombres(propietarioDetails.getNombres());
                     propietario.setApellidos(propietarioDetails.getApellidos());
                     propietario.setDni(propietarioDetails.getDni());
@@ -65,13 +112,13 @@ public class PropietarioController {
 
     // DELETE
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePropietario(@PathVariable Long id) {
+    public ResponseEntity<?> deletePropietario(@PathVariable Long id) {
         return propietarioRepository.findById(id)
                 .map(propietario -> {
                     propietarioRepository.delete(propietario);
-                    return ResponseEntity.noContent().<Void>build();
+                    return ResponseEntity.status(HttpStatus.OK).body("El propietario ha sido eliminado");
                 })
-                .orElse(ResponseEntity.notFound().build());
+                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).body("El propietario no existe"));
     }
 
     // Obtener departamentos de un propietario
@@ -120,5 +167,16 @@ public class PropietarioController {
         departamentoRepository.save(departamento);
 
         return ResponseEntity.ok().build();
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public static class PropietarioDTO {
+        private Long id;
+        private String nombres;
+        private String apellidos;
+        private String dni;
+        private String telefono;
+        private String correo;
     }
 }

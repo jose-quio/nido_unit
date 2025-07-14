@@ -1,8 +1,10 @@
 package com.example.departament.Controller;
 
 
+import com.example.departament.Entity.Company;
 import com.example.departament.Entity.Departamento;
 import com.example.departament.Entity.Edificio;
+import com.example.departament.Repository.CompanyRepository;
 import com.example.departament.Repository.DepartamentoRepository;
 import com.example.departament.Repository.EdificioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -20,17 +23,31 @@ import java.util.stream.Collectors;
 public class EdificioController {
     private final EdificioRepository edificioRepository;
     private final DepartamentoRepository departamentoRepository;
+    private final CompanyRepository companyRepository;
 
     @Autowired
     public EdificioController(EdificioRepository edificioRepository,
-                              DepartamentoRepository departamentoRepository) {
+                              DepartamentoRepository departamentoRepository,
+                                CompanyRepository companyRepository) {
         this.edificioRepository = edificioRepository;
         this.departamentoRepository = departamentoRepository;
+        this.companyRepository = companyRepository;
     }
 
     // CREATE
     @PostMapping
-    public ResponseEntity<Edificio> createEdificio(@RequestBody Edificio edificio) {
+    public ResponseEntity<?> createEdificio(@RequestBody Edificio edificio) {
+        // Verificar que la empresa exista
+        Optional<Company> companyOpt = companyRepository.findById(edificio.getCompany().getId());
+        if (companyOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("La empresa no existe.");
+        }
+        // Validar que el DNI no exista
+        if (edificioRepository.existsByNombreAndCompanyId(edificio.getNombre(),edificio.getCompany().getId())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("Ya existe un edificio con el nombre: " + edificio.getNombre()+ " en esta empresa");
+        }
         Edificio savedEdificio = edificioRepository.save(edificio);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedEdificio);
     }
@@ -55,6 +72,21 @@ public class EdificioController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/{id}/nroPisos")
+    public ResponseEntity<?> getPisosByEdificio(@PathVariable Long id) {
+        if (!edificioRepository.existsById(id)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("El edificio no existe");
+        }
+        Integer nroPisos = edificioRepository.findNroPisosById(id);
+
+        if (nroPisos == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("El edificio no tiene asignado la cantidad de pisos");
+        }
+        return ResponseEntity.ok(Map.of("nroPisos", nroPisos));
+    }
+
+
+
     // UPDATE
     @PutMapping("/{id}")
     public ResponseEntity<Edificio> updateEdificio(@PathVariable Long id, @RequestBody Edificio edificioDetails) {
@@ -63,7 +95,9 @@ public class EdificioController {
                     edificio.setNombre(edificioDetails.getNombre());
                     edificio.setDireccion(edificioDetails.getDireccion());
                     edificio.setNroPisos(edificioDetails.getNroPisos());
+                    edificio.setTipo(edificioDetails.getTipo());
                     edificio.setDescripcion(edificioDetails.getDescripcion());
+
                     Edificio updatedEdificio = edificioRepository.save(edificio);
                     return ResponseEntity.ok(updatedEdificio);
                 })
@@ -72,13 +106,22 @@ public class EdificioController {
 
     // DELETE
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteEdificio(@PathVariable Long id) {
-        return edificioRepository.findById(id)
-                .map(edificio -> {
-                    edificioRepository.delete(edificio);
-                    return ResponseEntity.noContent().<Void>build();
-                })
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<?> deleteEdificio(@PathVariable Long id) {
+        Optional<Edificio> edificioOpt = edificioRepository.findById(id);
+
+        if (edificioOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("El edificio que quieres eliminar no existe.");
+        }
+
+        List<Departamento> departamentos = departamentoRepository.findByEdificioId(id);
+        if (!departamentos.isEmpty()) {
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body("No se puede eliminar el edificio porque tiene departamentos asociados.");
+        }
+
+        edificioRepository.delete(edificioOpt.get());
+        return ResponseEntity.noContent().build();
     }
 
     // Obtener apartamentos de un edificio Eliminado
@@ -100,6 +143,7 @@ public class EdificioController {
                     Map<String, Object> map = new HashMap<>();
                     map.put("id", e.getId());
                     map.put("nombre", e.getNombre());
+                    map.put("nroPisos", e.getNroPisos());
                     return map;
                 })
                 .collect(Collectors.toList());
