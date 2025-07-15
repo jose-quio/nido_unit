@@ -56,6 +56,10 @@ public class ContratoController {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body("El departamento no pertenece a la empresa con ID " + companyId);
         }
+        if (!departamentoRepository.existsByIdAndDisponibleTrue(dto.departamentoId)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("El departamento no esta disponible para un contrato ");
+        }
 
         // Validar que el propietario pertenece a la misma empresa
         if (!propietario.getCompany().getId().equals(companyId)) {

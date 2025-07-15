@@ -26,5 +26,8 @@ public interface DepartamentoRepository extends JpaRepository<Departamento, Long
     @Query("SELECT d FROM Departamento d WHERE d.disponible = true AND d.edificio.company.id = :companyId")
     List<Departamento> findDisponiblesByCompanyId(@Param("companyId") Long companyId);
 
+    // Retorna true si el departamento con ese ID está disponible
+    boolean existsByIdAndDisponibleTrue(Long id);
+
 
 }
