@@ -38,6 +38,9 @@ dependencies {
 
 	implementation("io.jsonwebtoken:jjwt:0.9.1")
 	implementation("javax.xml.bind:jaxb-api:2.3.0")
+
+	implementation("com.itextpdf:itext7-core:7.2.3")
+	implementation("org.springframework.boot:spring-boot-starter-mail")
 	testImplementation("org.springframework.security:spring-security-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")

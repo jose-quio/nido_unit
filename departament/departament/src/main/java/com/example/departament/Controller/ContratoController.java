@@ -2,6 +2,8 @@ package com.example.departament.Controller;
 
 import com.example.departament.Entity.*;
 import com.example.departament.Repository.*;
+import com.example.departament.Service.CorreoService;
+import com.example.departament.Service.PdfService;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
@@ -32,6 +35,12 @@ public class ContratoController {
     private  PagoRepository pagoRepository;
     @Autowired
     private CompanyRepository companyRepository;
+    @Autowired
+    private PdfService pdfService;
+
+    @Autowired
+    private CorreoService correoService;
+
 
     @PostMapping("/company/{companyId}")
     public ResponseEntity<?> crearContrato(@PathVariable Long companyId,@RequestBody ContratoRequestDTO dto) {
@@ -98,6 +107,15 @@ public class ContratoController {
         Contrato contratoGuardado = contratoRepository.save(contrato);
         departamento.setDisponible(false);
         departamentoRepository.save(departamento);
+
+        try {
+            File pdf = pdfService.generarContratoPdf(contratoGuardado);
+            correoService.enviarContratoPorCorreo(propietario.getCorreo(), pdf);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al generar el PDF");
+        }
+
 
         Company company = departamento.getEdificio().getCompany();
         // Generar pagos
