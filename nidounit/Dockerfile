@@ -21,7 +21,7 @@ FROM nginx:alpine
 RUN rm -rf /usr/share/nginx/html/*
 
 # Copia archivos construidos desde la etapa anterior
-COPY --from=build /app/dist/* /usr/share/nginx/html
+COPY --from=build /app/dist/nidounit /usr/share/nginx/html
 
 # (Opcional) configuración personalizada de NGINX para rutas Angular
 COPY nginx.conf /etc/nginx/conf.d/default.conf
