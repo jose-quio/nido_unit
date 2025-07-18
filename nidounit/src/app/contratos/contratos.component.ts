@@ -20,7 +20,7 @@ export class ContratosComponent implements OnInit {
   departamentosDisponibles: any[] = [];
   propietarios: any[] = [];
   editingRowIndex: number = -1;
-
+  errorMessage: string | null = null;
   constructor(
     private fb: FormBuilder,
     private miServicio: BackserviceService,
@@ -98,8 +98,13 @@ export class ContratosComponent implements OnInit {
           this.obtenerContratos();
         },
         error => {
-          console.error('Error al crear el contrato:', error);
-        }
+            if (error.status === 409) {
+              this.errorMessage = 'Ya existe un contrato con este departamento';
+            } else {
+              console.error('Error al registrar el contrato:', error);
+              this.errorMessage = 'Ocurrió un error al registrar el departamento';
+            }
+          }
       );
     } else {
       console.log('Formulario inválido');

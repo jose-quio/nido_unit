@@ -1,33 +1,21 @@
-# Etapa 1: Construcción del proyecto Angular
-FROM node:18-alpine as build
+FROM node:20-alpine as build
 
-# Directorio de trabajo dentro del contenedor
 WORKDIR /app
 
-# Copiar dependencias e instalar
-COPY package.json package-lock.json ./
+COPY package.json package-lock.json* ./
 RUN npm install
 
-# Copiar todo el proyecto
 COPY . .
 
-# Compilar la app Angular en modo producción
-RUN npm run build -- --configuration production
+RUN npm run build
 
-# Etapa 2: Servir la app con NGINX
-FROM nginx:alpine
+FROM node:20-alpine
 
-# Elimina la página de ejemplo
-RUN rm -rf /usr/share/nginx/html/*
+WORKDIR /app
 
-# Copia archivos construidos desde la etapa anterior
-COPY --from=build /app/dist/nidounit /usr/share/nginx/html
+COPY --from=build /app/dist/nidounit /app/dist/nidounit
+COPY --from=build /app/node_modules /app/node_modules
 
-# (Opcional) configuración personalizada de NGINX para rutas Angular
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 4000
 
-# Puerto por defecto
-EXPOSE 80
-
-# Comando para mantener NGINX activo
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["node", "dist/nidounit/server/server.mjs"]

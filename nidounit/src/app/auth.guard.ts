@@ -25,14 +25,14 @@ export const authGuard: CanActivateFn = (route, state) => {
         return false;
       }
 
-      if (state.url !== '/companyregister' && !authService.hasCompany()) {
+      const routesWithoutCompanyCheck = ['/companyregister', '/forbidden'];
+      if (!routesWithoutCompanyCheck.includes(state.url) && !authService.hasCompany()) {
         console.log('[AuthGuard] Sin empresa registrada, redirigiendo a /companyregister');
         router.navigate(['/companyregister']);
         return false;
       }
 
       if (allowedRoles && allowedRoles.length > 0) {
-
         if (!user.roles || !Array.isArray(user.roles)) {
           console.log('[AuthGuard] Usuario no tiene roles válidos');
           router.navigate(['/forbidden']);
@@ -47,7 +47,7 @@ export const authGuard: CanActivateFn = (route, state) => {
         console.log('[AuthGuard] Resultado de verificación de permisos:', hasPermission);
 
         if (!hasPermission) {
-          console.log('[AuthGuard] Acceso denegado, redirigiendo a /forbidden');
+          console.log('[AuthGuard] Acceso denegado por roles, redirigiendo a /forbidden');
           router.navigate(['/forbidden']);
           return false;
         }

@@ -48,7 +48,6 @@ export class AuthService {
     this.nameCompanySubject = new BehaviorSubject<string | null>(initialName);
     this.nameCompany$ = this.nameCompanySubject.asObservable();
   }
-
   isAuthenticated(): boolean {
     if (!isPlatformBrowser(this.platformId)) return false;
 
@@ -56,11 +55,7 @@ export class AuthService {
     const currentUser = this.currentUserSubject.value;
     const storedUser = localStorage.getItem('currentUser');
 
-    const hasBasicAuth = !!token && !!currentUser && !!storedUser;
-
-    const isCompanyRegisterRoute = window.location.pathname.includes('/companyregister');
-
-    return hasBasicAuth && (isCompanyRegisterRoute || currentUser?.idCompany !== null);
+    return !!token && !!currentUser && !!storedUser;
   }
 
   hasCompany(): boolean {

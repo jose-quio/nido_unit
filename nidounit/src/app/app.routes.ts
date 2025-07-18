@@ -14,7 +14,8 @@ import { GastosComponent } from './gastos/gastos.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
-  { path: 'companyregister', component: CompanyRegisterComponent },
+  { path: 'companyregister', component: CompanyRegisterComponent, canActivate: [authGuard] },
+  { path: 'forbidden', component: ProhibidoComponent },
   {
     path: '',
     canActivate: [authGuard],
@@ -71,10 +72,6 @@ export const routes: Routes = [
         component: GastosComponent,
         canActivate: [authGuard],
         data: { roles: ['ADMIN_COMPANY'] }
-      },
-      {
-        path: 'forbidden',
-        component: ProhibidoComponent
       }
     ]
   },

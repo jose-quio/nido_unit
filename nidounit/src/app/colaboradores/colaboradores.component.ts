@@ -34,6 +34,7 @@ interface Role {
 })
 export class ColaboradoresComponent implements OnInit {
   colaboradorForm: FormGroup;
+  
   colaboradores: Colaborador[] = [];
   availableRoles: Role[] = [
     {
@@ -51,7 +52,7 @@ export class ColaboradoresComponent implements OnInit {
   selectedRoleIds: number[] = [];
   isSubmitting = false;
   successMessage = '';
-  errorMessage = '';
+  errorMessage: string | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -110,9 +111,13 @@ export class ColaboradoresComponent implements OnInit {
           this.isSubmitting = false;
         },
         error: (error) => {
-          this.errorMessage = this.getErrorMessage(error);
-          this.isSubmitting = false;
-        }
+            if (error.status === 409) {
+              this.errorMessage = 'Ya existe un colaborador con ese nombre de usuario o correo';
+            } else {
+              console.error('Error al registrar colaborador:', error);
+              this.errorMessage = 'Ocurrió un error al registrar el colaborador';
+            }
+          }
       });
     } else {
       this.errorMessage = 'Por favor complete todos los campos y seleccione al menos un rol';

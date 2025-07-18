@@ -1,11 +1,13 @@
 export const environment = {
-  production: true, 
+  production: true,
+  apiUrl: 'https://nidounit.onrender.com', 
   firebaseConfig: {
-    apiKey: "AIzaSyC9x1Hq2RtFvQl8Zm9KjE7Np6Sx8Yt4WcU",
-    authDomain: "mi-proyecto-12345.firebaseapp.com",
-    projectId: "mi-proyecto-12345",
-    storageBucket: "mi-proyecto-12345.appspot.com",
-    messagingSenderId: "123456789012",
-    appId: "1:123456789012:web:abcdef123456789"
+    apiKey: "AIzaSyCPhQGX_ZxLeNIUnNOCWAlyWdhV9vfZJvo",
+    authDomain: "nidounit.firebaseapp.com",
+    projectId: "nidounit",
+    storageBucket: "nidounit.firebasestorage.app",
+    messagingSenderId: "794845562769",
+    appId: "1:794845562769:web:665677dcc90d1f1417fc30",
+    measurementId: "G-M8LYG3K769"
   }
 };

@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { catchError, map, Observable, of, tap, throwError } from 'rxjs';
 import { UrlserviceService } from './urlservice.service';
 import { AuthUser } from './auth.service';
-import { environment } from '../../environments/environment.staging';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'

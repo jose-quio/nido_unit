@@ -332,11 +332,6 @@
                 {{ successMessage }}
             </div>
 
-            <div class="alert alert-danger" *ngIf="errorMessage">
-                <i class="fas fa-exclamation-triangle me-2"></i>
-                {{ errorMessage }}
-            </div>
-
             <form [formGroup]="colaboradorForm" (ngSubmit)="onSubmit()">
                 <div class="row">
                     <div class="col-md-6">
@@ -436,12 +431,14 @@
                         </div>
                     </div>
                 </div>
-
+                <div class="alert alert-danger mt-3" *ngIf="errorMessage">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    {{ errorMessage }}
+                </div>
                 <div class="text-center">
-                    <button type="submit" class="btn-submit" [disabled]="!colaboradorForm.valid || isSubmitting">
-                        <i class="fas fa-spinner fa-spin me-2" *ngIf="isSubmitting"></i>
-                        <i class="fas fa-user-plus me-2" *ngIf="!isSubmitting"></i>
-                        {{ isSubmitting ? 'Registrando...' : 'Registrar Colaborador' }}
+                    <button type="submit" class="btn-submit" [disabled]="!colaboradorForm.valid">
+                        <i class="fas fa-save"></i>
+                        Registrar Colaborador
                     </button>
                 </div>
             </form>
