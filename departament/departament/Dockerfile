@@ -8,7 +8,7 @@ RUN gradle clean build -x test
 FROM openjdk:21-jdk-slim
 WORKDIR /app
 COPY --from=builder /app/build/libs/*.jar app.jar
-COPY src/main/resources/database.db ./database.db
+
 
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
