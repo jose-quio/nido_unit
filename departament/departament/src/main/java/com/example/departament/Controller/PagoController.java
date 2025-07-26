@@ -84,17 +84,7 @@ public class PagoController {
         pago.setFechaPago(LocalDate.now());
         pagoRepository.save(pago);
 
-        try {
-            // Generar PDF de la boleta
-            File boletaPdf = pdfService.generarBoletaPagoPdf(pago);
-
-            // Enviar el PDF por correo al propietario
-            correoService.enviarBoletaPago(pago, boletaPdf);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Pago registrado, pero ocurrió un error al enviar el comprobante.");
-        }
+        
 
         return ResponseEntity.status(HttpStatus.OK).body("Pago registrado con éxito.");
     }

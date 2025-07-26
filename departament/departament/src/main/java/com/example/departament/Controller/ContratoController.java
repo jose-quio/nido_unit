@@ -108,13 +108,7 @@ public class ContratoController {
         departamento.setDisponible(false);
         departamentoRepository.save(departamento);
 
-        try {
-            File pdf = pdfService.generarContratoPdf(contratoGuardado);
-            correoService.enviarContratoPorCorreo(propietario.getCorreo(), pdf);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al generar el PDF");
-        }
+
 
 
         Company company = departamento.getEdificio().getCompany();
